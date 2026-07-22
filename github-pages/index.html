@@ -6,20 +6,195 @@
   <title>Grupo Mundo Patrimonial</title>
   <meta name="description" content="Propiedades seleccionadas y protección patrimonial en México.">
   <style>
-    :root{--navy:#061a34;--blue:#082142;--gold:#d3aa56;--beige:#f7f2e8;--muted:#64748b}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#334155;background:#fff}a{color:inherit;text-decoration:none}.wrap{max-width:1180px;margin:auto;padding:0 24px}.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #eef2f7}.nav{height:82px;display:flex;align-items:center;justify-content:space-between;gap:28px}.brand{display:flex;align-items:center;gap:12px;font-weight:900;color:var(--blue);letter-spacing:.02em}.mark{width:46px;height:46px;border:2px solid var(--blue);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-weight:900}.menu{display:flex;align-items:center;gap:30px;font-size:15px;font-weight:650}.btn{border:1px solid var(--blue);border-radius:999px;padding:14px 24px;font-weight:850}.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--blue)}.hero{background:var(--navy);color:#fff}.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;padding:88px 24px}.eyebrow{color:var(--gold);font-weight:900;text-transform:uppercase;letter-spacing:.22em;font-size:13px}.hero h1{font-size:58px;line-height:1.05;margin:22px 0 0;max-width:720px}.hero p{font-size:18px;line-height:1.8;color:#dbe5ef;max-width:720px}.search{margin-top:34px;background:#fff;color:#0f172a;border-radius:22px;padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;box-shadow:0 22px 45px #0005}.field{display:grid;gap:6px;font-size:12px;color:#64748b}.field input,.field select{height:46px;border:0;background:#f8fafc;border-radius:13px;padding:0 14px;color:#0f172a}.art{position:relative;min-height:340px;border:1px solid #ffffff1c;border-radius:34px;background:#ffffff13;padding:28px;overflow:hidden}.art:before{content:"";position:absolute;inset:34px;border-radius:50%;background:#fff1}.building{position:relative;height:100%;min-height:285px;border-radius:24px;background:linear-gradient(160deg,#123b5e,#061a34);display:flex;align-items:end;justify-content:center;gap:22px;padding:42px}.tower{width:58px;background:#f8f6ed}.tower.gold{background:var(--gold)}.t1{height:112px}.t2{height:170px}.t3{height:138px}.section{padding:78px 0}.section.beige{background:var(--beige)}.section-title{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}.section h2{font-size:46px;line-height:1.15;color:var(--blue);margin:14px 0 0}.section p{color:var(--muted);line-height:1.8}.filters{display:flex;gap:12px;flex-wrap:wrap;margin:34px 0}.pill{border:1px solid #e2e8f0;border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px}.pill.active{background:var(--blue);color:#fff}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}.card{background:#fff;border:1px solid #edf2f7;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px #0f172a0c}.card-img{height:210px;background:#d9e5e8;position:relative;overflow:hidden}.tag{position:absolute;top:16px;left:16px;z-index:3;background:var(--blue);color:#fff;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:900}.price{position:absolute;left:16px;bottom:16px;z-index:3;background:#fff;color:var(--blue);border-radius:12px;padding:10px 14px;font-weight:950;box-shadow:0 10px 22px #0002}.house{position:absolute;left:50%;bottom:0;z-index:1;transform:translateX(-50%);width:220px;height:130px;background:#fff}.house:before{content:"";position:absolute;left:-24px;right:-24px;top:-64px;border-left:134px solid transparent;border-right:134px solid transparent;border-bottom:76px solid var(--blue)}.card-body{padding:24px}.card h3{margin:0;color:var(--blue);font-size:21px}.meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;color:#475569;font-size:14px}.link{display:inline-block;margin-top:18px;color:#c59d47;font-weight:900}.service{padding:28px;background:#fff;border:1px solid #edf2f7;border-radius:20px;box-shadow:0 8px 24px #0f172a0b}.num{display:inline-block;background:#f4ead5;color:#c59d47;border-radius:999px;padding:9px 14px;font-weight:950;font-size:13px}.service h3{color:var(--blue);font-size:22px;margin:22px 0 10px}.cta{background:var(--blue);color:#fff}.cta .wrap{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-top:54px;padding-bottom:54px}.cta h2{font-size:34px;margin:0;max-width:700px}.footer{background:var(--navy);color:#fff;padding:46px 0}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}.footer p,.footer a{color:#cbd5e1}.gold-text{color:var(--gold)!important;font-weight:900}@media(max-width:850px){.menu{display:none}.hero-grid,.section-title,.grid,.footer-grid{grid-template-columns:1fr}.hero h1{font-size:42px}.search{grid-template-columns:1fr}.cta .wrap{display:grid}.card-img{height:190px}}
+    :root{--ink:#061d3b;--navy:#061a34;--navy-2:#0b2b4a;--gold:#d2a953;--gold-2:#c69a3f;--beige:#f6f1e8;--muted:#66758a;--line:#e7edf3;--pale-blue:#dce8ef;--pale-green:#dbe9df;--pale-sand:#e7dfd1}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#fff;color:#253347;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none}
+    button,input,select{font:inherit}
+    .shell{max-width:1210px;margin:0 auto;padding:0 42px}
+    .header{background:#fff}
+    .nav{height:110px;display:flex;align-items:center;justify-content:space-between;gap:36px}
+    .brand{display:flex;align-items:center;gap:13px;color:var(--ink);font-weight:950;letter-spacing:.03em;line-height:1.05}
+    .brand-mark{position:relative;display:grid;place-items:center;width:44px;height:44px;border:3px solid var(--ink);border-radius:50%;font-size:0}
+    .brand-mark:before,.brand-mark:after{content:"";position:absolute;bottom:12px;width:7px;border-radius:2px;background:var(--gold)}
+    .brand-mark:before{height:17px;left:14px}.brand-mark:after{height:25px;left:25px;background:#e0bd76}
+    .brand small{display:block;margin-top:6px;color:var(--gold);font-size:12px;letter-spacing:.16em}
+    .menu{display:flex;align-items:center;gap:31px;color:#1c2b40;font-size:14px;font-weight:560}
+    .advisor{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border:1.5px solid var(--ink);border-radius:999px;padding:0 29px;font-weight:850;color:var(--ink)}
+    .hero{margin:0 42px;background:radial-gradient(circle at 92% 56%,#183450 0 0,#183450 18%,#112941 18.2%,#112941 32%,transparent 32.2%),linear-gradient(125deg,#061a34 0%,#071f3a 48%,#0b2746 100%);color:#fff;overflow:hidden}
+    .hero-inner{max-width:1210px;margin:0 auto;min-height:606px;padding:95px 49px 96px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
+    .eyebrow{margin:0;color:var(--gold);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.22em}
+    .hero h1{margin:23px 0 0;max-width:630px;color:#fff;font-size:59px;line-height:1.04;letter-spacing:0;font-weight:950}
+    .hero-copy{margin:22px 0 0;max-width:610px;color:#e8f1f7;font-size:17px;line-height:1.75}
+    .search{margin-top:34px;max-width:600px;display:grid;grid-template-columns:1fr 1fr .95fr auto;gap:9px;align-items:end;background:#fff;border-radius:19px;padding:14px 15px;color:#111827;box-shadow:0 26px 58px rgba(0,0,0,.24)}
+    .field{display:grid;gap:5px;color:#6e7886;font-size:11px}
+    .field select,.field input{width:100%;height:43px;border:0;border-radius:12px;background:#f7f8fb;color:#0e1c2d;padding:0 13px;outline:none}
+    .search-btn{height:60px;border:0;border-radius:999px;background:var(--gold);color:#071d36;padding:0 22px;font-size:13px;font-weight:950;white-space:nowrap}
+    .hero-art{position:relative;height:372px;border:1px solid rgba(255,255,255,.14);border-radius:23px;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+    .screen{position:absolute;inset:23px;border-radius:15px;background:linear-gradient(#123b62,#082141);overflow:hidden}
+    .screen:after{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:#071c34}
+    .skyline{position:absolute;inset:0;z-index:1}
+    .tower{position:absolute;bottom:23px;background:#f6f4ec;box-shadow:15px 0 0 rgba(0,0,0,.08)}
+    .tower.gold{background:var(--gold)}.tw1{left:49px;width:30px;height:115px}.tw2{left:96px;width:76px;height:180px}.tw3{left:186px;width:53px;height:85px}.tw4{left:258px;width:40px;height:146px}.tw5{left:298px;width:78px;height:83px}.tw6{right:58px;width:51px;height:104px}
+    .section{padding:82px 0}
+    .section-title{display:grid;grid-template-columns:1fr .62fr;gap:64px;align-items:end}
+    .kicker{margin:0;color:var(--gold-2);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.22em}
+    .section h2{margin:18px 0 0;color:var(--ink);font-size:46px;line-height:1.22;font-weight:950}
+    .section-title p{margin:0 0 9px;color:var(--muted);font-size:15px;line-height:1.7}
+    .filters{display:flex;flex-wrap:wrap;gap:11px;margin:43px 0 23px}
+    .pill{display:inline-flex;min-height:36px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:0 18px;color:#5e6876;background:#fff;font-size:12px;font-weight:850}
+    .pill.active{background:var(--ink);border-color:var(--ink);color:#fff}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .property-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:0 18px 45px rgba(6,29,59,.08)}
+    .property-art{position:relative;height:215px;overflow:hidden;background:var(--pale-blue)}
+    .property-art.sand{background:var(--pale-sand)}.property-art.green{background:var(--pale-green)}
+    .ground{position:absolute;left:0;right:0;bottom:0;height:65px;background:#cfbd99}.property-art.sand .ground{background:#bcc7ca}.property-art.green .ground{background:#94a982}
+    .badge{position:absolute;z-index:5;top:16px;left:16px;border-radius:999px;background:var(--ink);color:#fff;padding:9px 14px;font-size:12px;font-weight:950}
+    .price{position:absolute;z-index:5;left:16px;bottom:14px;border-radius:10px;background:#fff;color:var(--ink);padding:11px 15px;font-size:15px;font-weight:950;box-shadow:0 12px 22px rgba(0,0,0,.12)}
+    .building-card{position:absolute;z-index:2;left:47px;bottom:65px;width:260px;height:96px;background:#f8f7f1}
+    .building-card:after{content:"";position:absolute;right:-113px;bottom:0;width:143px;height:128px;background:var(--ink)}
+    .window{position:absolute;z-index:3;width:32px;height:34px;background:#f0ce85}.w1{right:65px;top:18px}.w2{right:20px;top:18px}.w3{right:65px;top:67px}.w4{right:20px;top:67px}
+    .condo{position:absolute;z-index:2;left:70px;bottom:50px;width:220px;height:122px;border:17px solid var(--ink);background:#edf4f6}.condo:after{content:"";position:absolute;right:0;top:0;width:98px;height:88px;background:var(--gold)}.divider{position:absolute;z-index:3;left:102px;top:-5px;width:12px;height:113px;background:#fff}
+    .sun{position:absolute;right:59px;top:17px;width:52px;height:52px;border-radius:50%;background:#f4cf77}
+    .home-shape{position:absolute;z-index:2;left:70px;right:70px;bottom:51px;height:91px;background:#f9f7ef}.home-shape:before{content:"";position:absolute;left:-36px;right:-36px;top:-66px;border-left:145px solid transparent;border-right:145px solid transparent;border-bottom:82px solid var(--ink)}.home-shape:after{content:"";position:absolute;left:76px;bottom:0;width:44px;height:58px;background:var(--gold)}
+    .home-window{position:absolute;z-index:3;bottom:31px;width:30px;height:25px;background:#9db4c7}.hw1{left:105px}.hw2{right:105px}
+    .card-body{padding:25px 22px 23px}
+    .card-body h3{margin:0;color:var(--ink);font-size:21px;line-height:1.28;font-weight:950}
+    .location{margin:11px 0 0;color:#7a8594;font-size:14px;line-height:1.55}
+    .meta{display:flex;gap:17px;flex-wrap:wrap;margin:18px 0 0;color:#506174;font-size:13px}
+    .link{display:inline-flex;margin-top:19px;color:var(--gold-2);font-size:15px;font-weight:950}
+    .services{background:var(--beige)}
+    .service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:34px}
+    .service-card{min-height:210px;border:1px solid rgba(6,29,59,.06);border-radius:16px;background:#fff;padding:28px 24px;box-shadow:0 14px 36px rgba(6,29,59,.06)}
+    .num{display:inline-flex;align-items:center;height:33px;border-radius:999px;background:#f1e4c8;color:var(--gold-2);padding:0 14px;font-size:12px;font-weight:950}
+    .service-card h3{margin:25px 0 0;color:var(--ink);font-size:20px;line-height:1.25}
+    .service-card p{margin:13px 0 0;color:#66758a;line-height:1.65;font-size:14px}
+    .cta{background:var(--ink);color:#fff}
+    .cta-box{display:flex;align-items:center;justify-content:space-between;gap:35px;padding:52px 0}
+    .cta h2{margin:0;max-width:680px;font-size:35px;line-height:1.18}
+    .footer{background:#06172d;color:#fff;padding:46px 0}
+    .footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:28px}
+    .footer p,.footer a{color:#cbd5e1;line-height:1.8}.footer strong,.footer .gold{color:var(--gold);font-weight:950}
+    @media(max-width:980px){.shell{padding:0 22px}.hero{margin:0}.hero-inner,.section-title,.cards,.service-grid,.footer-grid{grid-template-columns:1fr}.hero-inner{padding:60px 24px}.hero h1{font-size:43px}.search{grid-template-columns:1fr}.search-btn{height:48px}.menu{display:none}.hero-art{height:310px}.cta-box{display:grid}.section h2{font-size:36px}}
+    @media(max-width:520px){.nav{height:86px}.brand span:last-child{font-size:13px}.hero h1{font-size:36px}.hero-copy{font-size:15px}.section{padding:58px 0}.property-art{height:190px}.building-card{left:34px}.home-shape{left:52px;right:52px}.card-body{padding:21px 18px}}
   </style>
 </head>
 <body>
-  <header class="header"><nav class="wrap nav"><a class="brand" href="./"><span class="mark">GMP</span><span>GRUPO MUNDO<br><span style="color:var(--gold);font-size:13px">PATRIMONIAL</span></span></a><div class="menu"><a href="./propiedades/">Propiedades</a><a href="./servicios/">Servicios</a><a href="./nosotros/">Nosotros</a><a href="./contacto/">Contacto</a><a class="btn" href="https://wa.me/5210000000000">Hablar con un asesor</a></div></nav></header>
-  <section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">Bienes raíces · Protección · Patrimonio</div><h1>Encuentra el espacio ideal para tu siguiente etapa.</h1><p>Propiedades seleccionadas en las mejores zonas, acompañamiento profesional y soluciones integrales para comprar, vender o rentar con confianza.</p><form class="search" action="./propiedades/"><label class="field">Operación<select><option>Venta y renta</option><option>Venta</option><option>Renta</option></select></label><label class="field">Tipo de propiedad<select><option>Todos</option><option>Departamento</option><option>Casa</option></select></label><label class="field">Zona<input placeholder="Ej. Del Valle"></label><button class="btn gold">Buscar propiedades</button></form></div><div class="art"><div class="building"><span class="tower gold t1"></span><span class="tower t2"></span><span class="tower gold t3"></span><span class="tower t1"></span></div></div></div></section>
-  <section class="section" id="propiedades"><div class="wrap"><div class="section-title"><div><div class="eyebrow">Propiedades destacadas</div><h2>Opciones seleccionadas para ti</h2></div><p>Un catálogo profesional preparado para crecer con nuevas zonas, filtros e imágenes reales dentro del proyecto Laravel completo.</p></div><div class="filters"><a class="pill active" href="./propiedades/">Todas</a><a class="pill" href="./propiedades/">En venta</a><a class="pill" href="./propiedades/">En renta</a><a class="pill" href="./propiedades/">Departamentos</a><a class="pill" href="./propiedades/">Casas</a></div><div class="grid">
-    <article class="card"><div class="card-img"><span class="tag">Venta</span><span class="price">$6,850,000 MXN</span><div class="house"></div></div><div class="card-body"><h3>Departamento moderno en Del Valle</h3><p>Del Valle Centro, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>105 m²</span></div><a class="link" href="./propiedades/">Ver propiedad →</a></div></article>
-    <article class="card"><div class="card-img" style="background:#e7dfd1"><span class="tag">Renta</span><span class="price">$32,000 / mes</span><div class="house"></div></div><div class="card-body"><h3>Departamento premium en Xoco</h3><p>Xoco, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>98 m²</span></div><a class="link" href="./propiedades/">Ver propiedad →</a></div></article>
-    <article class="card"><div class="card-img" style="background:#d8e6dc"><span class="tag">Venta</span><span class="price">$11,900,000 MXN</span><div class="house"></div></div><div class="card-body"><h3>Casa residencial en Coyoacán</h3><p>Barrio Santa Catarina, Coyoacán</p><div class="meta"><span>3 recámaras</span><span>3.5 baños</span><span>240 m²</span></div><a class="link" href="./propiedades/">Ver propiedad →</a></div></article>
-  </div></div></section>
-  <section class="section beige" id="servicios"><div class="wrap"><div class="eyebrow">Más que una inmobiliaria</div><h2>Servicios para proteger tu patrimonio</h2><div class="grid" style="margin-top:34px"><div class="service"><span class="num">01</span><h3>Compra y venta</h3><p>Acompañamiento comercial y documental durante todo el proceso.</p></div><div class="service"><span class="num">02</span><h3>Rentas</h3><p>Promoción, filtrado de prospectos y cierre profesional.</p></div><div class="service"><span class="num">03</span><h3>Administración</h3><p>Gestión de cobranza, mantenimiento y atención a inquilinos.</p></div><div class="service"><span class="num">04</span><h3>Protección patrimonial</h3><p>Pólizas jurídicas, seguros y soluciones complementarias.</p></div></div></div></section>
-  <section class="cta"><div class="wrap"><h2>Hablemos de tu siguiente inversión patrimonial.</h2><a class="btn gold" href="https://wa.me/5210000000000">Hablar con un asesor</a></div></section>
-  <footer class="footer"><div class="wrap footer-grid"><div><b>Grupo Mundo Patrimonial</b><p>Bienes raíces, protección y patrimonio.</p></div><div><p class="gold-text">Navegación</p><p><a href="./propiedades/">Propiedades</a><br><a href="./servicios/">Servicios</a><br><a href="./nosotros/">Nosotros</a><br><a href="./contacto/">Contacto</a></p></div><div><p class="gold-text">Contacto</p><p>contacto@grupomundopatrimonial.mx</p></div></div></footer>
+  <header class="header">
+    <nav class="shell nav">
+      <a class="brand" href="./" aria-label="Grupo Mundo Patrimonial">
+        <span class="brand-mark"></span>
+        <span>GRUPO MUNDO<small>PATRIMONIAL</small></span>
+      </a>
+      <div class="menu">
+        <a href="#propiedades">Propiedades</a>
+        <a href="#servicios">Servicios</a>
+        <a href="./nosotros/">Nosotros</a>
+        <a href="./contacto/">Contacto</a>
+        <a class="advisor" href="https://wa.me/5210000000000">Hablar con un asesor</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Bienes raíces · Protección · Patrimonio</p>
+        <h1>Encuentra el espacio ideal para tu siguiente etapa.</h1>
+        <p class="hero-copy">Propiedades seleccionadas en las mejores zonas, acompañamiento profesional y soluciones integrales para comprar, vender o rentar con confianza.</p>
+        <form class="search" action="#propiedades">
+          <label class="field">Operación
+            <select><option>Venta y renta</option><option>Venta</option><option>Renta</option></select>
+          </label>
+          <label class="field">Tipo de propiedad
+            <select><option>Todos</option><option>Departamento</option><option>Casa</option><option>Oficina</option></select>
+          </label>
+          <label class="field">Zona
+            <input placeholder="Ej. Del Valle">
+          </label>
+          <button class="search-btn">Buscar propiedades</button>
+        </form>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="screen">
+          <div class="skyline">
+            <span class="tower gold tw1"></span><span class="tower tw2"></span><span class="tower gold tw3"></span>
+            <span class="tower tw4"></span><span class="tower tw5"></span><span class="tower gold tw6"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="propiedades">
+    <div class="shell">
+      <div class="section-title">
+        <div>
+          <p class="kicker">Propiedades destacadas</p>
+          <h2>Opciones<br>seleccionadas para ti</h2>
+        </div>
+        <p>Un catálogo profesional que puede conectarse posteriormente con EasyBroker, Wix CMS o una base de datos propia.</p>
+      </div>
+      <div class="filters">
+        <a class="pill active" href="#propiedades">Todas</a>
+        <a class="pill" href="#propiedades">En venta</a>
+        <a class="pill" href="#propiedades">En renta</a>
+        <a class="pill" href="#propiedades">Departamentos</a>
+        <a class="pill" href="#propiedades">Casas</a>
+      </div>
+      <div class="cards">
+        <article class="property-card">
+          <div class="property-art">
+            <span class="badge">Venta</span><span class="price">$6,850,000 MXN</span><span class="ground"></span>
+            <div class="building-card"><span class="window w1"></span><span class="window w2"></span><span class="window w3"></span><span class="window w4"></span></div>
+          </div>
+          <div class="card-body"><h3>Departamento moderno en Del Valle</h3><p class="location">Del Valle Centro, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>105 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+        <article class="property-card">
+          <div class="property-art sand">
+            <span class="badge">Renta</span><span class="price">$32,000 / mes</span><span class="ground"></span><span class="sun"></span>
+            <div class="condo"><span class="divider"></span></div>
+          </div>
+          <div class="card-body"><h3>Departamento premium en Xoco</h3><p class="location">Xoco, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>98 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+        <article class="property-card">
+          <div class="property-art green">
+            <span class="badge">Venta</span><span class="price">$11,900,000 MXN</span><span class="ground"></span>
+            <div class="home-shape"></div><span class="home-window hw1"></span><span class="home-window hw2"></span>
+          </div>
+          <div class="card-body"><h3>Casa residencial en Coyoacán</h3><p class="location">Barrio Santa Catarina, Coyoacán</p><div class="meta"><span>3 recámaras</span><span>3.5 baños</span><span>240 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section services" id="servicios">
+    <div class="shell">
+      <p class="kicker">Más que una inmobiliaria</p>
+      <h2>Servicios para proteger tu patrimonio</h2>
+      <div class="service-grid">
+        <article class="service-card"><span class="num">01</span><h3>Compra y venta</h3><p>Acompañamiento comercial y documental durante todo el proceso.</p></article>
+        <article class="service-card"><span class="num">02</span><h3>Rentas</h3><p>Promoción, filtrado de prospectos y cierre profesional.</p></article>
+        <article class="service-card"><span class="num">03</span><h3>Administración</h3><p>Gestión de cobranza, mantenimiento y atención a inquilinos.</p></article>
+        <article class="service-card"><span class="num">04</span><h3>Protección patrimonial</h3><p>Pólizas jurídicas, seguros y soluciones complementarias.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="shell cta-box">
+      <h2>Hablemos de tu siguiente inversión patrimonial.</h2>
+      <a class="advisor" style="background:var(--gold);border-color:var(--gold)" href="https://wa.me/5210000000000">Hablar con un asesor</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <div><strong>Grupo Mundo Patrimonial</strong><p>Bienes raíces, protección y patrimonio con acompañamiento profesional.</p></div>
+      <div><p class="gold">Navegación</p><p><a href="#propiedades">Propiedades</a><br><a href="#servicios">Servicios</a><br><a href="./nosotros/">Nosotros</a><br><a href="./contacto/">Contacto</a></p></div>
+      <div><p class="gold">Contacto</p><p>contacto@grupomundopatrimonial.mx</p></div>
+    </div>
+  </footer>
 </body>
 </html>
