@@ -1,0 +1,1 @@
+<x-admin-layout title="{{ $property->title }}"><h1 class="text-3xl font-black text-[#082142]">{{ $property->title }}</h1><p class="mt-3">{{ $property->description }}</p><a class="mt-6 inline-flex rounded-full bg-[#d3aa56] px-5 py-3 font-bold text-[#082142]" href="{{ route('admin.properties.edit', $property) }}">Editar</a></x-admin-layout>

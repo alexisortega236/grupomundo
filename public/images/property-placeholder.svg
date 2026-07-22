@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 560" role="img" aria-label="Ilustración de propiedad">
+  <rect width="900" height="560" rx="24" fill="#d9e5e8"/>
+  <path d="M95 355h710v130H95z" fill="#c9b899"/>
+  <path d="M250 190h280v200H250z" fill="#143859"/>
+  <path d="M290 235h70v65h-70zm105 0h70v65h-70zm-105 95h70v65h-70zm105 0h70v65h-70z" fill="#d3aa56"/>
+  <path d="M530 270h145v120H530z" fill="#f7f5ee"/>
+  <path d="M525 270l78-70 80 70z" fill="#082142"/>
+</svg>
