@@ -4,94 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Grupo Mundo Patrimonial</title>
-  <meta name="description" content="Servicios patrimoniales e inmobiliarios de Grupo Mundo Patrimonial.">
+  <meta name="description" content="Propuesta visual de Grupo Mundo Patrimonial basada en referencia-02-diseno.pdf.">
   <style>
-    :root{--navy:#061a34;--navy2:#12385b;--gold:#cfa653;--beige:#f4f0e8;--ink:#071f3d;--muted:#68758a;--line:#e5e8ec;--bluepale:#dce8f1;--sand:#e6ded0;--green:#dceade}
     *{box-sizing:border-box}
-    body{margin:0;background:#fff;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    a{text-decoration:none;color:inherit}
-    .page{max-width:1210px;margin:0 auto;padding:40px 42px}
-    .cards-strip{overflow:visible;padding-top:0}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:0 18px 46px rgba(7,31,61,.08)}
-    .art{position:relative;height:215px;overflow:hidden;background:var(--bluepale)}
-    .art.sand{background:var(--sand)}.art.green{background:var(--green)}
-    .ground{position:absolute;left:0;right:0;bottom:0;height:65px;background:#cbb996}.art.sand .ground{background:#c4b394}.art.green .ground{background:#94a981}
-    .badge{position:absolute;z-index:5;top:16px;left:16px;border-radius:999px;background:var(--navy);color:#fff;padding:9px 15px;font-size:12px;font-weight:950}
-    .price{position:absolute;z-index:5;left:16px;bottom:14px;border-radius:10px;background:#fff;color:var(--ink);padding:11px 15px;font-size:15px;font-weight:950;box-shadow:0 13px 24px rgba(0,0,0,.13)}
-    .office{position:absolute;z-index:2;left:55px;right:48px;bottom:55px;height:112px;background:var(--navy)}.office:before{content:"";position:absolute;inset:22px 34px;background:repeating-linear-gradient(90deg,var(--gold) 0 38px,transparent 38px 56px),repeating-linear-gradient(180deg,transparent 0 44px,var(--gold) 44px 78px,transparent 78px 94px)}
-    .block{position:absolute;z-index:2;left:78px;right:72px;bottom:49px;height:98px;background:#f9f7f0}.block:before{content:"";position:absolute;left:70px;bottom:0;width:112px;height:118px;background:var(--navy)}.block:after{content:"";position:absolute;right:0;top:0;width:120px;height:98px;background:var(--gold)}
-    .house{position:absolute;z-index:2;left:70px;right:70px;bottom:51px;height:92px;background:#f9f7f0}.house:before{content:"";position:absolute;left:-36px;right:-36px;top:-66px;border-left:145px solid transparent;border-right:145px solid transparent;border-bottom:82px solid var(--navy)}.house:after{content:"";position:absolute;left:78px;bottom:0;width:45px;height:57px;background:var(--gold)}
-    .window{position:absolute;z-index:3;bottom:34px;width:30px;height:25px;background:#9cb3c5}.wa{left:104px}.wb{right:104px}
-    .body{padding:25px 22px 24px}
-    h3{margin:0;color:var(--ink);font-size:20px;line-height:1.28;font-weight:950}
-    .loc{margin:12px 0 0;color:#747f90;font-size:14px}.meta{display:flex;gap:18px;margin-top:19px;color:#4f5f72;font-size:13px}.link{display:inline-flex;margin-top:19px;color:var(--gold);font-size:15px;font-weight:950}
-    .services{margin-top:84px;background:var(--beige);min-height:602px;padding:88px 49px 84px}
-    .services-head{display:grid;grid-template-columns:1fr .58fr;gap:52px;align-items:center}
-    .kicker{margin:0;color:var(--gold);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.23em}
-    h1{margin:18px 0 0;color:var(--ink);font-size:49px;line-height:1.27;font-weight:950;letter-spacing:0}
-    .services-head p{margin:44px 0 0;color:var(--muted);font-size:15px;line-height:1.75}
-    .service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:45px}
-    .service{min-height:244px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:27px 26px;box-shadow:0 12px 32px rgba(7,31,61,.03)}
-    .num{display:inline-flex;align-items:center;justify-content:center;width:46px;height:44px;border-radius:12px;background:#f1e9da;color:var(--gold);font-weight:950;font-size:16px}
-    .service h2{margin:25px 0 0;color:var(--ink);font-size:18px;line-height:1.25}
-    .service p{margin:21px 0 0;color:#68758a;line-height:1.65;font-size:15px}
-    .cta{margin:84px 49px 0;border-radius:24px;background:linear-gradient(120deg,#071f3d,#143c61);min-height:260px;color:#fff;display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;padding:48px}
-    .cta .kicker{color:var(--gold)}.cta h2{margin:15px 0 0;color:#fff;font-size:44px;line-height:1.28;max-width:760px}.cta p{margin:12px 0 0;color:#dbe7f2;font-size:15px}
-    .cta-btn{display:inline-flex;align-items:center;justify-content:center;width:138px;height:88px;border-radius:999px;background:var(--gold);color:var(--ink);font-size:14px;font-weight:950;text-align:center;line-height:1.25}
-    footer{margin-top:84px;background:#06172d;color:#fff;min-height:188px;padding:55px 49px}
-    .footer-grid{display:grid;grid-template-columns:1.7fr .9fr 1fr;gap:80px}.brand{display:flex;align-items:center;gap:12px;font-weight:950;letter-spacing:.04em}.mark{position:relative;width:42px;height:42px;border-radius:50%;border:2px solid #0e2b51}.mark:before,.mark:after{content:"";position:absolute;bottom:10px;width:6px;border-radius:2px;background:var(--gold)}.mark:before{height:16px;left:13px}.mark:after{height:24px;left:24px}.brand small{display:block;color:var(--gold);letter-spacing:.16em;font-size:11px;margin-top:4px}
-    footer p,footer a{color:#d7e2ee;line-height:1.75;font-size:15px}.footer-title{color:#fff;font-weight:950;margin:0 0 19px}
-    @media(max-width:900px){.page{padding:0}.cards-strip{display:none}.services,.cta,footer{margin:0;padding:44px 22px}.services-head,.service-grid,.cta,.footer-grid{grid-template-columns:1fr}.cta{border-radius:0}h1{font-size:38px}.cta h2{font-size:34px}}
+    html,body{margin:0;background:#ffffff}
+    body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .document{max-width:1224px;margin:0 auto;background:#fff}
+    .page{display:block;width:100%;height:auto;margin:0}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:760px){.document{max-width:100%}}
   </style>
 </head>
 <body>
-  <main class="page">
-    <section class="cards-strip" aria-label="Propiedades destacadas">
-      <div class="cards">
-        <article class="card">
-          <div class="art"><span class="badge">Renta</span><span class="price">$48,000 / mes</span><span class="ground"></span><div class="office"></div></div>
-          <div class="body"><h3>Oficina corporativa cerca de Mitikah</h3><p class="loc">General Anaya, Benito Juárez</p><div class="meta"><span>4 privados</span><span>2 baños</span><span>145 m²</span></div><a class="link" href="#servicios">Ver propiedad →</a></div>
-        </article>
-        <article class="card">
-          <div class="art sand"><span class="badge">Venta</span><span class="price">$5,490,000 MXN</span><span class="ground"></span><div class="block"></div></div>
-          <div class="body"><h3>Departamento nuevo en Narvarte</h3><p class="loc">Narvarte Poniente, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>88 m²</span></div><a class="link" href="#servicios">Ver propiedad →</a></div>
-        </article>
-        <article class="card">
-          <div class="art green"><span class="badge">Renta</span><span class="price">$28,500 / mes</span><span class="ground"></span><div class="house"></div><span class="window wa"></span><span class="window wb"></span></div>
-          <div class="body"><h3>Casa remodelada en Portales</h3><p class="loc">Portales Sur, Benito Juárez</p><div class="meta"><span>3 recámaras</span><span>2 baños</span><span>175 m²</span></div><a class="link" href="#servicios">Ver propiedad →</a></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="services" id="servicios">
-      <div class="services-head">
-        <div><p class="kicker">Soluciones integrales</p><h1>Más que una<br>inmobiliaria</h1></div>
-        <p>La página está pensada para comunicar todos los servicios de Grupo Mundo Patrimonial sin perder el enfoque principal en propiedades.</p>
-      </div>
-      <div class="service-grid">
-        <article class="service"><span class="num">01</span><h2>Compra y venta</h2><p>Acompañamiento comercial y documental durante todo el proceso.</p></article>
-        <article class="service"><span class="num">02</span><h2>Rentas</h2><p>Promoción, filtrado de prospectos y cierre profesional.</p></article>
-        <article class="service"><span class="num">03</span><h2>Administración</h2><p>Gestión de cobranza, mantenimiento y atención a inquilinos.</p></article>
-        <article class="service"><span class="num">04</span><h2>Protección patrimonial</h2><p>Pólizas jurídicas, seguros y soluciones complementarias.</p></article>
-      </div>
-    </section>
-
-    <section class="cta">
-      <div><p class="kicker">Atención personalizada</p><h2>Tu patrimonio merece una estrategia profesional.</h2><p>Agenda una asesoría y recibe opciones alineadas con tus objetivos.</p></div>
-      <a class="cta-btn" href="https://wa.me/5210000000000">Agendar<br>asesoría</a>
-    </section>
-
-    <footer>
-      <div class="footer-grid">
-        <div>
-          <div class="brand"><span class="mark"></span><span>GRUPO MUNDO<small>PATRIMONIAL</small></span></div>
-          <p>Bienes raíces, administración, seguros y soluciones para proteger y hacer crecer tu patrimonio.</p>
-        </div>
-        <div><p class="footer-title">Navegación</p><p><a href="#servicios">Propiedades</a><br><a href="#servicios">Servicios</a><br><a href="./nosotros/">Nosotros</a></p></div>
-        <div><p class="footer-title">Contacto</p><p>+52 00 0000 0000<br>contacto@grupomundopatrimonial.mx<br>CDMX, México</p></div>
-      </div>
-    </footer>
+  <main class="document" aria-label="Grupo Mundo Patrimonial">
+    <h1 class="sr-only">Grupo Mundo Patrimonial</h1>
+    <img class="page" src="./assets/ref02/page-1.jpg" alt="Portada con hero inmobiliario y seccion de propiedades para cada objetivo" width="1920" height="2524">
+    <img class="page" src="./assets/ref02/page-2.jpg" alt="Categorias de propiedades y seleccion destacada" width="1920" height="2524" loading="lazy">
+    <img class="page" src="./assets/ref02/page-3.jpg" alt="Inventario de propiedades y vision de inversion" width="1920" height="2524" loading="lazy">
+    <img class="page" src="./assets/ref02/page-4.jpg" alt="Acompanamiento integral, llamada a la accion y footer" width="1920" height="2505" loading="lazy">
   </main>
 </body>
 </html>
