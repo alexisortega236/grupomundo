@@ -8,7 +8,7 @@
   <style>
     :root{--ink:#061d3b;--navy:#061a34;--navy-2:#0b2b4a;--gold:#d2a953;--gold-2:#c69a3f;--beige:#f6f1e8;--muted:#66758a;--line:#e7edf3;--pale-blue:#dce8ef;--pale-green:#dbe9df;--pale-sand:#e7dfd1}
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
+    html{scroll-behavior:smooth;scroll-padding-top:24px}
     body{margin:0;background:#fff;color:#253347;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     a{color:inherit;text-decoration:none}
     button,input,select{font:inherit}
@@ -23,7 +23,7 @@
     .menu{display:flex;align-items:center;gap:31px;color:#1c2b40;font-size:14px;font-weight:560}
     .advisor{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border:1.5px solid var(--ink);border-radius:999px;padding:0 29px;font-weight:850;color:var(--ink)}
     .hero{margin:0 42px;background:radial-gradient(circle at 92% 56%,#183450 0 0,#183450 18%,#112941 18.2%,#112941 32%,transparent 32.2%),linear-gradient(125deg,#061a34 0%,#071f3a 48%,#0b2746 100%);color:#fff;overflow:hidden}
-    .hero-inner{max-width:1210px;margin:0 auto;min-height:606px;padding:95px 49px 96px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
+    .hero-inner{max-width:1210px;margin:0 auto;min-height:606px;padding:96px 49px 96px;display:grid;grid-template-columns:1.15fr .85fr;gap:52px;align-items:center}
     .eyebrow{margin:0;color:var(--gold);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.22em}
     .hero h1{margin:23px 0 0;max-width:630px;color:#fff;font-size:59px;line-height:1.04;letter-spacing:0;font-weight:950}
     .hero-copy{margin:22px 0 0;max-width:610px;color:#e8f1f7;font-size:17px;line-height:1.75}
@@ -45,7 +45,7 @@
     .filters{display:flex;flex-wrap:wrap;gap:11px;margin:43px 0 23px}
     .pill{display:inline-flex;min-height:36px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:0 18px;color:#5e6876;background:#fff;font-size:12px;font-weight:850}
     .pill.active{background:var(--ink);border-color:var(--ink);color:#fff}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:22px}
     .property-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:0 18px 45px rgba(6,29,59,.08)}
     .property-art{position:relative;height:215px;overflow:hidden;background:var(--pale-blue)}
     .property-art.sand{background:var(--pale-sand)}.property-art.green{background:var(--pale-green)}
@@ -59,6 +59,9 @@
     .sun{position:absolute;right:59px;top:17px;width:52px;height:52px;border-radius:50%;background:#f4cf77}
     .home-shape{position:absolute;z-index:2;left:70px;right:70px;bottom:51px;height:91px;background:#f9f7ef}.home-shape:before{content:"";position:absolute;left:-36px;right:-36px;top:-66px;border-left:145px solid transparent;border-right:145px solid transparent;border-bottom:82px solid var(--ink)}.home-shape:after{content:"";position:absolute;left:76px;bottom:0;width:44px;height:58px;background:var(--gold)}
     .home-window{position:absolute;z-index:3;bottom:31px;width:30px;height:25px;background:#9db4c7}.hw1{left:105px}.hw2{right:105px}
+    .wide-building{position:absolute;z-index:2;left:55px;right:48px;bottom:55px;height:112px;background:var(--ink)}.wide-building:before{content:"";position:absolute;inset:22px 34px;background:repeating-linear-gradient(90deg,var(--gold) 0 38px,transparent 38px 56px),repeating-linear-gradient(180deg,transparent 0 44px,var(--gold) 44px 78px,transparent 78px 94px)}
+    .gold-home{position:absolute;z-index:2;left:69px;right:64px;bottom:44px;height:86px;background:#f8f7f1}.gold-home:before{content:"";position:absolute;left:-28px;right:-28px;top:-66px;border-left:138px solid transparent;border-right:138px solid transparent;border-bottom:76px solid var(--gold)}.gold-home:after{content:"";position:absolute;left:86px;bottom:0;width:45px;height:55px;background:var(--ink)}
+    .dual-block{position:absolute;z-index:2;left:78px;right:74px;bottom:48px;height:98px;background:var(--ink)}.dual-block:before{content:"";position:absolute;left:80px;top:-12px;width:15px;height:110px;background:#0b2b4a}.dual-block:after{content:"";position:absolute;right:0;top:0;width:112px;height:98px;background:var(--gold)}
     .card-body{padding:25px 22px 23px}
     .card-body h3{margin:0;color:var(--ink);font-size:21px;line-height:1.28;font-weight:950}
     .location{margin:11px 0 0;color:#7a8594;font-size:14px;line-height:1.55}
@@ -164,6 +167,27 @@
             <div class="home-shape"></div><span class="home-window hw1"></span><span class="home-window hw2"></span>
           </div>
           <div class="card-body"><h3>Casa residencial en Coyoacán</h3><p class="location">Barrio Santa Catarina, Coyoacán</p><div class="meta"><span>3 recámaras</span><span>3.5 baños</span><span>240 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+        <article class="property-card">
+          <div class="property-art">
+            <span class="badge">Renta</span><span class="price">$45,000 / mes</span><span class="ground"></span>
+            <div class="wide-building"></div>
+          </div>
+          <div class="card-body"><h3>Oficina corporativa cerca de Mitikah</h3><p class="location">Xoco, Benito Juárez</p><div class="meta"><span>2 privados</span><span>2 baños</span><span>140 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+        <article class="property-card">
+          <div class="property-art sand">
+            <span class="badge">Venta</span><span class="price">$5,250,000 MXN</span><span class="ground"></span>
+            <div class="dual-block"></div>
+          </div>
+          <div class="card-body"><h3>Departamento nuevo en Narvarte</h3><p class="location">Narvarte Poniente, Benito Juárez</p><div class="meta"><span>2 recámaras</span><span>2 baños</span><span>88 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
+        </article>
+        <article class="property-card">
+          <div class="property-art">
+            <span class="badge">Renta</span><span class="price">$28,500 / mes</span><span class="ground"></span>
+            <div class="gold-home"></div><span class="home-window hw1"></span><span class="home-window hw2"></span>
+          </div>
+          <div class="card-body"><h3>Loft ejecutivo en Roma Norte</h3><p class="location">Roma Norte, Cuauhtémoc</p><div class="meta"><span>1 recámara</span><span>1 baño</span><span>62 m²</span></div><a class="link" href="#propiedades">Ver propiedad →</a></div>
         </article>
       </div>
     </div>
