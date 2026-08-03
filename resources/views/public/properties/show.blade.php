@@ -3,8 +3,10 @@
     <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
             <div>
-                <img class="h-[520px] w-full rounded-lg object-cover" src="{{ $property->coverUrl() }}" alt="{{ $property->title }}">
-                <div class="mt-4 grid grid-cols-4 gap-3">@foreach($property->images as $image)<img class="h-24 rounded object-cover" src="{{ $image->url('thumb') }}" alt="{{ $image->alt_text ?: $property->title }}">@endforeach</div>
+                <div class="flex h-[520px] w-full items-center justify-center overflow-hidden rounded-lg bg-white">
+                    <img class="max-h-full max-w-full object-contain" src="{{ $property->coverUrl() }}" alt="{{ $property->title }}">
+                </div>
+                <div class="mt-4 grid grid-cols-4 gap-3">@foreach($property->images as $image)<div class="flex h-24 items-center justify-center rounded bg-white"><img class="max-h-full max-w-full object-contain" src="{{ $image->url('thumb') }}" alt="{{ $image->alt_text ?: $property->title }}"></div>@endforeach</div>
             </div>
             <aside class="rounded-lg bg-white p-7 shadow-sm">
                 <p class="text-sm font-bold uppercase tracking-[.18em] text-[#b89752]">{{ $property->operation_type->label() }} · {{ $property->property_type }}</p>
