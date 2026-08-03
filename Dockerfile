@@ -35,6 +35,8 @@ RUN chmod +x /usr/local/bin/render-entrypoint \
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false
+ENV APP_URL=https://grupomundo.onrender.com
+ENV ASSET_URL=https://grupomundo.onrender.com
 ENV LOG_CHANNEL=stderr
 ENV SESSION_DRIVER=database
 ENV CACHE_STORE=database
