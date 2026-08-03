@@ -115,3 +115,21 @@ Las pruebas Feature cubren carga de inicio, catalogo, detalle publicado, bloqueo
 - Usa `APP_DEBUG=false`.
 - Ejecuta `php artisan optimize` despues del despliegue.
 - Revisa permisos de `storage` y `bootstrap/cache`.
+
+## Render
+
+El repositorio incluye `Dockerfile` para Render. En el servicio selecciona `Docker` como runtime y deja que Render use el `Dockerfile` de la raiz.
+
+Variables recomendadas:
+
+```env
+APP_NAME=Grupo Mundo Patrimonial
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://grupomundo.onrender.com
+WHATSAPP_NUMBER=5210000000000
+CONTACT_EMAIL=contacto@grupomundopatrimonial.mx
+RUN_SEEDERS=true
+```
+
+Para una prueba rapida puede dejar SQLite, que es el valor predeterminado del contenedor. Para produccion usa una base externa y configura `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD`.
