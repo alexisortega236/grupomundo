@@ -132,7 +132,7 @@ class PropertyController extends Controller
         $property = Property::withTrashed()->findOrFail($property);
         $this->authorize('forceDelete', $property);
         foreach ($property->images as $image) {
-            Storage::disk('public')->delete($image->path);
+            Storage::disk('public')->delete($image->paths());
         }
         $property->forceDelete();
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad eliminada permanentemente.');

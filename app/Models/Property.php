@@ -85,11 +85,11 @@ class Property extends Model
         return $query->where('operation_type', OperationType::Rent);
     }
 
-    public function coverUrl(): string
+    public function coverUrl(string $version = 'large'): string
     {
         $image = $this->coverImage->first() ?: $this->images->first();
 
-        return $image ? Storage::url($image->path) : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
+        return $image ? $image->url($version) : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
     }
 
     public function formattedPrice(): string

@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Property;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PublicPropertyTest extends TestCase
@@ -93,5 +95,38 @@ class PublicPropertyTest extends TestCase
 
         $this->actingAs($admin)->delete(route('admin.properties.destroy', $property))->assertRedirect();
         $this->assertSoftDeleted('properties', ['id' => $property->id]);
+    }
+
+    public function test_admin_uploads_are_optimized_to_webp_versions(): void
+    {
+        Storage::fake('public');
+        $this->seed();
+        $admin = User::where('role', 'admin')->first();
+
+        $this->actingAs($admin)->post(route('admin.properties.store'), [
+            'title' => 'Casa con imagen optimizada',
+            'slug' => 'casa-con-imagen-optimizada',
+            'description' => 'Descripcion completa de prueba.',
+            'operation_type' => 'sale',
+            'property_type' => 'Casa',
+            'price' => 3500000,
+            'currency' => 'MXN',
+            'neighborhood' => 'Del Valle',
+            'city' => 'Ciudad de Mexico',
+            'state' => 'CDMX',
+            'status' => 'published',
+            'images' => [UploadedFile::fake()->image('fachada.jpg', 2200, 1400)],
+        ])->assertRedirect();
+
+        $image = Property::where('slug', 'casa-con-imagen-optimizada')->first()->images()->first();
+
+        $this->assertNotNull($image);
+        $this->assertStringEndsWith('-large.webp', $image->path);
+        $this->assertStringEndsWith('-card.webp', $image->card_path);
+        $this->assertStringEndsWith('-thumb.webp', $image->thumb_path);
+        $this->assertNotNull($image->size_kb);
+        Storage::disk('public')->assertExists($image->path);
+        Storage::disk('public')->assertExists($image->card_path);
+        Storage::disk('public')->assertExists($image->thumb_path);
     }
 }
