@@ -37,7 +37,7 @@ class PropertyController extends Controller
     public function create()
     {
         return view('admin.properties.form', [
-            'property' => new Property(['currency' => 'MXN', 'status' => PropertyStatus::Draft]),
+            'property' => new Property(['currency' => 'MXN', 'status' => PropertyStatus::Published, 'published_at' => now()]),
             'amenities' => Amenity::orderBy('name')->get(),
         ]);
     }

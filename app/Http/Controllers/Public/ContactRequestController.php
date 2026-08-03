@@ -10,7 +10,13 @@ class ContactRequestController extends Controller
 {
     public function __invoke(StoreContactRequest $request)
     {
-        ContactRequest::create($request->validated());
+        ContactRequest::create($request->safe()->only([
+            'property_id',
+            'name',
+            'phone',
+            'email',
+            'message',
+        ]));
 
         return back()->with('status', 'Tu solicitud fue enviada. Un asesor te contactara pronto.');
     }

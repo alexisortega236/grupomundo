@@ -44,6 +44,7 @@ class PublicPropertyTest extends TestCase
             'phone' => '5512345678',
             'email' => 'cliente@example.com',
             'message' => 'Quiero informacion.',
+            'website' => '',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('contact_requests', ['phone' => '5512345678']);
