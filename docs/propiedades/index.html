@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Propiedades | Grupo Mundo Patrimonial</title>
+    <meta name="description" content="Catalogo de propiedades en venta y renta.">
+    <meta property="og:title" content="Propiedades | Grupo Mundo Patrimonial">
+    <meta property="og:description" content="Catalogo de propiedades en venta y renta.">
+    <link rel="preload" as="style" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js" /><link rel="stylesheet" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><script type="module" src="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js"></script></head>
+<body class="bg-[#f5f2eb] font-sans text-[#112f2b] antialiased">
+    <header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-[#e6dfd2] bg-white/95 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <a href="http://127.0.0.1:8099" class="flex items-center gap-3">
+            <span class="grid h-10 w-10 place-items-center border border-[#c9a968] font-serif text-lg text-[#c9a968]">M</span>
+            <span class="text-xs font-bold uppercase tracking-[.18em] text-[#0d2723]">Grupo Mundo<br><span class="text-[#c9a968]">Patrimonial</span></span>
+        </a>
+        <button class="rounded p-2 md:hidden" @click="open = !open" aria-label="Abrir menu"><span class="block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span></button>
+        <nav class="hidden items-center gap-8 text-sm font-medium text-[#51635f] md:flex">
+            <a href="http://127.0.0.1:8099/propiedades">Propiedades</a>
+            <a href="http://127.0.0.1:8099/servicios">Servicios</a>
+            <a href="http://127.0.0.1:8099/nosotros">Nosotros</a>
+            <a href="http://127.0.0.1:8099/contacto">Contacto</a>
+            <a class="rounded-full border border-[#0d2723] px-5 py-3 text-xs font-bold uppercase tracking-[.16em] text-[#0d2723] hover:bg-[#0d2723] hover:text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial." target="_blank" rel="noopener">Hablar con un asesor</a>
+        </nav>
+    </div>
+    <nav x-show="open" x-cloak class="grid gap-2 border-t border-[#e6dfd2] bg-white px-4 pb-4 text-sm md:hidden">
+        <a class="py-2" href="http://127.0.0.1:8099/propiedades">Propiedades</a>
+        <a class="py-2" href="http://127.0.0.1:8099/servicios">Servicios</a>
+        <a class="py-2" href="http://127.0.0.1:8099/nosotros">Nosotros</a>
+        <a class="py-2" href="http://127.0.0.1:8099/contacto">Contacto</a>
+        <a class="rounded-full bg-[#0d2723] px-5 py-3 text-center text-xs font-bold uppercase tracking-[.16em] text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial.">Hablar con un asesor</a>
+    </nav>
+</header>
+    <main><section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <h1 class="font-serif text-5xl">Propiedades</h1>
+        <form class="mt-8 grid gap-4 rounded-lg bg-white p-5 shadow-sm md:grid-cols-4">
+            <input name="keyword" value="" placeholder="Palabra clave" class="rounded border-[#ded8ca]">
+            <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Operacion</option><option value="sale" >Venta</option><option value="rent" >Renta</option></select>
+            <select name="property_type" class="rounded border-[#ded8ca]"><option value="">Tipo</option><option >Departamento</option><option >Casa</option><option >Oficina</option><option >Local</option><option >Terreno</option></select>
+            <select name="state" class="rounded border-[#ded8ca]"><option value="">Estado</option><option >CDMX</option></select>
+            <select name="city" class="rounded border-[#ded8ca]"><option value="">Ciudad</option><option >Ciudad de Mexico</option></select>
+            <input name="neighborhood" value="" placeholder="Zona o colonia" class="rounded border-[#ded8ca]">
+            <input name="min_price" value="" type="number" placeholder="Precio minimo" class="rounded border-[#ded8ca]">
+            <input name="max_price" value="" type="number" placeholder="Precio maximo" class="rounded border-[#ded8ca]">
+            <input name="bedrooms" value="" type="number" placeholder="Recamaras" class="rounded border-[#ded8ca]">
+            <input name="bathrooms" value="" type="number" step="0.5" placeholder="Banos" class="rounded border-[#ded8ca]">
+            <select name="sort" class="rounded border-[#ded8ca]"><option value="recent">Mas recientes</option><option value="price_asc" >Precio menor</option><option value="price_desc" >Precio mayor</option><option value="featured" >Destacadas</option></select>
+            <div class="flex gap-2"><button class="flex-1 rounded bg-[#0d2723] px-5 py-3 text-white">Filtrar</button><a class="rounded border px-5 py-3" href="http://127.0.0.1:8099/propiedades">Limpiar</a></div>
+        </form>
+        <p class="mt-6 text-sm text-[#687773]">12 resultados encontrados</p>
+        <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3"><article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa remodelada en Portales">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+                <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$6,900,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Casa remodelada en Portales</h3>
+        <p class="mt-2 text-sm text-[#687773]">Portales, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>3 rec.</span><span>3.0 banos</span><span>140 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/casa-remodelada-en-portales">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Penthouse con terraza en Del Valle">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Renta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$45,000 MXN <small>/ mes</small></span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Penthouse con terraza en Del Valle</h3>
+        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>4 rec.</span><span>3.0 banos</span><span>220 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/penthouse-con-terraza-en-del-valle">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Departamento premium en Xoco">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Renta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$32,000 MXN <small>/ mes</small></span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Departamento premium en Xoco</h3>
+        <p class="mt-2 text-sm text-[#687773]">Xoco, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>4 rec.</span><span>2.0 banos</span><span>141 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/departamento-premium-en-xoco">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Departamento moderno en Del Valle">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$4,850,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Departamento moderno en Del Valle</h3>
+        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>3 rec.</span><span>2.0 banos</span><span>111 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/departamento-moderno-en-del-valle">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa residencial en Coyoacan">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$9,200,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Casa residencial en Coyoacan</h3>
+        <p class="mt-2 text-sm text-[#687773]">Coyoacan, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>2 rec.</span><span>2.0 banos</span><span>162 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/casa-residencial-en-coyoacan">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Departamento nuevo en Narvarte">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+                <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$3,950,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Departamento nuevo en Narvarte</h3>
+        <p class="mt-2 text-sm text-[#687773]">Narvarte, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>4 rec.</span><span>1.0 banos</span><span>142 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/departamento-nuevo-en-narvarte">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Terreno patrimonial en San Angel">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+                <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$11,500,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Terreno patrimonial en San Angel</h3>
+        <p class="mt-2 text-sm text-[#687773]">San Angel, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>0 rec.</span><span>3.0 banos</span><span>103 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/terreno-patrimonial-en-san-angel">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa con jardin en Tlalpan">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$8,700,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Casa con jardin en Tlalpan</h3>
+        <p class="mt-2 text-sm text-[#687773]">Tlalpan, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>4 rec.</span><span>4.0 banos</span><span>88 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/casa-con-jardin-en-tlalpan">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Oficina privada en Napoles">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Renta</span>
+                <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$26,000 MXN <small>/ mes</small></span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Oficina privada en Napoles</h3>
+        <p class="mt-2 text-sm text-[#687773]">Napoles, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>0 rec.</span><span>2.0 banos</span><span>119 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/oficina-privada-en-napoles">Ver propiedad</a>
+    </div>
+</article>
+</div>
+        <div class="mt-8"><nav role="navigation" aria-label="Pagination Navigation">
+
+        <div class="flex gap-2 items-center justify-between sm:hidden">
+
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 cursor-not-allowed leading-5 rounded-md dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600">
+                    pagination.previous
+                </span>
+            
+                            <a href="http://127.0.0.1:8099/propiedades?page=2" rel="next" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-700 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-800 transition ease-in-out duration-150 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:focus:border-blue-700 dark:active:bg-gray-700 dark:active:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 dark:hover:text-gray-200">
+                    pagination.next
+                </a>
+            
+        </div>
+
+        <div class="hidden sm:flex-1 sm:flex sm:gap-2 sm:items-center sm:justify-between">
+
+            <div>
+                <p class="text-sm text-gray-700 leading-5 dark:text-gray-600">
+                    Showing
+                                            <span class="font-medium">1</span>
+                        to
+                        <span class="font-medium">9</span>
+                                        of
+                    <span class="font-medium">12</span>
+                    results
+                </p>
+            </div>
+
+            <div>
+                <span class="inline-flex rtl:flex-row-reverse shadow-sm rounded-md">
+
+                    
+                                            <span aria-disabled="true" aria-label="pagination.previous">
+                            <span class="inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-not-allowed rounded-l-md leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400" aria-hidden="true">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                        </span>
+                    
+                    
+                                            
+                        
+                        
+                                                                                                                        <span aria-current="page">
+                                        <span class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 cursor-default leading-5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">1</span>
+                                    </span>
+                                                                                                                                <a href="http://127.0.0.1:8099/propiedades?page=2" class="inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 hover:text-gray-700 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-gray-300 dark:active:bg-gray-700 dark:focus:border-blue-800 hover:bg-gray-100 dark:hover:bg-gray-900" aria-label="Go to page 2">
+                                        2
+                                    </a>
+                                                                                                        
+                    
+                                            <a href="http://127.0.0.1:8099/propiedades?page=2" rel="next" class="inline-flex items-center px-2 py-2 -ml-px text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md leading-5 hover:text-gray-400 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150 dark:bg-gray-800 dark:border-gray-600 dark:active:bg-gray-700 dark:focus:border-blue-800 dark:text-gray-300 dark:hover:bg-gray-900 dark:hover:text-gray-300" aria-label="pagination.next">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                                    </span>
+            </div>
+        </div>
+    </nav>
+</div>
+    </section></main>
+    <footer class="bg-[#0d2723] text-white">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
+        <div><p class="font-serif text-2xl">Grupo Mundo Patrimonial</p><p class="mt-3 text-sm text-white/70">Espacios excepcionales y decisiones patrimoniales inteligentes.</p></div>
+        <div class="text-sm text-white/75"><p>Propiedades</p><p>Servicios inmobiliarios</p><p>Proteccion patrimonial</p></div>
+        <div class="text-sm text-white/75"><p>contacto@grupomundopatrimonial.mx</p><p>WhatsApp 5210000000000</p></div>
+    </div>
+</footer>
+</body>
+</html>

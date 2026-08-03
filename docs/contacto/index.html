@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contacto | Grupo Mundo Patrimonial</title>
+    <meta name="description" content="Inmobiliaria patrimonial en Ciudad de Mexico.">
+    <meta property="og:title" content="Contacto | Grupo Mundo Patrimonial">
+    <meta property="og:description" content="Inmobiliaria patrimonial en Ciudad de Mexico.">
+    <link rel="preload" as="style" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js" /><link rel="stylesheet" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><script type="module" src="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js"></script></head>
+<body class="bg-[#f5f2eb] font-sans text-[#112f2b] antialiased">
+    <header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-[#e6dfd2] bg-white/95 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <a href="http://127.0.0.1:8099" class="flex items-center gap-3">
+            <span class="grid h-10 w-10 place-items-center border border-[#c9a968] font-serif text-lg text-[#c9a968]">M</span>
+            <span class="text-xs font-bold uppercase tracking-[.18em] text-[#0d2723]">Grupo Mundo<br><span class="text-[#c9a968]">Patrimonial</span></span>
+        </a>
+        <button class="rounded p-2 md:hidden" @click="open = !open" aria-label="Abrir menu"><span class="block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span></button>
+        <nav class="hidden items-center gap-8 text-sm font-medium text-[#51635f] md:flex">
+            <a href="http://127.0.0.1:8099/propiedades">Propiedades</a>
+            <a href="http://127.0.0.1:8099/servicios">Servicios</a>
+            <a href="http://127.0.0.1:8099/nosotros">Nosotros</a>
+            <a href="http://127.0.0.1:8099/contacto">Contacto</a>
+            <a class="rounded-full border border-[#0d2723] px-5 py-3 text-xs font-bold uppercase tracking-[.16em] text-[#0d2723] hover:bg-[#0d2723] hover:text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial." target="_blank" rel="noopener">Hablar con un asesor</a>
+        </nav>
+    </div>
+    <nav x-show="open" x-cloak class="grid gap-2 border-t border-[#e6dfd2] bg-white px-4 pb-4 text-sm md:hidden">
+        <a class="py-2" href="http://127.0.0.1:8099/propiedades">Propiedades</a>
+        <a class="py-2" href="http://127.0.0.1:8099/servicios">Servicios</a>
+        <a class="py-2" href="http://127.0.0.1:8099/nosotros">Nosotros</a>
+        <a class="py-2" href="http://127.0.0.1:8099/contacto">Contacto</a>
+        <a class="rounded-full bg-[#0d2723] px-5 py-3 text-center text-xs font-bold uppercase tracking-[.16em] text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial.">Hablar con un asesor</a>
+    </nav>
+</header>
+    <main><section class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8"><div><h1 class="font-serif text-5xl">Contacto</h1><p class="mt-5 text-[#51635f]">Comparte tus datos y un asesor te contactara para entender tu objetivo inmobiliario.</p><p class="mt-6">contacto@grupomundopatrimonial.mx</p></div><form method="POST" action="http://127.0.0.1:8099/solicitudes" class="rounded-lg bg-white p-7 shadow-sm"><input type="hidden" name="_token" value="q38ht5JEyxfV9cX6X5zg2lEwsFIG1NCuulVMDEuv" autocomplete="off"><input class="hidden" name="website" tabindex="-1" autocomplete="off"><div class="grid gap-4"><label class="block text-sm font-semibold text-[#0d2723]">Nombre
+    <input name="name" type="text" value="" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">
+</label>
+<label class="block text-sm font-semibold text-[#0d2723]">Telefono
+    <input name="phone" type="text" value="" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">
+</label>
+<label class="block text-sm font-semibold text-[#0d2723]">Correo electronico
+    <input name="email" type="email" value="" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">
+</label>
+<label class="block text-sm font-semibold text-[#0d2723]">Mensaje
+    <textarea name="message" rows="5" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"></textarea>
+</label>
+<button class="rounded bg-[#0d2723] px-5 py-3 font-bold text-white">Enviar solicitud</button></div></form></section></main>
+    <footer class="bg-[#0d2723] text-white">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
+        <div><p class="font-serif text-2xl">Grupo Mundo Patrimonial</p><p class="mt-3 text-sm text-white/70">Espacios excepcionales y decisiones patrimoniales inteligentes.</p></div>
+        <div class="text-sm text-white/75"><p>Propiedades</p><p>Servicios inmobiliarios</p><p>Proteccion patrimonial</p></div>
+        <div class="text-sm text-white/75"><p>contacto@grupomundopatrimonial.mx</p><p>WhatsApp 5210000000000</p></div>
+    </div>
+</footer>
+</body>
+</html>
