@@ -18,7 +18,7 @@ FROM php:8.3-apache
 WORKDIR /var/www/html
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends bash libicu-dev libzip-dev libpq-dev libsqlite3-dev \
+    && apt-get install -y --no-install-recommends bash libicu-dev libzip-dev libpq-dev libsqlite3-dev libonig-dev \
     && docker-php-ext-install intl mbstring pdo_mysql pdo_pgsql pdo_sqlite zip \
     && a2enmod rewrite headers \
     && sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \
