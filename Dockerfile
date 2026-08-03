@@ -14,13 +14,16 @@ COPY . .
 RUN composer dump-autoload --optimize \
     && php artisan package:discover --ansi
 
-FROM php:8.3-cli-alpine
+FROM php:8.3-apache
 WORKDIR /var/www/html
 
-RUN apk add --no-cache bash icu-dev libzip-dev postgresql-dev oniguruma-dev sqlite-dev \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends bash libicu-dev libzip-dev libpq-dev libsqlite3-dev \
     && docker-php-ext-install intl mbstring pdo_mysql pdo_pgsql pdo_sqlite zip \
-    && addgroup -g 1000 laravel \
-    && adduser -D -G laravel -u 1000 laravel
+    && a2enmod rewrite headers \
+    && sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \
+    && sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=vendor /app /var/www/html
 COPY --from=assets /app/public/build /var/www/html/public/build
@@ -28,9 +31,7 @@ COPY docker/entrypoint.sh /usr/local/bin/render-entrypoint
 
 RUN chmod +x /usr/local/bin/render-entrypoint \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
-    && chown -R laravel:laravel storage bootstrap/cache database public
-
-USER laravel
+    && chown -R www-data:www-data storage bootstrap/cache database public
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false
@@ -44,4 +45,4 @@ ENV DB_DATABASE=/var/www/html/database/database.sqlite
 EXPOSE 10000
 
 ENTRYPOINT ["render-entrypoint"]
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["apache2-foreground"]

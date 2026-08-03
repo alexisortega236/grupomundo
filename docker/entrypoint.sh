@@ -23,4 +23,12 @@ php artisan config:cache --no-interaction
 php artisan route:cache --no-interaction
 php artisan view:cache --no-interaction
 
+chown -R www-data:www-data storage bootstrap/cache database public/storage 2>/dev/null || true
+
+if command -v apache2-foreground >/dev/null 2>&1; then
+  APACHE_PORT="${PORT:-10000}"
+  sed -ri "s/^Listen .*/Listen ${APACHE_PORT}/" /etc/apache2/ports.conf
+  sed -ri "s/<VirtualHost \\*:[0-9]+>/<VirtualHost *:${APACHE_PORT}>/" /etc/apache2/sites-available/000-default.conf
+fi
+
 exec "$@"
