@@ -32,7 +32,8 @@ write_page() {
             -e "s#href=\"/#href=\"${BASE_PATH}/#g" \
             -e "s#src=\"/#src=\"${BASE_PATH}/#g" \
             -e "s#action=\"/#action=\"${BASE_PATH}/#g" \
-            -e "s#content=\"${ORIGIN}/#content=\"${BASE_PATH}/#g" \
+            -e "s#${ORIGIN}#${BASE_PATH}#g" \
+            -e "s#http%3A%2F%2F${HOST}%3A${PORT}#https%3A%2F%2Falexisortega236.github.io%2Fgrupomundo#g" \
         > "${target}"
 }
 

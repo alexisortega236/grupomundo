@@ -7,28 +7,28 @@
     <meta name="description" content="Encuentra propiedades en venta y renta con asesoria patrimonial.">
     <meta property="og:title" content="Grupo Mundo Patrimonial">
     <meta property="og:description" content="Encuentra propiedades en venta y renta con asesoria patrimonial.">
-    <link rel="preload" as="style" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js" /><link rel="stylesheet" href="http://127.0.0.1:8099/build/assets/app-d-wwbGLG.css" /><script type="module" src="http://127.0.0.1:8099/build/assets/app-CpOtDUtT.js"></script></head>
+    <link rel="preload" as="style" href="/grupomundo/build/assets/app-d-wwbGLG.css" /><link rel="modulepreload" as="script" href="/grupomundo/build/assets/app-CpOtDUtT.js" /><link rel="stylesheet" href="/grupomundo/build/assets/app-d-wwbGLG.css" /><script type="module" src="/grupomundo/build/assets/app-CpOtDUtT.js"></script></head>
 <body class="bg-[#f5f2eb] font-sans text-[#112f2b] antialiased">
     <header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-[#e6dfd2] bg-white/95 backdrop-blur">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="http://127.0.0.1:8099" class="flex items-center gap-3">
+        <a href="/grupomundo" class="flex items-center gap-3">
             <span class="grid h-10 w-10 place-items-center border border-[#c9a968] font-serif text-lg text-[#c9a968]">M</span>
             <span class="text-xs font-bold uppercase tracking-[.18em] text-[#0d2723]">Grupo Mundo<br><span class="text-[#c9a968]">Patrimonial</span></span>
         </a>
         <button class="rounded p-2 md:hidden" @click="open = !open" aria-label="Abrir menu"><span class="block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span></button>
         <nav class="hidden items-center gap-8 text-sm font-medium text-[#51635f] md:flex">
-            <a href="http://127.0.0.1:8099/propiedades">Propiedades</a>
-            <a href="http://127.0.0.1:8099/servicios">Servicios</a>
-            <a href="http://127.0.0.1:8099/nosotros">Nosotros</a>
-            <a href="http://127.0.0.1:8099/contacto">Contacto</a>
+            <a href="/grupomundo/propiedades">Propiedades</a>
+            <a href="/grupomundo/servicios">Servicios</a>
+            <a href="/grupomundo/nosotros">Nosotros</a>
+            <a href="/grupomundo/contacto">Contacto</a>
             <a class="rounded-full border border-[#0d2723] px-5 py-3 text-xs font-bold uppercase tracking-[.16em] text-[#0d2723] hover:bg-[#0d2723] hover:text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial." target="_blank" rel="noopener">Hablar con un asesor</a>
         </nav>
     </div>
     <nav x-show="open" x-cloak class="grid gap-2 border-t border-[#e6dfd2] bg-white px-4 pb-4 text-sm md:hidden">
-        <a class="py-2" href="http://127.0.0.1:8099/propiedades">Propiedades</a>
-        <a class="py-2" href="http://127.0.0.1:8099/servicios">Servicios</a>
-        <a class="py-2" href="http://127.0.0.1:8099/nosotros">Nosotros</a>
-        <a class="py-2" href="http://127.0.0.1:8099/contacto">Contacto</a>
+        <a class="py-2" href="/grupomundo/propiedades">Propiedades</a>
+        <a class="py-2" href="/grupomundo/servicios">Servicios</a>
+        <a class="py-2" href="/grupomundo/nosotros">Nosotros</a>
+        <a class="py-2" href="/grupomundo/contacto">Contacto</a>
         <a class="rounded-full bg-[#0d2723] px-5 py-3 text-center text-xs font-bold uppercase tracking-[.16em] text-white" href="https://wa.me/5210000000000?text=Hola%2C%20me%20gustaria%20hablar%20con%20un%20asesor%20de%20Grupo%20Mundo%20Patrimonial.">Hablar con un asesor</a>
     </nav>
 </header>
@@ -38,7 +38,7 @@
                 <p class="text-xs font-bold uppercase tracking-[.35em] text-[#d5b673]">Real estate · inversion · patrimonio</p>
                 <h1 class="mt-6 font-serif text-5xl leading-tight sm:text-7xl">Encuentra el espacio ideal para tu siguiente etapa.</h1>
                 <p class="mt-6 max-w-2xl text-lg text-white/75">Seleccion curada de residencias, departamentos, oficinas, locales y terrenos para vivir, operar e invertir con vision de largo plazo.</p>
-                <form action="http://127.0.0.1:8099/propiedades" class="mt-10 grid gap-4 rounded-lg bg-white p-4 text-[#0d2723] shadow-2xl md:grid-cols-5">
+                <form action="/grupomundo/propiedades" class="mt-10 grid gap-4 rounded-lg bg-white p-4 text-[#0d2723] shadow-2xl md:grid-cols-5">
                     <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Venta y renta</option><option value="sale">Venta</option><option value="rent">Renta</option></select>
                     <select name="property_type" class="rounded border-[#ded8ca]"><option value="">Tipo de inmueble</option><option>Departamento</option><option>Casa</option><option>Oficina</option><option>Local</option><option>Terreno</option></select>
                     <input name="keyword" class="rounded border-[#ded8ca]" placeholder="Zona o palabra clave">
@@ -55,21 +55,21 @@
     <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div><p class="text-xs font-bold uppercase tracking-[.35em] text-[#b89752]">Portafolio integral</p><h2 class="mt-4 font-serif text-5xl">Propiedades destacadas</h2></div>
-            <div class="flex flex-wrap gap-3"><a class="rounded-full border px-4 py-2" href="http://127.0.0.1:8099/propiedades?operation_type=sale">Venta</a><a class="rounded-full border px-4 py-2" href="http://127.0.0.1:8099/propiedades?operation_type=rent">Renta</a><a class="rounded-full border px-4 py-2" href="http://127.0.0.1:8099/propiedades?sort=featured">Destacadas</a></div>
+            <div class="flex flex-wrap gap-3"><a class="rounded-full border px-4 py-2" href="/grupomundo/propiedades?operation_type=sale">Venta</a><a class="rounded-full border px-4 py-2" href="/grupomundo/propiedades?operation_type=rent">Renta</a><a class="rounded-full border px-4 py-2" href="/grupomundo/propiedades?sort=featured">Destacadas</a></div>
         </div>
         <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3"><article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
     <div class="relative">
-        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Penthouse con terraza en Del Valle">
-        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Renta</span>
-        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$45,000 MXN <small>/ mes</small></span>
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa con jardin en Tlalpan">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$8,700,000 MXN </span>
     </div>
     <div class="p-5">
-        <h3 class="font-serif text-2xl text-[#0d2723]">Penthouse con terraza en Del Valle</h3>
-        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
+        <h3 class="font-serif text-2xl text-[#0d2723]">Casa con jardin en Tlalpan</h3>
+        <p class="mt-2 text-sm text-[#687773]">Tlalpan, Ciudad de Mexico</p>
         <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>4 rec.</span><span>3.0 banos</span><span>220 m2</span>
+            <span>2 rec.</span><span>1.0 banos</span><span>124 m2</span>
         </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/penthouse-con-terraza-en-del-valle">Ver propiedad</a>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/casa-con-jardin-en-tlalpan">Ver propiedad</a>
     </div>
 </article>
 <article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
@@ -82,54 +82,9 @@
         <h3 class="font-serif text-2xl text-[#0d2723]">Departamento premium en Xoco</h3>
         <p class="mt-2 text-sm text-[#687773]">Xoco, Ciudad de Mexico</p>
         <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>4 rec.</span><span>2.0 banos</span><span>141 m2</span>
+            <span>3 rec.</span><span>3.0 banos</span><span>94 m2</span>
         </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/departamento-premium-en-xoco">Ver propiedad</a>
-    </div>
-</article>
-<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
-    <div class="relative">
-        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Departamento moderno en Del Valle">
-        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
-        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$4,850,000 MXN </span>
-    </div>
-    <div class="p-5">
-        <h3 class="font-serif text-2xl text-[#0d2723]">Departamento moderno en Del Valle</h3>
-        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>3 rec.</span><span>2.0 banos</span><span>111 m2</span>
-        </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/departamento-moderno-en-del-valle">Ver propiedad</a>
-    </div>
-</article>
-<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
-    <div class="relative">
-        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa residencial en Coyoacan">
-        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
-        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$9,200,000 MXN </span>
-    </div>
-    <div class="p-5">
-        <h3 class="font-serif text-2xl text-[#0d2723]">Casa residencial en Coyoacan</h3>
-        <p class="mt-2 text-sm text-[#687773]">Coyoacan, Ciudad de Mexico</p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>2 rec.</span><span>2.0 banos</span><span>162 m2</span>
-        </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/casa-residencial-en-coyoacan">Ver propiedad</a>
-    </div>
-</article>
-<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
-    <div class="relative">
-        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa con jardin en Tlalpan">
-        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
-        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$8,700,000 MXN </span>
-    </div>
-    <div class="p-5">
-        <h3 class="font-serif text-2xl text-[#0d2723]">Casa con jardin en Tlalpan</h3>
-        <p class="mt-2 text-sm text-[#687773]">Tlalpan, Ciudad de Mexico</p>
-        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>4 rec.</span><span>4.0 banos</span><span>88 m2</span>
-        </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/casa-con-jardin-en-tlalpan">Ver propiedad</a>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/departamento-premium-en-xoco">Ver propiedad</a>
     </div>
 </article>
 <article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
@@ -142,9 +97,54 @@
         <h3 class="font-serif text-2xl text-[#0d2723]">Oficina corporativa cerca de Mitikah</h3>
         <p class="mt-2 text-sm text-[#687773]">Xoco, Ciudad de Mexico</p>
         <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>0 rec.</span><span>2.0 banos</span><span>185 m2</span>
+            <span>0 rec.</span><span>4.0 banos</span><span>198 m2</span>
         </div>
-        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="http://127.0.0.1:8099/propiedades/oficina-corporativa-cerca-de-mitikah">Ver propiedad</a>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/oficina-corporativa-cerca-de-mitikah">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Departamento moderno en Del Valle">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$4,850,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Departamento moderno en Del Valle</h3>
+        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>3 rec.</span><span>4.0 banos</span><span>246 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/departamento-moderno-en-del-valle">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Casa residencial en Coyoacan">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Venta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$9,200,000 MXN </span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Casa residencial en Coyoacan</h3>
+        <p class="mt-2 text-sm text-[#687773]">Coyoacan, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>2 rec.</span><span>2.0 banos</span><span>192 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/casa-residencial-en-coyoacan">Ver propiedad</a>
+    </div>
+</article>
+<article class="group overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-[#e4dccd] transition hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img class="h-56 w-full object-cover" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Penthouse con terraza en Del Valle">
+        <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">Renta</span>
+        <span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">$45,000 MXN <small>/ mes</small></span>
+    </div>
+    <div class="p-5">
+        <h3 class="font-serif text-2xl text-[#0d2723]">Penthouse con terraza en Del Valle</h3>
+        <p class="mt-2 text-sm text-[#687773]">Del Valle, Ciudad de Mexico</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
+            <span>4 rec.</span><span>4.0 banos</span><span>127 m2</span>
+        </div>
+        <a class="mt-5 inline-block text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="/grupomundo/propiedades/penthouse-con-terraza-en-del-valle">Ver propiedad</a>
     </div>
 </article>
 </div>
