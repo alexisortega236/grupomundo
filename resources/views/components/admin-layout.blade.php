@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }} | {{ config('app.name') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite-assets />
 </head>
 <body class="bg-[#f5f2eb] text-[#112f2b] antialiased">
     <div class="min-h-screen lg:flex">

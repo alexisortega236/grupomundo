@@ -8,7 +8,7 @@
     <meta name="description" content="{{ $description }}">
     <meta property="og:title" content="{{ $title }}">
     <meta property="og:description" content="{{ $description }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-vite-assets />
 </head>
 <body class="bg-[#f5f2eb] font-sans text-[#112f2b] antialiased">
     <x-header />
