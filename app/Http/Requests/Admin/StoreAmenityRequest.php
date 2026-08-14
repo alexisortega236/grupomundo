@@ -26,7 +26,6 @@ class StoreAmenityRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:120', 'unique:amenities,name'.($id ? ','.$id : '')],
-            'slug' => ['nullable', 'string', 'max:120', 'unique:amenities,slug'.($id ? ','.$id : '')],
         ];
     }
 }

@@ -94,6 +94,31 @@ class Property extends Model
 
     public function formattedPrice(): string
     {
-        return '$'.number_format((float) $this->price, 0).' '.$this->currency;
+        $price = (float) $this->price;
+        $decimals = floor($price) === $price ? 0 : 2;
+
+        return '$'.number_format($price, $decimals).' '.strtoupper($this->currency ?: 'MXN');
+    }
+
+    public function formattedPriceWithPeriod(): string
+    {
+        $price = $this->formattedPrice();
+
+        if ($this->operation_type->includesRent()) {
+            return $price.' / '.($this->rent_period ?: 'mes');
+        }
+
+        return $price;
+    }
+
+    public function displayAddress(): string
+    {
+        $streetLine = collect([$this->street, $this->exterior_number])
+            ->filter(fn ($value) => filled($value))
+            ->implode(' ');
+
+        return collect([$streetLine, $this->neighborhood, $this->city, $this->state])
+            ->filter(fn ($value) => filled($value))
+            ->implode(', ');
     }
 }

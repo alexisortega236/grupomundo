@@ -40,4 +40,13 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Administrador',
+            'editor' => 'Editor',
+            default => $this->role,
+        };
+    }
 }

@@ -11,10 +11,10 @@ use Intervention\Image\ImageManager;
 
 class PropertyImageService
 {
-    private const LARGE_WIDTH = 1600;
-    private const CARD_WIDTH = 600;
+    private const LARGE_WIDTH = 2200;
+    private const CARD_WIDTH = 900;
     private const THUMB_WIDTH = 300;
-    private const WEBP_QUALITY = 82;
+    private const WEBP_QUALITY = 90;
 
     public function sync(Property $property, array $data): void
     {

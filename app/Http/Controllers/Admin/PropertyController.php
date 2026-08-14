@@ -37,7 +37,7 @@ class PropertyController extends Controller
     public function create()
     {
         return view('admin.properties.form', [
-            'property' => new Property(['currency' => 'MXN', 'status' => PropertyStatus::Published, 'published_at' => now()]),
+            'property' => new Property(['currency' => 'MXN', 'status' => PropertyStatus::Published]),
             'amenities' => Amenity::orderBy('name')->get(),
         ]);
     }
@@ -49,6 +49,7 @@ class PropertyController extends Controller
     {
         $property = DB::transaction(function () use ($request, $images) {
             $data = $this->propertyPayload($request);
+            $data['slug'] = $this->uniqueSlug($data['title']);
             $data['created_by'] = $request->user()->id;
             $property = Property::create($data);
             $property->amenities()->sync($request->input('amenities', []));
@@ -84,7 +85,7 @@ class PropertyController extends Controller
     public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images)
     {
         DB::transaction(function () use ($request, $property, $images) {
-            $property->update($this->propertyPayload($request));
+            $property->update($this->propertyPayload($request, $property));
             $property->amenities()->sync($request->input('amenities', []));
             $images->sync($property, $request->validated());
         });
@@ -107,9 +108,9 @@ class PropertyController extends Controller
         $this->authorize('update', $property);
         $property->update([
             'status' => $property->status === PropertyStatus::Published ? PropertyStatus::Draft : PropertyStatus::Published,
-            'published_at' => $property->status === PropertyStatus::Published ? null : now(),
+            'published_at' => $property->published_at ?: now(),
         ]);
-        return back()->with('status', 'Publicacion actualizada.');
+        return back()->with('status', 'Publicación actualizada.');
     }
 
     public function archive(Property $property)
@@ -138,17 +139,30 @@ class PropertyController extends Controller
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad eliminada permanentemente.');
     }
 
-    private function propertyPayload(Request $request): array
+    private function propertyPayload(Request $request, ?Property $property = null): array
     {
         $data = collect($request->validated())->except([
-            'amenities', 'images', 'new_image_alt', 'existing_images', 'delete_images', 'cover_image_id',
+            'slug', 'published_at', 'amenities', 'images', 'new_image_alt', 'existing_images', 'delete_images', 'cover_image_id',
         ])->all();
-        $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         $data['is_featured'] = $request->boolean('is_featured');
-        $data['published_at'] = $data['status'] === PropertyStatus::Published->value
-            ? ($data['published_at'] ?? now())
-            : null;
+        if (($data['status'] ?? null) === PropertyStatus::Published->value && ! $property?->published_at) {
+            $data['published_at'] = now();
+        }
 
         return $data;
+    }
+
+    private function uniqueSlug(string $title): string
+    {
+        $base = Str::slug($title) ?: 'propiedad';
+        $slug = $base;
+        $counter = 2;
+
+        while (Property::where('slug', $slug)->exists()) {
+            $slug = "{$base}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }

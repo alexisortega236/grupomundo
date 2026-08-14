@@ -4,9 +4,9 @@
             <div>
                 <p class="text-xs font-bold uppercase tracking-[.35em] text-[#d5b673]">Real estate · inversion · patrimonio</p>
                 <h1 class="mt-6 font-serif text-5xl leading-tight sm:text-7xl">Encuentra el espacio ideal para tu siguiente etapa.</h1>
-                <p class="mt-6 max-w-2xl text-lg text-white/75">Seleccion curada de residencias, departamentos, oficinas, locales y terrenos para vivir, operar e invertir con vision de largo plazo.</p>
+                <p class="mt-6 max-w-2xl text-lg leading-relaxed text-white/75">Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.</p>
                 <form action="{{ route('properties.index') }}" class="mt-10 grid gap-4 rounded-lg bg-white p-4 text-[#0d2723] shadow-2xl md:grid-cols-5">
-                    <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Venta y renta</option><option value="sale">Venta</option><option value="rent">Renta</option></select>
+                    <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Venta y renta</option>@foreach(\App\Enums\OperationType::options() as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach</select>
                     <select name="property_type" class="rounded border-[#ded8ca]"><option value="">Tipo de inmueble</option>@foreach($propertyTypes as $type)<option>{{ $type }}</option>@endforeach</select>
                     <input name="keyword" class="rounded border-[#ded8ca]" placeholder="Zona o palabra clave">
                     <select name="sort" class="rounded border-[#ded8ca]"><option value="recent">Mas recientes</option><option value="featured">Destacadas</option></select>
@@ -22,7 +22,7 @@
     <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div><p class="text-xs font-bold uppercase tracking-[.35em] text-[#b89752]">Portafolio integral</p><h2 class="mt-4 font-serif text-5xl">Propiedades destacadas</h2></div>
-            <div class="flex flex-wrap gap-3"><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => 'sale']) }}">Venta</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => 'rent']) }}">Renta</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['sort' => 'featured']) }}">Destacadas</a></div>
+            <div class="flex flex-wrap gap-3"><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => \App\Enums\OperationType::Sale->value]) }}">Venta</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => \App\Enums\OperationType::Rent->value]) }}">Renta</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => \App\Enums\OperationType::SaleRent->value]) }}">Venta/Renta</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['operation_type' => \App\Enums\OperationType::Presale->value]) }}">Preventa</a><a class="rounded-full border px-4 py-2" href="{{ route('properties.index', ['sort' => 'featured']) }}">Destacadas</a></div>
         </div>
         <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">@forelse($featuredProperties as $property)<x-property-card :property="$property" />@empty<x-empty-state message="Pronto publicaremos nuevas propiedades destacadas." />@endforelse</div>
     </section>
@@ -30,11 +30,12 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <p class="text-xs font-bold uppercase tracking-[.35em] text-[#b89752]">Mas que una inmobiliaria</p>
             <h2 class="mt-4 max-w-3xl font-serif text-5xl">Acompañamiento para proteger cada decision.</h2>
-            <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <x-service-card number="01" title="Compra y venta" text="Acompanamiento comercial y documental durante todo el proceso." />
-                <x-service-card number="02" title="Rentas" text="Promocion, filtrado de prospectos y cierre profesional." />
-                <x-service-card number="03" title="Administracion" text="Gestion de cobranza, mantenimiento y atencion a inquilinos." />
-                <x-service-card number="04" title="Proteccion patrimonial" text="Polizas juridicas, seguros y soluciones complementarias." />
+            <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-6">
+                <x-service-card class="lg:col-span-2" number="01" title="Compra y venta" text="Asesoría integral para comprar o vender tu propiedad con seguridad, estrategia y acompañamiento de principio a fin." />
+                <x-service-card class="lg:col-span-2" number="02" title="Rentas" text="Promoción, selección de prospectos, negociación y acompañamiento hasta la formalización del contrato." />
+                <x-service-card class="lg:col-span-2" number="03" title="Administración" text="Gestión de cobranza, mantenimiento, atención a inquilinos y seguimiento operativo de tu propiedad." />
+                <x-service-card class="lg:col-span-3" number="04" title="Gestión y asesoría" text="Acompañamiento en trámites inmobiliarios, créditos, documentación y procesos relacionados con tu propiedad." />
+                <x-service-card class="lg:col-span-3" number="05" title="Protección patrimonial" text="Pólizas jurídicas, seguros y soluciones diseñadas para proteger tu propiedad y patrimonio." />
             </div>
         </div>
     </section>

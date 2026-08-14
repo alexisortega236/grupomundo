@@ -4,7 +4,7 @@
         <img class="h-56 w-full object-cover" src="{{ $property->coverUrl('card') }}" alt="{{ $property->title }}">
         <span class="absolute left-4 top-4 rounded-full bg-[#0d2723] px-3 py-1 text-xs font-bold uppercase tracking-[.14em] text-white">{{ $property->operation_type->label() }}</span>
         @if($property->is_featured)<span class="absolute right-4 top-4 rounded-full bg-[#d5b673] px-3 py-1 text-xs font-bold text-[#0d2723]">Destacada</span>@endif
-        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">{{ $property->formattedPrice() }} @if($property->operation_type->value === 'rent')<small>/ {{ $property->rent_period ?: 'mes' }}</small>@endif</span>
+        <span class="absolute bottom-4 left-4 rounded-full bg-white px-4 py-2 font-semibold text-[#0d2723] shadow">{{ $property->formattedPriceWithPeriod() }}</span>
     </div>
     <div class="p-5">
         <h3 class="font-serif text-2xl text-[#0d2723]">{{ $property->title }}</h3>

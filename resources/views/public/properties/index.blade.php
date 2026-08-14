@@ -3,7 +3,7 @@
         <h1 class="font-serif text-5xl">Propiedades</h1>
         <form class="mt-8 grid gap-4 rounded-lg bg-white p-5 shadow-sm md:grid-cols-4">
             <input name="keyword" value="{{ request('keyword') }}" placeholder="Palabra clave" class="rounded border-[#ded8ca]">
-            <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Operacion</option><option value="sale" @selected(request('operation_type')==='sale')>Venta</option><option value="rent" @selected(request('operation_type')==='rent')>Renta</option></select>
+            <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Operacion</option>@foreach(\App\Enums\OperationType::options() as $value => $label)<option value="{{ $value }}" @selected(request('operation_type')===$value)>{{ $label }}</option>@endforeach</select>
             <select name="property_type" class="rounded border-[#ded8ca]"><option value="">Tipo</option>@foreach($options['types'] as $type)<option @selected(request('property_type')===$type)>{{ $type }}</option>@endforeach</select>
             <select name="state" class="rounded border-[#ded8ca]"><option value="">Estado</option>@foreach($options['states'] as $state)<option @selected(request('state')===$state)>{{ $state }}</option>@endforeach</select>
             <select name="city" class="rounded border-[#ded8ca]"><option value="">Ciudad</option>@foreach($options['cities'] as $city)<option @selected(request('city')===$city)>{{ $city }}</option>@endforeach</select>

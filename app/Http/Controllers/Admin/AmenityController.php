@@ -67,7 +67,23 @@ class AmenityController extends Controller
     private function payload(StoreAmenityRequest $request): array
     {
         $data = $request->validated();
-        $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
+        $data['slug'] = $this->uniqueSlug($data['name'], $request->route('amenity')?->id);
         return $data;
+    }
+
+    private function uniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($name) ?: 'amenidad';
+        $slug = $base;
+        $counter = 2;
+
+        while (Amenity::where('slug', $slug)
+            ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+            ->exists()) {
+            $slug = "{$base}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }
