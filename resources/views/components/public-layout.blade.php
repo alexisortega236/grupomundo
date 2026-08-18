@@ -9,10 +9,12 @@
     <meta property="og:title" content="{{ $title }}">
     <meta property="og:description" content="{{ $description }}">
     <x-vite-assets />
+    @stack('styles')
 </head>
 <body class="bg-[#f5f2eb] font-sans text-[#112f2b] antialiased">
     <x-header />
     <main>{{ $slot }}</main>
     <x-footer />
+    @stack('scripts')
 </body>
 </html>

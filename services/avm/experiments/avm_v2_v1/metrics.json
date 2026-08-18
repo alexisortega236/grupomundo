@@ -1,0 +1,953 @@
+{
+  "created_at": "2026-08-18T15:09:03+00:00",
+  "records_initial": 168,
+  "records_after_target_filters": 168,
+  "records_after_deduplication": 155,
+  "records_outlier_filtered": 154,
+  "holdout_size": 28,
+  "duplicate_groups": {
+    "groups_with_duplicates": 7,
+    "records_in_duplicate_groups": 20,
+    "records_removed_for_experiment": 13,
+    "examples": [
+      {
+        "duplicate_group_id": "mercadolibre|1262500.0|yautepec|felipe neri|69.0|75.0|2.0|2.0",
+        "count": 2,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3054010939",
+            "price": 1262500.0,
+            "municipality": "Yautepec",
+            "neighborhood": "Felipe Neri",
+            "land_area_m2": 69.0,
+            "construction_area_m2": 75.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5585344486",
+            "price": 1262500.0,
+            "municipality": "Yautepec",
+            "neighborhood": "Felipe Neri",
+            "land_area_m2": 69.0,
+            "construction_area_m2": 75.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|1550000.0|ayala|tlayecac|72.0|72.0|2.0|2.0",
+        "count": 5,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527930346",
+            "price": 1550000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 72.0,
+            "construction_area_m2": 72.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527932640",
+            "price": 1550000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 72.0,
+            "construction_area_m2": 72.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527944222",
+            "price": 1550000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 72.0,
+            "construction_area_m2": 72.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527956810",
+            "price": 1550000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 72.0,
+            "construction_area_m2": 72.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527933682",
+            "price": 1550000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 72.0,
+            "construction_area_m2": 72.0,
+            "bedrooms": 2.0,
+            "bathrooms": 2.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|1900000.0|ayala|tlayecac|88.0|88.0|3.0|2.0",
+        "count": 2,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527936258",
+            "price": 1900000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 88.0,
+            "construction_area_m2": 88.0,
+            "bedrooms": 3.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527948052",
+            "price": 1900000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 88.0,
+            "construction_area_m2": 88.0,
+            "bedrooms": 3.0,
+            "bathrooms": 2.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|2000000.0|ayala|tlayecac|123.0|123.0|3.0|3.0",
+        "count": 5,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3025930911",
+            "price": 2000000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 123.0,
+            "construction_area_m2": 123.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3025917043",
+            "price": 2000000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 123.0,
+            "construction_area_m2": 123.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3025943315",
+            "price": 2000000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 123.0,
+            "construction_area_m2": 123.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3025916021",
+            "price": 2000000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 123.0,
+            "construction_area_m2": 123.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5527617358",
+            "price": 2000000.0,
+            "municipality": "Ayala",
+            "neighborhood": "Tlayecac",
+            "land_area_m2": 123.0,
+            "construction_area_m2": 123.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|2250000.0|yautepec|oacalco|153.0|153.0|5.0|3.0",
+        "count": 2,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3006163883",
+            "price": 2250000.0,
+            "municipality": "Yautepec",
+            "neighborhood": "Oacalco",
+            "land_area_m2": 153.0,
+            "construction_area_m2": 153.0,
+            "bedrooms": 5.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3009382263",
+            "price": 2250000.0,
+            "municipality": "Yautepec",
+            "neighborhood": "Oacalco",
+            "land_area_m2": 153.0,
+            "construction_area_m2": 153.0,
+            "bedrooms": 5.0,
+            "bathrooms": 3.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|2350000.0|xochitepec|atlacholoaya|96.0|96.0|5.0|2.0",
+        "count": 2,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5376528522",
+            "price": 2350000.0,
+            "municipality": "Xochitepec",
+            "neighborhood": "Atlacholoaya",
+            "land_area_m2": 96.0,
+            "construction_area_m2": 96.0,
+            "bedrooms": 5.0,
+            "bathrooms": 2.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-3084897379",
+            "price": 2350000.0,
+            "municipality": "Xochitepec",
+            "neighborhood": "Atlacholoaya",
+            "land_area_m2": 96.0,
+            "construction_area_m2": 96.0,
+            "bedrooms": 5.0,
+            "bathrooms": 2.0
+          }
+        ]
+      },
+      {
+        "duplicate_group_id": "mercadolibre|3750000.0|temixco|burgos|149.0|149.0|3.0|3.0",
+        "count": 2,
+        "records": [
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-5759035700",
+            "price": 3750000.0,
+            "municipality": "Temixco",
+            "neighborhood": "Burgos",
+            "land_area_m2": 149.0,
+            "construction_area_m2": 149.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          },
+          {
+            "source": "mercadolibre",
+            "source_id": "MLM-2904775199",
+            "price": 3750000.0,
+            "municipality": "Temixco",
+            "neighborhood": "Burgos",
+            "land_area_m2": 149.0,
+            "construction_area_m2": 149.0,
+            "bedrooms": 3.0,
+            "bathrooms": 3.0
+          }
+        ]
+      }
+    ]
+  },
+  "excluded_outliers": [
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-2988471739",
+      "price": 35500000.0,
+      "municipality": "Jiutepec",
+      "property_type": "casa",
+      "quality_flags": "missing_coordinates,same_land_and_construction_area,suspicious_construction_area"
+    }
+  ],
+  "dataset": {
+    "records": 155,
+    "by_source": {
+      "mercadolibre": 149,
+      "icasas": 6
+    },
+    "by_municipality": {
+      "Cuernavaca": 39,
+      "Atlatlahucan": 24,
+      "Yautepec": 23,
+      "Cuautla": 18,
+      "Jiutepec": 18,
+      "Xochitepec": 12,
+      "Emiliano Zapata": 9,
+      "Temixco": 8,
+      "Ayala": 4
+    },
+    "by_type": {
+      "casa": 84,
+      "departamento": 38,
+      "terreno": 33
+    },
+    "by_training_readiness": {
+      "B": 114,
+      "C": 40,
+      "A": 1
+    },
+    "by_coordinate_quality": {
+      "medium": 153,
+      "high": 2
+    }
+  },
+  "target_distribution": {
+    "count": 155,
+    "min": 250000.0,
+    "p25": 1950000.0,
+    "median": 3950000.0,
+    "mean": 6166850.993548387,
+    "p75": 7190000.0,
+    "max": 50000000.0
+  },
+  "area_distribution": {
+    "land_area_m2": {
+      "count": 153,
+      "min": 10.0,
+      "p25": 130.0,
+      "median": 370.0,
+      "mean": 1164.1923529411765,
+      "p75": 728.0,
+      "max": 36249.0
+    },
+    "construction_area_m2": {
+      "count": 119,
+      "min": 42.0,
+      "p25": 92.5,
+      "median": 182.0,
+      "mean": 301.1157142857143,
+      "p75": 350.5,
+      "max": 7000.0
+    },
+    "price_per_construction_m2": {
+      "count": 119,
+      "min": 5071.43,
+      "p25": 16211.475,
+      "median": 21250.0,
+      "mean": 22614.899663865548,
+      "p75": 26172.32,
+      "max": 56000.0
+    },
+    "price_per_land_m2": {
+      "count": 33,
+      "min": 300.0,
+      "p25": 1600.45,
+      "median": 3367.0,
+      "mean": 4068.1206060606055,
+      "p75": 5803.52,
+      "max": 14000.0
+    }
+  },
+  "baselines": {
+    "global_median": {
+      "mae": 4185311.1741935485,
+      "median_ae": 2251000.0,
+      "rmse": 7922941.028785174,
+      "r2": -0.09992131188430427,
+      "mape": 97.44566205447822,
+      "median_absolute_percentage_error": 58.29826481789398,
+      "within_10_pct": 8.387096774193548,
+      "within_20_pct": 13.548387096774196,
+      "within_30_pct": 18.064516129032256,
+      "n": 155,
+      "folds": 5
+    },
+    "municipality_property_type_median": {
+      "mae": 3666709.470967742,
+      "median_ae": 1871000.0,
+      "rmse": 7721663.419553052,
+      "r2": -0.0678845916946722,
+      "mape": 99.13861680057309,
+      "median_absolute_percentage_error": 41.7611948631839,
+      "within_10_pct": 12.258064516129032,
+      "within_20_pct": 25.16129032258064,
+      "within_30_pct": 36.77419354838709,
+      "n": 155,
+      "folds": 5
+    },
+    "property_type_median": {
+      "mae": 4060455.9483870966,
+      "median_ae": 2422000.0,
+      "rmse": 7875693.862662408,
+      "r2": -0.1419324485029923,
+      "mape": 102.62188335758829,
+      "median_absolute_percentage_error": 50.61761266142531,
+      "within_10_pct": 9.032258064516128,
+      "within_20_pct": 18.064516129032256,
+      "within_30_pct": 29.677419354838708,
+      "n": 155,
+      "folds": 5
+    }
+  },
+  "models": {
+    "RandomForest": {
+      "metrics": {
+        "mae": 2428311.7293998385,
+        "median_ae": 1101962.1354435042,
+        "rmse": 4922825.085738273,
+        "r2": 0.06313452191288746,
+        "mape": 68.94616775454428,
+        "median_absolute_percentage_error": 28.90012693130894,
+        "within_10_pct": 18.70967741935484,
+        "within_20_pct": 35.483870967741936,
+        "within_30_pct": 55.48387096774193,
+        "n": 155,
+        "folds": 5
+      },
+      "log_target": false
+    },
+    "HistGradientBoosting": {
+      "metrics": {
+        "mae": 3802794.411737263,
+        "median_ae": 1858966.5275591642,
+        "rmse": 6197056.208003899,
+        "r2": -0.04858844183183693,
+        "mape": 132.5434594927808,
+        "median_absolute_percentage_error": 53.77704739159683,
+        "within_10_pct": 10.32258064516129,
+        "within_20_pct": 21.29032258064516,
+        "within_30_pct": 33.54838709677419,
+        "n": 155,
+        "folds": 5
+      },
+      "log_target": false
+    },
+    "GradientBoosting": {
+      "metrics": {
+        "mae": 2271378.9558824534,
+        "median_ae": 1049960.9465622779,
+        "rmse": 4782468.974701986,
+        "r2": 0.22319438041230466,
+        "mape": 55.93346371488919,
+        "median_absolute_percentage_error": 28.50672946726944,
+        "within_10_pct": 21.29032258064516,
+        "within_20_pct": 41.29032258064517,
+        "within_30_pct": 56.12903225806451,
+        "n": 155,
+        "folds": 5
+      },
+      "log_target": false
+    }
+  },
+  "best_model": "GradientBoosting",
+  "ablation": {
+    "physical": {
+      "mae": 3482372.7888791473,
+      "median_ae": 1235816.9524589337,
+      "rmse": 6495121.0337372385,
+      "r2": -0.03921466380956891,
+      "mape": 85.99479886068599,
+      "median_absolute_percentage_error": 36.07800501545997,
+      "within_10_pct": 11.612903225806452,
+      "within_20_pct": 27.741935483870964,
+      "within_30_pct": 43.225806451612904,
+      "n": 155,
+      "folds": 5
+    },
+    "physical_geography": {
+      "mae": 3482372.7888791473,
+      "median_ae": 1235816.9524589337,
+      "rmse": 6495121.0337372385,
+      "r2": -0.03921466380956891,
+      "mape": 85.99479886068599,
+      "median_absolute_percentage_error": 36.07800501545997,
+      "within_10_pct": 11.612903225806452,
+      "within_20_pct": 27.741935483870964,
+      "within_30_pct": 43.225806451612904,
+      "n": 155,
+      "folds": 5
+    },
+    "physical_censo": {
+      "mae": 3728677.129335037,
+      "median_ae": 1807251.3339120902,
+      "rmse": 6194943.92176548,
+      "r2": -0.24282740475941936,
+      "mape": 139.58272424143328,
+      "median_absolute_percentage_error": 48.46049304022371,
+      "within_10_pct": 8.387096774193548,
+      "within_20_pct": 21.29032258064516,
+      "within_30_pct": 30.967741935483872,
+      "n": 155,
+      "folds": 5
+    },
+    "physical_censo_denue": {
+      "mae": 3802794.411737263,
+      "median_ae": 1858966.5275591642,
+      "rmse": 6197056.208003899,
+      "r2": -0.04858844183183693,
+      "mape": 132.5434594927808,
+      "median_absolute_percentage_error": 53.77704739159683,
+      "within_10_pct": 10.32258064516129,
+      "within_20_pct": 21.29032258064516,
+      "within_30_pct": 33.54838709677419,
+      "n": 155,
+      "folds": 5
+    }
+  },
+  "target_comparison": {
+    "price_direct": {
+      "mae": 3802794.411737263,
+      "median_ae": 1858966.5275591642,
+      "rmse": 6197056.208003899,
+      "r2": -0.04858844183183693,
+      "mape": 132.5434594927808,
+      "median_absolute_percentage_error": 53.77704739159683,
+      "within_10_pct": 10.32258064516129,
+      "within_20_pct": 21.29032258064516,
+      "within_30_pct": 33.54838709677419,
+      "n": 155,
+      "folds": 5
+    },
+    "log1p_price": {
+      "mae": 2986818.7264058427,
+      "median_ae": 1141469.432809028,
+      "rmse": 5912244.61704999,
+      "r2": 0.36966702467628015,
+      "mape": 57.65902445271892,
+      "median_absolute_percentage_error": 33.83182410042722,
+      "within_10_pct": 18.06451612903226,
+      "within_20_pct": 30.322580645161292,
+      "within_30_pct": 47.09677419354839,
+      "n": 155,
+      "folds": 5
+    }
+  },
+  "outlier_comparison": {
+    "with_outliers": {
+      "mae": 3802794.411737263,
+      "median_ae": 1858966.5275591642,
+      "rmse": 6197056.208003899,
+      "r2": -0.04858844183183693,
+      "mape": 132.5434594927808,
+      "median_absolute_percentage_error": 53.77704739159683,
+      "within_10_pct": 10.32258064516129,
+      "within_20_pct": 21.29032258064516,
+      "within_30_pct": 33.54838709677419,
+      "n": 155,
+      "folds": 5
+    },
+    "quality_outliers_excluded": {
+      "mae": 3579467.1216432666,
+      "median_ae": 1857542.6094728783,
+      "rmse": 5908259.3088027425,
+      "r2": 0.22529654171336616,
+      "mape": 112.75368521074816,
+      "median_absolute_percentage_error": 48.68674066693057,
+      "within_10_pct": 12.344086021505378,
+      "within_20_pct": 24.70967741935484,
+      "within_30_pct": 32.473118279569896,
+      "n": 154,
+      "folds": 5
+    }
+  },
+  "houses_only_experiment": {
+    "mae": 3011979.1333630783,
+    "median_ae": 1825967.1676082343,
+    "rmse": 5026079.538415667,
+    "r2": 0.14548085852474518,
+    "mape": 56.273325164169,
+    "median_absolute_percentage_error": 36.04906661285299,
+    "within_10_pct": 21.764705882352942,
+    "within_20_pct": 31.25,
+    "within_30_pct": 40.73529411764706,
+    "n": 84,
+    "folds": 5
+  },
+  "segment_metrics": {
+    "property_type": {
+      "casa": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 2241790.1222428717,
+        "median_ae": 1253072.8525920068,
+        "rmse": 4811692.081043595,
+        "r2": 0.6007975115023547,
+        "mape": 33.894957717182336,
+        "median_absolute_percentage_error": 25.49576453157171,
+        "within_10_pct": 21.428571428571427,
+        "within_20_pct": 40.476190476190474,
+        "within_30_pct": 58.333333333333336,
+        "n": 84
+      },
+      "departamento": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 982172.1016091713,
+        "median_ae": 448196.0588556179,
+        "rmse": 1762003.0492398709,
+        "r2": 0.3651436888764873,
+        "mape": 36.646434564904325,
+        "median_absolute_percentage_error": 26.290269798938283,
+        "within_10_pct": 23.684210526315788,
+        "within_20_pct": 47.368421052631575,
+        "within_30_pct": 57.89473684210527,
+        "n": 38
+      },
+      "terreno": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 3831237.2130978964,
+        "median_ae": 1811104.3694323632,
+        "rmse": 7027747.3945496725,
+        "r2": 0.6355907189626829,
+        "mape": 134.24078527570137,
+        "median_absolute_percentage_error": 44.60953491748381,
+        "within_10_pct": 18.181818181818183,
+        "within_20_pct": 36.36363636363637,
+        "within_30_pct": 48.484848484848484,
+        "n": 33
+      }
+    },
+    "municipality": {
+      "Atlatlahucan": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1349185.4980416729,
+        "median_ae": 939404.5391274597,
+        "rmse": 1742264.6486506988,
+        "r2": 0.701056625995238,
+        "mape": 25.74978217187251,
+        "median_absolute_percentage_error": 15.424730070318592,
+        "within_10_pct": 37.5,
+        "within_20_pct": 54.166666666666664,
+        "within_30_pct": 70.83333333333334,
+        "n": 24
+      },
+      "Cuautla": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1047309.4388475849,
+        "median_ae": 775100.9343378539,
+        "rmse": 1449633.0413901636,
+        "r2": -0.5183457753651364,
+        "mape": 47.66748417334172,
+        "median_absolute_percentage_error": 36.81834999366333,
+        "within_10_pct": 27.77777777777778,
+        "within_20_pct": 44.44444444444444,
+        "within_30_pct": 44.44444444444444,
+        "n": 18
+      },
+      "Cuernavaca": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1781982.2450674106,
+        "median_ae": 1266430.538790511,
+        "rmse": 2539159.293447649,
+        "r2": 0.4220053430146271,
+        "mape": 31.781207510525768,
+        "median_absolute_percentage_error": 25.188028464118446,
+        "within_10_pct": 23.076923076923077,
+        "within_20_pct": 48.717948717948715,
+        "within_30_pct": 66.66666666666666,
+        "n": 39
+      },
+      "Emiliano Zapata": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 2604021.4452025224,
+        "median_ae": 2123861.8433917537,
+        "rmse": 3484667.969061694,
+        "r2": 0.8733127741165791,
+        "mape": 35.88175411397937,
+        "median_absolute_percentage_error": 30.128575115445333,
+        "within_10_pct": 11.11111111111111,
+        "within_20_pct": 22.22222222222222,
+        "within_30_pct": 44.44444444444444,
+        "n": 9
+      },
+      "Jiutepec": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 6479201.795527328,
+        "median_ae": 614210.0746826853,
+        "rmse": 11867933.077875612,
+        "r2": 0.5261138695150843,
+        "mape": 98.10802691563134,
+        "median_absolute_percentage_error": 29.347616934269222,
+        "within_10_pct": 16.666666666666664,
+        "within_20_pct": 38.88888888888889,
+        "within_30_pct": 50.0,
+        "n": 18
+      },
+      "Temixco": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1559668.61244953,
+        "median_ae": 1497484.8388302037,
+        "rmse": 1866335.1723798707,
+        "r2": 0.6776356283168123,
+        "mape": 50.78889412840981,
+        "median_absolute_percentage_error": 25.23553770612501,
+        "within_10_pct": 12.5,
+        "within_20_pct": 25.0,
+        "within_30_pct": 62.5,
+        "n": 8
+      },
+      "Xochitepec": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 2684723.18565242,
+        "median_ae": 675937.7721008642,
+        "rmse": 6493265.095189743,
+        "r2": -18.76102036562308,
+        "mape": 139.47323991547884,
+        "median_absolute_percentage_error": 35.72613707635972,
+        "within_10_pct": 25.0,
+        "within_20_pct": 33.33333333333333,
+        "within_30_pct": 41.66666666666667,
+        "n": 12
+      },
+      "Yautepec": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1730676.6578230744,
+        "median_ae": 1742634.3553795307,
+        "rmse": 2269434.745658111,
+        "r2": 0.9199455717143289,
+        "mape": 70.32028955150378,
+        "median_absolute_percentage_error": 35.1378250052971,
+        "within_10_pct": 8.695652173913043,
+        "within_20_pct": 30.434782608695656,
+        "within_30_pct": 43.47826086956522,
+        "n": 23
+      }
+    },
+    "coordinate_quality": {
+      "medium": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 2287175.3286838625,
+        "median_ae": 1107963.3986776378,
+        "rmse": 4911096.423341838,
+        "r2": 0.6360542944993969,
+        "mape": 55.29589704924538,
+        "median_absolute_percentage_error": 26.759664612633284,
+        "within_10_pct": 21.568627450980394,
+        "within_20_pct": 41.830065359477125,
+        "within_30_pct": 56.86274509803921,
+        "n": 153
+      }
+    },
+    "training_readiness": {
+      "B": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1873513.8606442604,
+        "median_ae": 909439.4054041738,
+        "rmse": 4214562.312011972,
+        "r2": 0.6285574026382164,
+        "mape": 33.650403129055476,
+        "median_absolute_percentage_error": 25.449340605759335,
+        "within_10_pct": 22.807017543859647,
+        "within_20_pct": 43.859649122807014,
+        "within_30_pct": 59.64912280701754,
+        "n": 114
+      },
+      "C": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 3442899.978214902,
+        "median_ae": 1657828.7619457967,
+        "rmse": 6455819.048578046,
+        "r2": 0.6399714616162566,
+        "mape": 119.55992477782327,
+        "median_absolute_percentage_error": 40.43607283779799,
+        "within_10_pct": 17.5,
+        "within_20_pct": 35.0,
+        "within_30_pct": 47.5,
+        "n": 40
+      }
+    },
+    "source": {
+      "icasas": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 1389595.4269501155,
+        "median_ae": 1062956.4365746428,
+        "rmse": 1753508.9987354886,
+        "r2": -0.09583416235704068,
+        "mape": 60.72475528311124,
+        "median_absolute_percentage_error": 50.16875677663219,
+        "within_10_pct": 16.666666666666664,
+        "within_20_pct": 33.33333333333333,
+        "within_30_pct": 33.33333333333333,
+        "n": 6
+      },
+      "mercadolibre": {
+        "model": "segment",
+        "fold": 0,
+        "mae": 2306887.017450199,
+        "median_ae": 1107963.3986776378,
+        "rmse": 4965770.61911243,
+        "r2": 0.6366262494542745,
+        "mape": 55.740525799390326,
+        "median_absolute_percentage_error": 26.759664612633284,
+        "within_10_pct": 21.476510067114095,
+        "within_20_pct": 41.61073825503356,
+        "within_30_pct": 57.04697986577181,
+        "n": 149
+      }
+    }
+  },
+  "legacy_comparison": {
+    "status": "not_comparable",
+    "reason": "El modelo legacy app/model/modelo_precio.joblib requiere contrato legacy con colonia COL_XX y features entrenadas en otro catálogo. No se inventaron COL_XX para los 168 registros reales, por lo que una comparación directa contra los mismos registros no es válida."
+  },
+  "worst_predictions": [
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-3145111643",
+      "property_type": "casa",
+      "municipality": "Jiutepec",
+      "training_readiness": "B",
+      "coordinate_quality": "medium",
+      "actual_price": 45000000.0,
+      "predicted_price": 14005271.660030844,
+      "absolute_error": 30994728.33996916,
+      "percentage_error": 68.87717408882035,
+      "fold": 0
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-5064745416",
+      "property_type": "terreno",
+      "municipality": "Jiutepec",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 50000000.0,
+      "predicted_price": 22071128.01497863,
+      "absolute_error": 27928871.98502137,
+      "percentage_error": 55.85774397004274,
+      "fold": 1
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-5064730880",
+      "property_type": "casa",
+      "municipality": "Jiutepec",
+      "training_readiness": "B",
+      "coordinate_quality": "medium",
+      "actual_price": 46500000.0,
+      "predicted_price": 23262666.43556458,
+      "absolute_error": 23237333.56443542,
+      "percentage_error": 49.97276035362456,
+      "fold": 2
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-4904229866",
+      "property_type": "terreno",
+      "municipality": "Xochitepec",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 2145000.0,
+      "predicted_price": 24230010.831312474,
+      "absolute_error": 22085010.831312474,
+      "percentage_error": 1029.604234560022,
+      "fold": 4
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-2988471739",
+      "property_type": "casa",
+      "municipality": "Jiutepec",
+      "training_readiness": "B",
+      "coordinate_quality": "medium",
+      "actual_price": 35500000.0,
+      "predicted_price": 46797998.19141205,
+      "absolute_error": 11297998.191412047,
+      "percentage_error": 31.825347018062107,
+      "fold": 3
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-2309651041",
+      "property_type": "terreno",
+      "municipality": "Jiutepec",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 20776000.0,
+      "predicted_price": 30044076.974456437,
+      "absolute_error": 9268076.974456437,
+      "percentage_error": 44.60953491748381,
+      "fold": 3
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-3246463249",
+      "property_type": "terreno",
+      "municipality": "Emiliano Zapata",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 28700000.0,
+      "predicted_price": 21019976.256174248,
+      "absolute_error": 7680023.743825752,
+      "percentage_error": 26.759664612633284,
+      "fold": 1
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-3233322585",
+      "property_type": "departamento",
+      "municipality": "Cuernavaca",
+      "training_readiness": "B",
+      "coordinate_quality": "medium",
+      "actual_price": 11800000.0,
+      "predicted_price": 4838676.15843694,
+      "absolute_error": 6961323.84156306,
+      "percentage_error": 58.99426984375474,
+      "fold": 3
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-2985878831",
+      "property_type": "terreno",
+      "municipality": "Ayala",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 5056000.0,
+      "predicted_price": 10827492.70247716,
+      "absolute_error": 5771492.702477161,
+      "percentage_error": 114.15135883064005,
+      "fold": 0
+    },
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-5468368160",
+      "property_type": "terreno",
+      "municipality": "Cuernavaca",
+      "training_readiness": "C",
+      "coordinate_quality": "medium",
+      "actual_price": 11200000.0,
+      "predicted_price": 5453404.094589623,
+      "absolute_error": 5746595.905410377,
+      "percentage_error": 51.30889201259266,
+      "fold": 2
+    }
+  ]
+}

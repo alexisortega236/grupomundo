@@ -1,0 +1,54 @@
+{
+  "created_at": "2026-08-18T17:36:52+00:00",
+  "input": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/experiments/avm_v2_dataset_v2_candidates.csv",
+  "output": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/experiments/avm_v2_dataset_v2.csv",
+  "initial_candidates": 272,
+  "after_price_currency_filters": 272,
+  "removed_duplicates": 0,
+  "removed_quality_errors": 1,
+  "removed_quality_error_rows": [
+    {
+      "source": "mercadolibre",
+      "source_id": "MLM-2988471739",
+      "property_type": "casa",
+      "municipality": "Jiutepec",
+      "price": 35500000.0,
+      "quality_flags": "missing_coordinates,same_land_and_construction_area,suspicious_construction_area"
+    }
+  ],
+  "final_rows": 271,
+  "by_source": {
+    "mercadolibre": 265,
+    "icasas": 6
+  },
+  "by_market_segment": {
+    "residential": 188,
+    "land": 83
+  },
+  "by_property_type": {
+    "casa": 118,
+    "terreno": 83,
+    "departamento": 70
+  },
+  "by_municipality": {
+    "Cuernavaca": 54,
+    "Yautepec": 43,
+    "Atlatlahucan": 38,
+    "Jiutepec": 31,
+    "Cuautla": 30,
+    "Temixco": 24,
+    "Xochitepec": 23,
+    "Emiliano Zapata": 19,
+    "Ayala": 9
+  },
+  "by_price_band": {
+    "1M-2M": 67,
+    "2M-3M": 53,
+    "5M-8M": 46,
+    "3M-5M": 41,
+    "8M-12M": 21,
+    "<1M": 17,
+    ">20M": 15,
+    "12M-20M": 11
+  }
+}

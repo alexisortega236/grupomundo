@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valuador MVP</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.09);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.72);
+      --line: rgba(255,255,255,.12);
+      --accent:#6ee7ff;
+      --accent2:#a78bfa;
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow: 0 20px 50px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(110,231,255,.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 25%, rgba(167,139,250,.18), transparent 55%),
+        radial-gradient(1200px 700px at 50% 110%, rgba(52,211,153,.10), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+    }
+    a{ color:inherit; }
+    .container{ max-width:1100px; margin:0 auto; padding:26px 18px 40px; }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:18px;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; }
+    .logo{
+      width:34px;height:34px;border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: var(--shadow);
+    }
+    .title{ font-weight:750; letter-spacing:.2px; }
+    .chip{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      padding:8px 10px; border-radius:999px;
+      font-size:12px; color:var(--muted);
+      display:flex; gap:8px; align-items:center;
+    }
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: 1.05fr .95fr;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+    }
+    .cardHeader h2{ margin:0; font-size:16px; }
+    .cardHeader p{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
+    .cardBody{ padding:16px; }
+    .formGrid{ display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 640px){ .formGrid{ grid-template-columns:1fr; } }
+
+    label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
+    .field{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.15);
+      border-radius: 14px;
+      padding:10px 12px;
+      color: var(--text);
+      outline:none;
+      width:100%;
+      transition:.15s ease;
+    }
+    .field:focus{
+      border-color: rgba(110,231,255,.55);
+      box-shadow: 0 0 0 4px rgba(110,231,255,.12);
+    }
+    select.field{ appearance:none; }
+    .row2{ display:flex; gap:12px; }
+    .row2 > *{ flex:1; }
+    .actions{ display:flex; gap:10px; margin-top:12px; }
+    @media (max-width: 640px){ .actions{ flex-direction:column; } }
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:650;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
+    .btn:active{ transform: translateY(0); }
+    .btnPrimary{
+      border-color: rgba(110,231,255,.35);
+      background: linear-gradient(135deg, rgba(110,231,255,.18), rgba(167,139,250,.18));
+    }
+    .btnPrimary:hover{ background: linear-gradient(135deg, rgba(110,231,255,.25), rgba(167,139,250,.25)); }
+    .btn[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .stats{
+      display:grid; grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .stat{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      padding:12px;
+    }
+    .stat .k{ color:var(--muted); font-size:12px; }
+    .stat .v{ font-size:20px; font-weight:800; margin-top:4px; letter-spacing:.2px; }
+    .pill{
+      display:inline-flex; gap:6px; align-items:center;
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); background: rgba(0,0,0,.18);
+      color:var(--muted);
+    }
+    .pill.good{ border-color: rgba(52,211,153,.35); color: rgba(52,211,153,.95); }
+    .pill.warn{ border-color: rgba(251,191,36,.35); color: rgba(251,191,36,.95); }
+
+    .sectionTitle{ margin:16px 0 10px; font-size:13px; color:var(--muted); font-weight:700; letter-spacing:.2px; }
+    .poiGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 640px){ .poiGrid{ grid-template-columns:1fr; } }
+    .poiItem{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding:10px 12px;
+    }
+    .poiItem .h{ display:flex; justify-content:space-between; gap:10px; }
+    .poiItem .name{ font-weight:750; font-size:13px; }
+    .poiItem .dist{ color:var(--muted); font-size:12px; }
+    .poiItem .meta{ color:var(--muted); font-size:12px; margin-top:4px; }
+    details{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,.16);
+      padding:10px 12px;
+    }
+    summary{ cursor:pointer; color:var(--muted); font-weight:650; }
+    pre{
+      margin:10px 0 0;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      padding:12px;
+      border-radius:14px;
+      overflow:auto;
+      color: rgba(234,240,255,.92);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .foot{ margin-top:16px; color:var(--muted); font-size:12px; }
+    .spinner{
+      width:14px;height:14px;border-radius:999px;
+      border:2px solid rgba(255,255,255,.25);
+      border-top-color: rgba(110,231,255,.9);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div class="title">Valuador MVP</div>
+          <div style="color:var(--muted); font-size:12px;">Cuautla • Backend inteligente (POIs + ML)</div>
+        </div>
+      </div>
+      <div class="chip">
+        <span>API</span>
+        <code style="color:var(--text); font-size:12px;">/predict</code>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Form -->
+      <div class="card">
+        <div class="cardHeader">
+          <h2>Valuar propiedad</h2>
+          <p>Ingresa lo mínimo. El backend enriquecerá con POIs (escuelas, transporte, parques, etc.) a 1km.</p>
+        </div>
+
+        <div class="cardBody">
+          <div class="formGrid">
+            <div>
+              <label>Tipo</label>
+              <select id="tipo" class="field">
+                <option value="casa">Casa</option>
+                <option value="depa">Departamento</option>
+                <option value="terreno">Terreno</option>
+              </select>
+            </div>
+            <div>
+              <label>Colonia (MVP)</label>
+              <input id="colonia" class="field" placeholder="COL_13" value="COL_13" />
+            </div>
+
+            <div>
+              <label>m² terreno</label>
+              <input id="m2_terreno" class="field" type="number" value="200" />
+            </div>
+            <div>
+              <label>m² construcción</label>
+              <input id="m2_construccion" class="field" type="number" value="160" />
+            </div>
+
+            <div>
+              <label>Recámaras</label>
+              <input id="recamaras" class="field" type="number" value="3" />
+            </div>
+            <div>
+              <label>Baños</label>
+              <input id="banos" class="field" type="number" value="2" />
+            </div>
+
+            <div>
+              <label>Estacionamientos</label>
+              <input id="estacionamientos" class="field" type="number" value="2" />
+            </div>
+            <div>
+              <label>Antigüedad (años)</label>
+              <input id="antiguedad_anios" class="field" type="number" value="8" />
+            </div>
+
+            <div>
+              <label>Latitud</label>
+              <input id="lat" class="field" type="number" step="0.000001" placeholder="(opcional)" />
+            </div>
+            <div>
+              <label>Longitud</label>
+              <input id="lng" class="field" type="number" step="0.000001" placeholder="(opcional)" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="btnGeo" class="btn" type="button">📍 Usar mi ubicación</button>
+            <button id="btnExample" class="btn" type="button">⚙️ Cargar ejemplo</button>
+            <button id="btnValuar" class="btn btnPrimary" type="button">
+              <span id="btnValuarIcon">✨</span>
+              <span id="btnValuarText">Valuar</span>
+            </button>
+          </div>
+
+          <div class="foot">
+            Tip: si no pones lat/lng, no podemos calcular POIs. En la siguiente versión lo resolveremos con mapa + pin.
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Results -->
+      <div class="card">
+        <div class="cardHeader">
+          <h2>Resultado</h2>
+          <p>Precio estimado + explicación de contexto (zona, cercanías, POIs).</p>
+        </div>
+
+        <div class="cardBody">
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Precio estimado</div>
+              <div id="precio" class="v">—</div>
+              <div id="moneda" class="k" style="margin-top:6px;">MXN</div>
+            </div>
+            <div class="stat">
+              <div class="k">Contexto</div>
+              <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                <span id="pillZona" class="pill">Zona: —</span>
+                <span id="pillCache" class="pill">Cache: —</span>
+                <span id="pillEsc" class="pill">Escuelas: —</span>
+                <span id="pillTrans" class="pill">Transporte: —</span>
+              </div>
+              <div id="nearest" class="k" style="margin-top:10px;">Nearest: —</div>
+            </div>
+          </div>
+
+          <div class="sectionTitle">POIs cercanos (top)</div>
+          <div id="poiList" class="poiGrid">
+            <div class="poiItem">
+              <div class="h">
+                <div class="name">Sin datos aún</div>
+                <div class="dist">—</div>
+              </div>
+              <div class="meta">Haz una valuación para ver POIs.</div>
+            </div>
+          </div>
+
+          <details>
+            <summary>Ver JSON completo (debug)</summary>
+            <pre id="raw">{}</pre>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function moneyMXN(n){
+    if (typeof n !== "number" || !isFinite(n)) return "—";
+    try{
+      return new Intl.NumberFormat("es-MX", { style:"currency", currency:"MXN", maximumFractionDigits:0 }).format(n);
+    }catch{
+      return `${Math.round(n)} MXN`;
+    }
+  }
+
+  function setLoading(isLoading){
+    const btn = $("btnValuar");
+    btn.disabled = isLoading;
+    $("btnValuarText").textContent = isLoading ? "Valuando..." : "Valuar";
+    $("btnValuarIcon").textContent = isLoading ? "" : "✨";
+    if (isLoading){
+      const sp = document.createElement("span");
+      sp.className = "spinner";
+      sp.id = "spin";
+      btn.prepend(sp);
+    } else {
+      const sp = $("spin");
+      if (sp) sp.remove();
+    }
+  }
+
+  function renderPOIs(data){
+    const pois = data?.pois;
+    const details = pois?.details || {};
+    const nearest = pois?.nearest_m || {};
+
+    // Pills
+    $("precio").textContent = moneyMXN(data?.precio_estimado);
+    $("pillZona").textContent = `Zona: ${data?.zona_inferida ?? "—"}`;
+    $("pillCache").textContent = `Cache: ${pois?.cache_hit ? "hit" : "miss"}`;
+    $("pillEsc").textContent = `Escuelas: ${data?.features_derivadas?.cerca_escuelas ? "sí" : "no"}`;
+    $("pillTrans").textContent = `Transporte: ${data?.features_derivadas?.cerca_transporte ? "sí" : "no"}`;
+
+    const nearTxt = [
+      `Escuela: ${nearest.schools ?? "—"}m`,
+      `Bus: ${nearest.bus_stops ?? "—"}m`,
+      `Parque: ${nearest.parks ?? "—"}m`,
+      `Super: ${nearest.supermarkets ?? "—"}m`,
+      `Hospital: ${nearest.hospitals ?? "—"}m`,
+    ].join(" • ");
+    $("nearest").textContent = `Nearest: ${nearTxt}`;
+
+    // List: tomar 1-2 items por categoría para “top”
+    const pick = [];
+    const order = [
+      ["schools","Escuela"],
+      ["bus_stops","Transporte"],
+      ["supermarkets","Supermercado"],
+      ["parks","Parque"],
+      ["hospitals","Hospital"]
+    ];
+
+    for (const [k, label] of order){
+      const arr = details[k] || [];
+      if (arr.length){
+        const x = arr[0];
+        pick.push({
+          label,
+          name: x.name || "(sin nombre)",
+          kind: x.kind || k,
+          dist: x.distance_m,
+          address: x.address
+        });
+      }
+    }
+
+    const box = $("poiList");
+    box.innerHTML = "";
+
+    if (!pick.length){
+      box.innerHTML = `
+        <div class="poiItem">
+          <div class="h">
+            <div class="name">No se encontraron POIs</div>
+            <div class="dist">—</div>
+          </div>
+          <div class="meta">Prueba con otro pin o aumenta el radio en el backend.</div>
+        </div>`;
+      return;
+    }
+
+    for (const it of pick){
+      const dist = (typeof it.dist === "number") ? `${it.dist} m` : "—";
+      const addr = it.address ? ` • ${it.address}` : "";
+      const meta = `${it.label} • ${it.kind}${addr}`;
+      box.insertAdjacentHTML("beforeend", `
+        <div class="poiItem">
+          <div class="h">
+            <div class="name">${it.name}</div>
+            <div class="dist">${dist}</div>
+          </div>
+          <div class="meta">${meta}</div>
+        </div>
+      `);
+    }
+  }
+
+  $("btnExample").addEventListener("click", () => {
+    $("tipo").value = "casa";
+    $("colonia").value = "COL_13";
+    $("lat").value = "18.8123";
+    $("lng").value = "-98.9556";
+    $("m2_terreno").value = "200";
+    $("m2_construccion").value = "160";
+    $("recamaras").value = "3";
+    $("banos").value = "2";
+    $("estacionamientos").value = "2";
+    $("antiguedad_anios").value = "8";
+  });
+
+  $("btnGeo").addEventListener("click", () => {
+    if (!navigator.geolocation) return alert("Tu navegador no soporta geolocalización.");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        $("lat").value = pos.coords.latitude.toFixed(6);
+        $("lng").value = pos.coords.longitude.toFixed(6);
+      },
+      (err) => alert("No se pudo obtener ubicación: " + err.message),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+
+  $("btnValuar").addEventListener("click", async () => {
+    const payload = {
+      tipo: $("tipo").value,
+      colonia: $("colonia").value.trim(),
+      m2_terreno: Number($("m2_terreno").value || 0),
+      m2_construccion: Number($("m2_construccion").value || 0),
+      recamaras: Number($("recamaras").value || 0),
+      banos: Number($("banos").value || 0),
+      estacionamientos: Number($("estacionamientos").value || 0),
+      antiguedad_anios: Number($("antiguedad_anios").value || 0),
+    };
+
+    const lat = $("lat").value, lng = $("lng").value;
+    if (lat && lng) { payload.lat = Number(lat); payload.lng = Number(lng); }
+
+    setLoading(true);
+    $("raw").textContent = "{}";
+
+    try{
+      const r = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const txt = await r.text();
+      let data;
+      try { data = JSON.parse(txt); } catch { data = { raw: txt }; }
+
+      if (!r.ok){
+        setLoading(false);
+        alert(data.error || `HTTP ${r.status}`);
+        return;
+      }
+
+      $("raw").textContent = JSON.stringify(data, null, 2);
+      renderPOIs(data);
+    }catch(e){
+      alert(e.message);
+    }finally{
+      setLoading(false);
+    }
+  });
+</script>
+</body>
+</html>

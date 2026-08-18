@@ -1,0 +1,731 @@
+{
+  "created_at": "2026-08-18T17:46:54+00:00",
+  "dataset": {
+    "n": 188,
+    "property_type": {
+      "casa": 118,
+      "departamento": 70
+    },
+    "municipality": {
+      "Cuernavaca": 44,
+      "Yautepec": 31,
+      "Atlatlahucan": 24,
+      "Cuautla": 20,
+      "Jiutepec": 19,
+      "Temixco": 18,
+      "Emiliano Zapata": 15,
+      "Xochitepec": 12,
+      "Ayala": 5
+    },
+    "price_band": {
+      "1M-2M": 50,
+      "2M-3M": 39,
+      "5M-8M": 34,
+      "3M-5M": 27,
+      "8M-12M": 19,
+      "<1M": 10,
+      "12M-20M": 5,
+      ">20M": 4
+    },
+    "source": {
+      "mercadolibre": 183,
+      "icasas": 5
+    }
+  },
+  "reference_cv": {
+    "label": "REFERENCE_CV",
+    "n": 188,
+    "mae": 1460673.4719746816,
+    "median_ae": 642304.8758198156,
+    "rmse": 3091570.094636622,
+    "r2": 0.7037420628675256,
+    "mape": 28.790510871934774,
+    "median_absolute_percentage_error": 22.411241904467268,
+    "within_10_pct": 25.53191489361702,
+    "within_20_pct": 44.680851063829785,
+    "within_30_pct": 63.829787234042556,
+    "bias_mean": -246854.87492822704,
+    "bias_median": 592.3336895947577,
+    "median_prediction_ratio": 1.0035923397879933
+  },
+  "property_type_metrics": {
+    "casa": {
+      "n": 118,
+      "mae": 1917417.1215191628,
+      "median_ae": 840913.9763676163,
+      "rmse": 3786208.4363272986,
+      "r2": 0.670167769464843,
+      "mape": 28.704171536428102,
+      "median_absolute_percentage_error": 22.935966510413827,
+      "within_10_pct": 22.033898305084744,
+      "within_20_pct": 44.06779661016949,
+      "within_30_pct": 61.86440677966102,
+      "bias_mean": -274164.1407278659,
+      "bias_median": 158143.35306484043,
+      "median_prediction_ratio": 1.0262425227062804
+    },
+    "departamento": {
+      "n": 70,
+      "mae": 690734.1770282702,
+      "median_ae": 355895.31291656056,
+      "rmse": 1226454.1926009469,
+      "r2": 0.5849474039104695,
+      "mape": 28.936054323217455,
+      "median_absolute_percentage_error": 21.65938299727297,
+      "within_10_pct": 31.428571428571427,
+      "within_20_pct": 45.714285714285715,
+      "within_30_pct": 67.14285714285714,
+      "bias_mean": -200819.2554374071,
+      "bias_median": -35703.174379200675,
+      "median_prediction_ratio": 0.9736412975481439
+    }
+  },
+  "seed_stability": [
+    {
+      "metric": "mae",
+      "mean": 1465405.6172190136,
+      "std": 375149.00542709907,
+      "min": 736187.3034827426,
+      "max": 2176989.918441603
+    },
+    {
+      "metric": "mape",
+      "mean": 30.5225757077971,
+      "std": 5.596371232403674,
+      "min": 19.11411459877408,
+      "max": 43.52716315601146
+    },
+    {
+      "metric": "r2",
+      "mean": 0.6041112949894519,
+      "std": 0.2686224121660488,
+      "min": -0.24762539865748678,
+      "max": 0.9029697504097172
+    },
+    {
+      "metric": "within_20_pct",
+      "mean": 47.315789473684205,
+      "std": 8.346545389836347,
+      "min": 28.947368421052634,
+      "max": 60.526315789473685
+    },
+    {
+      "metric": "within_30_pct",
+      "mean": 64.10526315789474,
+      "std": 7.017192973683772,
+      "min": 47.368421052631575,
+      "max": 81.57894736842105
+    }
+  ],
+  "bootstrap_metrics": {
+    "mae": {
+      "point": 1460673.4719746816,
+      "ci95_low": 1122287.4700496905,
+      "ci95_high": 1870473.2839407003
+    },
+    "mape": {
+      "point": 28.790510871934774,
+      "ci95_low": 25.119639218917193,
+      "ci95_high": 33.106689231084
+    },
+    "median_ae": {
+      "point": 642304.8758198156,
+      "ci95_low": 504134.71821316564,
+      "ci95_high": 756523.286606068
+    },
+    "within_20_pct": {
+      "point": 44.680851063829785,
+      "ci95_low": 37.765957446808514,
+      "ci95_high": 52.12765957446809
+    },
+    "within_30_pct": {
+      "point": 63.829787234042556,
+      "ci95_low": 56.91489361702128,
+      "ci95_high": 70.22606382978722
+    }
+  },
+  "municipality_robustness": [
+    {
+      "municipality": "Xochitepec",
+      "n": 12,
+      "mape": 38.42424370471807,
+      "within_20_pct": 41.66666666666667,
+      "bias_mean": 443221.4364379886,
+      "status": "ROBUST"
+    },
+    {
+      "municipality": "Temixco",
+      "n": 18,
+      "mape": 39.89738500877927,
+      "within_20_pct": 38.88888888888889,
+      "bias_mean": -289353.82221905864,
+      "status": "WEAK"
+    },
+    {
+      "municipality": "Emiliano Zapata",
+      "n": 15,
+      "mape": 33.70383117751715,
+      "within_20_pct": 33.33333333333333,
+      "bias_mean": -509213.0098132051,
+      "status": "WEAK"
+    },
+    {
+      "municipality": "Jiutepec",
+      "n": 19,
+      "mape": 30.81025560212854,
+      "within_20_pct": 36.84210526315789,
+      "bias_mean": -3480088.902525437,
+      "status": "PROMISING"
+    },
+    {
+      "municipality": "Ayala",
+      "n": 5,
+      "mape": 14.402902937498746,
+      "within_20_pct": 80.0,
+      "bias_mean": 74346.54883206198,
+      "status": "INSUFFICIENT_DATA"
+    },
+    {
+      "municipality": "Cuautla",
+      "n": 20,
+      "mape": 25.503958696458334,
+      "within_20_pct": 70.0,
+      "bias_mean": 220105.44309487805,
+      "status": "ROBUST"
+    },
+    {
+      "municipality": "Cuernavaca",
+      "n": 44,
+      "mape": 33.872562937621645,
+      "within_20_pct": 27.27272727272727,
+      "bias_mean": -1240543.651318772,
+      "status": "WEAK"
+    },
+    {
+      "municipality": "Yautepec",
+      "n": 31,
+      "mape": 53.4206078944674,
+      "within_20_pct": 35.483870967741936,
+      "bias_mean": 807521.4984792764,
+      "status": "WEAK"
+    },
+    {
+      "municipality": "Atlatlahucan",
+      "n": 24,
+      "mape": 31.098922879867484,
+      "within_20_pct": 37.5,
+      "bias_mean": -2806773.8450617897,
+      "status": "PROMISING"
+    }
+  ],
+  "source_holdout": [
+    {
+      "source": "icasas",
+      "train_n": 183,
+      "test_n": 5,
+      "sample_quality": "LOW_SAMPLE",
+      "n": 5.0,
+      "mae": 553321.901177816,
+      "median_ae": 533810.9474981669,
+      "rmse": 741342.6628039576,
+      "r2": 0.5542790062475977,
+      "mape": 46.2179565954537,
+      "median_absolute_percentage_error": 17.973432575695856,
+      "within_10_pct": 40.0,
+      "within_20_pct": 60.0,
+      "within_30_pct": 60.0,
+      "bias_mean": 517552.2107572627,
+      "bias_median": 533810.9474981669,
+      "median_prediction_ratio": 1.1797343257569586
+    },
+    {
+      "source": "mercadolibre",
+      "train_n": 5,
+      "test_n": 183,
+      "sample_quality": "INCONCLUSIVE",
+      "n": NaN,
+      "mae": NaN,
+      "median_ae": NaN,
+      "rmse": NaN,
+      "r2": NaN,
+      "mape": NaN,
+      "median_absolute_percentage_error": NaN,
+      "within_10_pct": NaN,
+      "within_20_pct": NaN,
+      "within_30_pct": NaN,
+      "bias_mean": NaN,
+      "bias_median": NaN,
+      "median_prediction_ratio": NaN
+    }
+  ],
+  "price_band_holdout": [
+    {
+      "price_band": "<1M",
+      "train_n": 178,
+      "test_n": 10,
+      "sample_quality": "LIMITED",
+      "n": 10,
+      "mae": 679075.4410983296,
+      "median_ae": 557279.1615480032,
+      "rmse": 772288.6513787396,
+      "r2": -26.620132425461374,
+      "mape": 95.81466049313569,
+      "median_absolute_percentage_error": 83.84701907711056,
+      "within_10_pct": 0.0,
+      "within_20_pct": 0.0,
+      "within_30_pct": 10.0,
+      "bias_mean": 679075.4410983296,
+      "bias_median": 557279.1615480032,
+      "median_prediction_ratio": 1.8384701907711056
+    },
+    {
+      "price_band": "1M-2M",
+      "train_n": 138,
+      "test_n": 50,
+      "sample_quality": "OK",
+      "n": 50,
+      "mae": 903913.451430393,
+      "median_ae": 758507.6778475589,
+      "rmse": 1075746.474461854,
+      "r2": -13.263441289230506,
+      "mape": 63.87712671232719,
+      "median_absolute_percentage_error": 50.52854458386461,
+      "within_10_pct": 6.0,
+      "within_20_pct": 10.0,
+      "within_30_pct": 22.0,
+      "bias_mean": 773169.8881087409,
+      "bias_median": 733904.180677172,
+      "median_prediction_ratio": 1.489669504032455
+    },
+    {
+      "price_band": "2M-3M",
+      "train_n": 149,
+      "test_n": 39,
+      "sample_quality": "OK",
+      "n": 39,
+      "mae": 705540.7770663174,
+      "median_ae": 706699.3595286389,
+      "rmse": 816569.2275503328,
+      "r2": -7.994974289574303,
+      "mape": 28.582796281651465,
+      "median_absolute_percentage_error": 28.93396748177528,
+      "within_10_pct": 12.82051282051282,
+      "within_20_pct": 38.46153846153847,
+      "within_30_pct": 53.84615384615385,
+      "bias_mean": -66415.40775917456,
+      "bias_median": -195053.77385300212,
+      "median_prediction_ratio": 0.9219784904587992
+    },
+    {
+      "price_band": "3M-5M",
+      "train_n": 161,
+      "test_n": 27,
+      "sample_quality": "OK",
+      "n": 27,
+      "mae": 1588401.7720907663,
+      "median_ae": 1264632.0183355017,
+      "rmse": 1919227.2995333644,
+      "r2": -9.541017319918005,
+      "mape": 40.14037551994856,
+      "median_absolute_percentage_error": 32.465038855227384,
+      "within_10_pct": 7.4074074074074066,
+      "within_20_pct": 14.814814814814813,
+      "within_30_pct": 44.44444444444444,
+      "bias_mean": 252301.2566281032,
+      "bias_median": -723671.675352734,
+      "median_prediction_ratio": 0.7793683916607518
+    },
+    {
+      "price_band": "5M-8M",
+      "train_n": 154,
+      "test_n": 34,
+      "sample_quality": "OK",
+      "n": 34,
+      "mae": 2100600.812615852,
+      "median_ae": 1953680.7381640766,
+      "rmse": 2767073.228858572,
+      "r2": -8.38189660690526,
+      "mape": 32.68523420754286,
+      "median_absolute_percentage_error": 31.29914804862255,
+      "within_10_pct": 23.52941176470588,
+      "within_20_pct": 38.23529411764706,
+      "within_30_pct": 44.11764705882353,
+      "bias_mean": 230187.3393237798,
+      "bias_median": -56736.77014750475,
+      "median_prediction_ratio": 0.9912213975095633
+    },
+    {
+      "price_band": "8M-12M",
+      "train_n": 169,
+      "test_n": 19,
+      "sample_quality": "LIMITED",
+      "n": 19,
+      "mae": 3226143.3751145983,
+      "median_ae": 2665691.7526465813,
+      "rmse": 4685230.854613881,
+      "r2": -16.819746627546007,
+      "mape": 31.158969249901187,
+      "median_absolute_percentage_error": 27.76762242340189,
+      "within_10_pct": 21.052631578947366,
+      "within_20_pct": 47.368421052631575,
+      "within_30_pct": 52.63157894736842,
+      "bias_mean": -1386776.2609181663,
+      "bias_median": -1554834.1910961624,
+      "median_prediction_ratio": 0.8519205532289369
+    },
+    {
+      "price_band": "12M-20M",
+      "train_n": 183,
+      "test_n": 5,
+      "sample_quality": "LOW_SAMPLE",
+      "n": 5,
+      "mae": 5871815.573632058,
+      "median_ae": 6102987.982110389,
+      "rmse": 6444614.69707711,
+      "r2": -10.050728659478048,
+      "mape": 39.99819776124665,
+      "median_absolute_percentage_error": 40.86206213981748,
+      "within_10_pct": 0.0,
+      "within_20_pct": 20.0,
+      "within_30_pct": 20.0,
+      "bias_mean": -3093195.348124469,
+      "bias_median": -4158918.6456085984,
+      "median_prediction_ratio": 0.6750844808118283
+    },
+    {
+      "price_band": ">20M",
+      "train_n": 184,
+      "test_n": 4,
+      "sample_quality": "LOW_SAMPLE",
+      "n": 4,
+      "mae": 21601373.91034886,
+      "median_ae": 21249995.34117894,
+      "rmse": 24128529.312411364,
+      "r2": -3.0627956944622436,
+      "mape": 60.168886507667025,
+      "median_absolute_percentage_error": 58.01498697818451,
+      "within_10_pct": 0.0,
+      "within_20_pct": 0.0,
+      "within_30_pct": 0.0,
+      "bias_mean": -21601373.91034886,
+      "bias_median": -21249995.34117894,
+      "median_prediction_ratio": 0.419850130218155
+    }
+  ],
+  "extremes": {
+    "under_1m_count": 10,
+    "over_12m_count": 9,
+    "under_1m": [
+      {
+        "source_id": "MLM-5557575130",
+        "property_type": "departamento",
+        "municipality": "Temixco",
+        "neighborhood": "Temixco",
+        "actual_price": 660000.0,
+        "predicted_price": 1430815.1650001274,
+        "percentage_error": 116.79017651517081,
+        "land_area_m2": 45.0,
+        "construction_area_m2": 42.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-3002649895",
+        "property_type": "departamento",
+        "municipality": "Jiutepec",
+        "neighborhood": "Progreso",
+        "actual_price": 995000.0,
+        "predicted_price": 1233454.7532614046,
+        "percentage_error": 23.965301835317042,
+        "land_area_m2": 60.0,
+        "construction_area_m2": 60.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "1a66-9fc1-1917371-e6d80237f422-75ff",
+        "property_type": "casa",
+        "municipality": "Cuautla",
+        "neighborhood": "emiliano zapata",
+        "actual_price": 858500.0,
+        "predicted_price": 2183856.7674509315,
+        "percentage_error": 154.38052037867578,
+        "land_area_m2": 166.0,
+        "construction_area_m2": NaN,
+        "bedrooms": 3.0,
+        "bathrooms": 2.0,
+        "parking_spaces": NaN
+      },
+      {
+        "source_id": "MLM-5229647088",
+        "property_type": "departamento",
+        "municipality": "Temixco",
+        "neighborhood": "Lauro Ortega",
+        "actual_price": 660000.0,
+        "predicted_price": 792730.5935950633,
+        "percentage_error": 20.11069599925202,
+        "land_area_m2": 60.0,
+        "construction_area_m2": 45.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5759035018",
+        "property_type": "departamento",
+        "municipality": "Emiliano Zapata",
+        "neighborhood": "Emiliano Zapata",
+        "actual_price": 896000.0,
+        "predicted_price": 849347.9164828793,
+        "percentage_error": 5.206705749678648,
+        "land_area_m2": 42.0,
+        "construction_area_m2": 42.0,
+        "bedrooms": 3.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5229571020",
+        "property_type": "departamento",
+        "municipality": "Temixco",
+        "neighborhood": "Lauro Ortega",
+        "actual_price": 720000.0,
+        "predicted_price": 693183.5059294765,
+        "percentage_error": 3.724513065350491,
+        "land_area_m2": 43.0,
+        "construction_area_m2": 42.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5229559666",
+        "property_type": "departamento",
+        "municipality": "Xochitepec",
+        "neighborhood": "Lázaro Cárdenas",
+        "actual_price": 560000.0,
+        "predicted_price": 1302502.9161491308,
+        "percentage_error": 132.58980645520194,
+        "land_area_m2": 81.0,
+        "construction_area_m2": 53.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5229660244",
+        "property_type": "departamento",
+        "municipality": "Temixco",
+        "neighborhood": "Lauro Ortega",
+        "actual_price": 680000.0,
+        "predicted_price": 743732.1009984927,
+        "percentage_error": 9.372367793895982,
+        "land_area_m2": 45.0,
+        "construction_area_m2": 45.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5229646408",
+        "property_type": "departamento",
+        "municipality": "Temixco",
+        "neighborhood": "Pueblo Viejo",
+        "actual_price": 650000.0,
+        "predicted_price": 894059.6901730796,
+        "percentage_error": 37.547644642012244,
+        "land_area_m2": 42.0,
+        "construction_area_m2": 42.0,
+        "bedrooms": 1.0,
+        "bathrooms": 1.0,
+        "parking_spaces": 1.0
+      },
+      {
+        "source_id": "MLM-5991350540",
+        "property_type": "casa",
+        "municipality": "Yautepec",
+        "neighborhood": "Oacalco",
+        "actual_price": 990000.0,
+        "predicted_price": 1210365.6586601047,
+        "percentage_error": 22.25915744041462,
+        "land_area_m2": 54.0,
+        "construction_area_m2": 54.0,
+        "bedrooms": 2.0,
+        "bathrooms": 2.0,
+        "parking_spaces": 1.0
+      }
+    ],
+    "over_12m": [
+      {
+        "source_id": "MLM-4761561668",
+        "property_type": "casa",
+        "municipality": "Cuernavaca",
+        "neighborhood": "Del Bosque",
+        "actual_price": 15300000.0,
+        "predicted_price": 12579631.340530777,
+        "percentage_error": 17.780187316792304,
+        "land_area_m2": 600.0,
+        "construction_area_m2": 644.0,
+        "bedrooms": 3.0,
+        "bathrooms": 3.0,
+        "parking_spaces": 3.0
+      },
+      {
+        "source_id": "MLM-4808963374",
+        "property_type": "casa",
+        "municipality": "Atlatlahucan",
+        "neighborhood": "Lomas De Cocoyoc",
+        "actual_price": 12800000.0,
+        "predicted_price": 8108947.388122733,
+        "percentage_error": 36.64884853029115,
+        "land_area_m2": 475.0,
+        "construction_area_m2": 375.0,
+        "bedrooms": 3.0,
+        "bathrooms": 5.0,
+        "parking_spaces": 5.0
+      },
+      {
+        "source_id": "MLM-3289884329",
+        "property_type": "casa",
+        "municipality": "Yautepec",
+        "neighborhood": "Lomas De Cocoyoc",
+        "actual_price": 16200000.0,
+        "predicted_price": 6912902.879937087,
+        "percentage_error": 57.32776000038836,
+        "land_area_m2": 627.0,
+        "construction_area_m2": 520.0,
+        "bedrooms": 4.0,
+        "bathrooms": 4.0,
+        "parking_spaces": 4.0
+      },
+      {
+        "source_id": "MLM-4904200614",
+        "property_type": "casa",
+        "municipality": "Atlatlahucan",
+        "neighborhood": "Lomas De Cocoyoc",
+        "actual_price": 20000000.0,
+        "predicted_price": 11022880.791835845,
+        "percentage_error": 44.88559604082078,
+        "land_area_m2": 1390.0,
+        "construction_area_m2": 400.0,
+        "bedrooms": 5.0,
+        "bathrooms": 6.0,
+        "parking_spaces": 6.0
+      },
+      {
+        "source_id": "MLM-5064730880",
+        "property_type": "casa",
+        "municipality": "Jiutepec",
+        "neighborhood": "Sumiya",
+        "actual_price": 46500000.0,
+        "predicted_price": 22137757.87838452,
+        "percentage_error": 52.39191854110856,
+        "land_area_m2": 4312.0,
+        "construction_area_m2": 1681.0,
+        "bedrooms": 8.0,
+        "bathrooms": 9.0,
+        "parking_spaces": 9.0
+      },
+      {
+        "source_id": "MLM-3101623379",
+        "property_type": "casa",
+        "municipality": "Cuernavaca",
+        "neighborhood": "Lomas de Tzompantle",
+        "actual_price": 12000000.0,
+        "predicted_price": 6225850.119597516,
+        "percentage_error": 48.1179156700207,
+        "land_area_m2": 354.0,
+        "construction_area_m2": 315.0,
+        "bedrooms": 2.0,
+        "bathrooms": 4.0,
+        "parking_spaces": 4.0
+      },
+      {
+        "source_id": "MLM-3140320311",
+        "property_type": "casa",
+        "municipality": "Jiutepec",
+        "neighborhood": "Sumiya",
+        "actual_price": 17000000.0,
+        "predicted_price": 16855347.06085818,
+        "percentage_error": 0.8508996420107124,
+        "land_area_m2": 1456.0,
+        "construction_area_m2": 650.0,
+        "bedrooms": 5.0,
+        "bathrooms": 6.0,
+        "parking_spaces": 6.0
+      },
+      {
+        "source_id": "MLM-5970504932",
+        "property_type": "casa",
+        "municipality": "Atlatlahucan",
+        "neighborhood": "Lomas De Cocoyoc",
+        "actual_price": 24000000.0,
+        "predicted_price": 19244217.597263195,
+        "percentage_error": 19.815760011403356,
+        "land_area_m2": 1500.0,
+        "construction_area_m2": 578.0,
+        "bedrooms": 6.0,
+        "bathrooms": 7.0,
+        "parking_spaces": 7.0
+      },
+      {
+        "source_id": "MLM-3145111643",
+        "property_type": "casa",
+        "municipality": "Jiutepec",
+        "neighborhood": "El Zapote",
+        "actual_price": 45000000.0,
+        "predicted_price": 28969052.172669623,
+        "percentage_error": 35.62432850517862,
+        "land_area_m2": 4870.0,
+        "construction_area_m2": 1695.0,
+        "bedrooms": 16.0,
+        "bathrooms": 16.0,
+        "parking_spaces": 16.0
+      }
+    ]
+  },
+  "censo_out_of_sample": {
+    "base_mae": 1384050.324071763,
+    "candidate_mae": 1326476.5684601343,
+    "delta_mae": -57573.75561162876,
+    "classification": "weak_useful"
+  },
+  "denue_out_of_sample": {
+    "base_mae": 1326476.5684601343,
+    "candidate_mae": 1460673.4719746816,
+    "delta_mae": 134196.90351454727,
+    "classification": "unstable"
+  },
+  "prediction_intervals": [
+    {
+      "method": "global_pct",
+      "coverage_80": 80.83926031294452,
+      "coverage_90": 88.87624466571836,
+      "mean_interval_width": 5566908.186773923,
+      "median_interval_width": 3561562.8389008874
+    },
+    {
+      "method": "price_band_pct",
+      "coverage_80": 79.78662873399716,
+      "coverage_90": 85.6330014224751,
+      "mean_interval_width": 5200552.407403576,
+      "median_interval_width": 3594609.4970268556
+    },
+    {
+      "method": "property_type_pct",
+      "coverage_80": 80.31294452347085,
+      "coverage_90": 89.40256045519205,
+      "mean_interval_width": 5695946.409901084,
+      "median_interval_width": 3584127.10759926
+    }
+  ],
+  "decision": {
+    "classification": "B_GENERALIZA_PARCIALMENTE",
+    "reason": "Mantiene señal global, pero las validaciones por municipio/precio muestran debilidad en extremos y municipios pequeños.",
+    "mae_seed_std": 375149.00542709907,
+    "weak_municipalities": 4,
+    "extreme_price_band_risk": true
+  }
+}

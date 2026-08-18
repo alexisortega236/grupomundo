@@ -1,0 +1,26 @@
+source_id,source,property_type,municipality,neighborhood,actual_price,predicted_price,absolute_error,percentage_error,land_area_m2,construction_area_m2,bedrooms,bathrooms,parking_spaces,coordinate_quality,training_readiness,quality_flags
+MLM-2720564119,mercadolibre,departamento,Cuernavaca,Tetela Del Monte,2500000.0,2511570.8744475953,11570.874447595328,0.4628349779038131,225.0,150.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2988202549,mercadolibre,casa,Cuautla,Hermenegildo Galeana,2000000.0,1986649.4283199003,13350.57168009947,0.6675285840049735,160.0,100.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2676697903,mercadolibre,casa,Xochitepec,Atlacholoaya,2650000.0,2669210.40944019,19210.409440190066,0.7249211109505685,200.0,159.0,4.0,3.0,3.0,medium,B,missing_coordinates
+MLM-4761612978,mercadolibre,casa,Cuernavaca,Lomas De Cortes,8890000.0,8988858.27106683,98858.27106682956,1.1120165474334034,604.0,506.0,4.0,4.0,4.0,medium,B,missing_coordinates
+MLM-3871630662,mercadolibre,terreno,Cuautla,Lázaro Cárdenas,3750000.0,3811104.369432363,61104.36943236319,1.6294498515296851,835.0,,2.0,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-2945637589,mercadolibre,departamento,Atlatlahucan,San Juan Texcalpan,1400000.0,1376046.554543095,23953.445456905058,1.7109603897789327,45.0,45.0,2.0,2.0,1.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-5445165554,mercadolibre,departamento,Jiutepec,Centro Jiutepec,1585000.0,1615254.354560424,30254.354560424108,1.908792085831174,65.0,65.0,3.0,2.0,1.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-4904087280,mercadolibre,departamento,Jiutepec,José G Parres,3000000.0,2939652.4615399907,60347.538460009266,2.0115846153336423,160.0,160.0,3.0,3.0,3.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-3193975845,mercadolibre,casa,Cuernavaca,Miguel Hidalgo,2550000.0,2629121.2941359277,79121.29413592769,3.1027958484677525,119.0,142.0,2.0,3.0,3.0,medium,B,missing_coordinates
+MLM-3233369615,mercadolibre,casa,Jiutepec,Pedregal De Las Fuentes,9300000.0,8997749.376125246,302250.6238747537,3.2500067083306847,1353.0,415.0,3.0,4.0,4.0,medium,B,missing_coordinates
+MLM-3215727649,mercadolibre,casa,Cuernavaca,Tetela Del Monte,6900000.0,7129125.423424479,229125.42342447865,3.3206583104996903,393.18,304.0,4.0,4.0,4.0,medium,B,missing_coordinates
+33cb-8482-96ccc302-d22afe11714e-4860,icasas,casa,Cuautla,Peña Flores,2800000.0,2908996.030242365,108996.03024236484,3.892715365798745,232.0,,3.0,3.0,4.0,medium,C,missing_construction_area
+MLM-5641653648,mercadolibre,casa,Emiliano Zapata,Real De Tezoyuca,7000000.0,7300981.08530291,300981.08530290984,4.299729790041569,2707.0,300.0,2.0,5.0,5.0,medium,B,"missing_coordinates,suspicious_surface_pair"
+MLM-3233382991,mercadolibre,casa,Atlatlahucan,Lomas De Cocoyoc,7950000.0,8304634.391574343,354634.39157434274,4.460809956909972,471.0,305.0,4.0,4.0,4.0,medium,B,missing_coordinates
+MLM-5347925596,mercadolibre,terreno,Cuernavaca,Lomas De Ahuatlan,2376582.0,2499880.3114397367,123298.31143973676,5.188052061310603,449.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-4532067472,mercadolibre,terreno,Atlatlahucan,Lomas De Cocoyoc,4014500.0,4231045.432511648,216545.43251164816,5.394082264582094,647.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3032202161,mercadolibre,casa,Xochitepec,Villas De Xochitepec,1700000.0,1798384.1473142726,98384.1473142726,5.787302783192505,62.0,91.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2750437785,mercadolibre,casa,Temixco,Burgos,7950000.0,8435327.040231368,485327.0402313676,6.104742644419718,469.0,402.0,4.0,6.0,6.0,medium,B,missing_coordinates
+MLM-5439143118,mercadolibre,departamento,Atlatlahucan,Lomas De Cocoyoc,7500000.0,7972163.768426136,472163.7684261361,6.295516912348481,1109.0,302.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2718606247,mercadolibre,terreno,Xochitepec,Chiconcuac,1279997.0,1362003.3481872245,82006.34818722447,6.406760967972931,2000.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3006163883,mercadolibre,departamento,Yautepec,Oacalco,2250000.0,2098891.6430429686,151108.3569570314,6.715926975868062,153.0,153.0,5.0,3.0,3.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-3254235919,mercadolibre,casa,Cuernavaca,Lomas de La Selva,6875000.0,6396177.287353594,478822.71264640614,6.964694002129544,320.0,250.0,4.0,4.0,4.0,medium,B,missing_coordinates
+MLM-3129632463,mercadolibre,departamento,Cuautla,Sitio Del Sol,1750000.0,1872157.037103037,122157.03710303664,6.980402120173523,70.0,88.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-5608415186,mercadolibre,terreno,Atlatlahucan,Lomas De Cocoyoc,4224000.0,4534959.375110739,310959.3751107389,7.361727630462569,675.85,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3331641737,mercadolibre,casa,Atlatlahucan,Lomas De Cocoyoc,9600000.0,8879159.306873813,720840.6931261867,7.508757220064445,1007.0,330.0,4.0,3.0,3.0,medium,B,missing_coordinates

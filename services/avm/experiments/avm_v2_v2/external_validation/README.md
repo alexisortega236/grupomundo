@@ -1,0 +1,84 @@
+# External Residential Holdout
+
+Evaluación prospectiva sin reentrenar `model_residential_experimental.joblib`.
+
+{
+  "created_at": "2026-08-18T18:31:40+00:00",
+  "holdout": {
+    "n": 51,
+    "by_source": {
+      "mercadolibre": 51
+    },
+    "by_property_type": {
+      "casa": 51
+    },
+    "by_municipality": {
+      "Atlatlahucan": 18,
+      "Jiutepec": 14,
+      "Cuautla": 8,
+      "Yautepec": 5,
+      "Xochitepec": 3,
+      "Temixco": 2,
+      "Emiliano Zapata": 1
+    },
+    "by_price_band": {
+      "3M-5M": 12,
+      "5M-8M": 11,
+      "2M-3M": 8,
+      "8M-12M": 8,
+      "12M-20M": 7,
+      ">20M": 4,
+      "1M-2M": 1
+    }
+  },
+  "overall": {
+    "n": 51,
+    "mae": 2031439.28568208,
+    "median_ae": 829323.1244582646,
+    "rmse": 3259207.7085302086,
+    "r2": 0.7693107696629105,
+    "mape": 19.60037338449119,
+    "median_absolute_percentage_error": 18.424704596722613,
+    "within_10_pct": 31.372549019607842,
+    "within_20_pct": 52.94117647058824,
+    "within_30_pct": 82.35294117647058,
+    "bias_mean": -1157529.2951138802,
+    "bias_median": -451174.1427670317,
+    "median_prediction_ratio": 0.9229664928244601
+  },
+  "reference_cv": {
+    "mae": 1460673.4719746816,
+    "r2": 0.7037420628675256,
+    "mape": 28.790510871934774,
+    "within_20_pct": 44.680851063829785,
+    "within_30_pct": 63.829787234042556
+  },
+  "bootstrap_ci95": {
+    "mae": {
+      "point": 1460673.4719746816,
+      "ci95_low": 1122287.4700496905,
+      "ci95_high": 1870473.2839407003
+    },
+    "mape": {
+      "point": 28.790510871934774,
+      "ci95_low": 25.119639218917193,
+      "ci95_high": 33.106689231084
+    },
+    "median_ae": {
+      "point": 642304.8758198156,
+      "ci95_low": 504134.71821316564,
+      "ci95_high": 756523.286606068
+    },
+    "within_20_pct": {
+      "point": 44.680851063829785,
+      "ci95_low": 37.765957446808514,
+      "ci95_high": 52.12765957446809
+    },
+    "within_30_pct": {
+      "point": 63.829787234042556,
+      "ci95_low": 56.91489361702128,
+      "ci95_high": 70.22606382978722
+    }
+  },
+  "classification": "C_RESULTADO_CONSISTENTE_CON_VALIDACION_PREVIA"
+}

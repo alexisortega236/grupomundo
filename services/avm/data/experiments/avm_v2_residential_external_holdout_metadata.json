@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-08-18T18:31:07+00:00",
+  "training_identity": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/experiments/avm_v2_residential_training_identity.csv",
+  "db_path": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/listings.sqlite3",
+  "eligible_before_historical_exclusion": 256,
+  "excluded": {
+    "historical_source_id": 188,
+    "historical_fingerprint": 17
+  },
+  "holdout_final": 51,
+  "by_source": {
+    "mercadolibre": 51
+  },
+  "by_property_type": {
+    "casa": 51
+  },
+  "by_municipality": {
+    "Atlatlahucan": 18,
+    "Jiutepec": 14,
+    "Cuautla": 8,
+    "Yautepec": 5,
+    "Xochitepec": 3,
+    "Temixco": 2,
+    "Emiliano Zapata": 1
+  },
+  "by_price_band": {
+    "3M-5M": 12,
+    "5M-8M": 11,
+    "2M-3M": 8,
+    "8M-12M": 8,
+    "12M-20M": 7,
+    ">20M": 4,
+    "1M-2M": 1
+  },
+  "by_coordinate_quality": {
+    "medium": 51
+  }
+}

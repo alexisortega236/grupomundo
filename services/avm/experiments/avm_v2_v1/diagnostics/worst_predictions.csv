@@ -1,0 +1,37 @@
+source_id,source,property_type,municipality,neighborhood,actual_price,predicted_price,absolute_error,percentage_error,land_area_m2,construction_area_m2,bedrooms,bathrooms,parking_spaces,coordinate_quality,training_readiness,quality_flags
+MLM-4747030498,mercadolibre,terreno,Jiutepec,Jiutepec,250000.0,3397081.546660573,3147081.546660573,1258.8326186642294,500.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-4904229866,mercadolibre,terreno,Xochitepec,Alpuyeca,2145000.0,24230010.83131247,22085010.83131247,1029.604234560022,7150.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-4048570156,mercadolibre,terreno,Yautepec,Oaxtepec Centro,750000.0,5289884.769268369,4539884.769268369,605.3179692357826,900.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-5557575130,mercadolibre,departamento,Temixco,Temixco,660000.0,2271647.7544132452,1611647.7544132452,244.18905369897655,45.0,42.0,2.0,2.0,1.0,medium,B,missing_coordinates
+MLM-2705584815,mercadolibre,terreno,Xochitepec,Xochitepec,1279999.0,4022036.1300029145,2742037.1300029145,214.22181814227312,2000.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3081127767,mercadolibre,departamento,Cuernavaca,Vista Hermosa,2300000.0,5976334.394232618,3676334.3942326177,159.8406258362008,44.0,44.0,2.0,1.0,1.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+1a66-9fc1-1917371-e6d80237f422-75ff,icasas,casa,Cuautla,emiliano zapata,858500.0,2217253.9534107577,1358753.9534107577,158.27069929071143,166.0,,3.0,2.0,,high,C,missing_construction_area
+MLM-4571122436,mercadolibre,terreno,Xochitepec,Chiconcuac,500000.0,1247675.2046378232,747675.2046378232,149.5350409275646,500.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-5428243280,mercadolibre,terreno,Cuautla,Hermenegildo Galeana,1350000.0,3216284.18350999,1866284.18350999,138.24327285259187,423.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-4756939850,mercadolibre,terreno,Yautepec,Pedregal De Oaxtepec,1300000.0,3092137.208904882,1792137.208904882,137.85670837729862,335.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-5811591900,mercadolibre,casa,Yautepec,Santa Rosa,2150000.0,4822869.867419744,2672869.867419744,124.3195287171974,488.0,190.0,2.0,2.0,1.0,medium,B,missing_coordinates
+MLM-5641679028,mercadolibre,casa,Yautepec,Cocoyoc,3400000.0,7317085.673463774,3917085.673463774,115.20840216069924,736.0,353.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2985878831,mercadolibre,terreno,Ayala,Ciudad Ayala,5056000.0,10827492.70247716,5771492.702477161,114.15135883064004,5056.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-2880697277,mercadolibre,casa,Xochitepec,Loma Bonita,1000000.0,2112593.4534268416,1112593.4534268416,111.25934534268416,180.0,51.0,2.0,2.0,1.0,medium,B,missing_coordinates
+MLM-3289901267,mercadolibre,casa,Yautepec,San Carlos,1800000.0,3542634.3553795307,1742634.3553795307,96.81301974330728,1000.0,120.0,2.0,3.0,3.0,medium,B,"missing_coordinates,suspicious_surface_pair"
+MLM-5641715946,mercadolibre,departamento,Atlatlahucan,San Juan Texcalpan,1200000.0,2354582.7391800527,1154582.739180053,96.2152282650044,85.0,85.0,3.0,2.0,1.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-3233382989,mercadolibre,casa,Cuautla,Hermenegildo Galeana,3300000.0,6467208.277573055,3167208.2775730547,95.97600841130468,160.0,240.0,3.0,3.0,3.0,medium,B,missing_coordinates
+MLM-3254227549,mercadolibre,casa,Cuernavaca,Lomas De Tetela,4100000.0,8022807.27873209,3922807.2787320903,95.6782263105388,434.0,434.0,3.0,4.0,4.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-5754474470,mercadolibre,casa,Emiliano Zapata,Modesto Rangel,1290000.0,2460135.392018046,1170135.3920180462,90.70816992387957,98.0,59.0,3.0,2.0,2.0,medium,B,missing_coordinates
+MLM-2897440679,mercadolibre,terreno,Cuautla,Lázaro Cárdenas,2000000.0,3811104.369432363,1811104.3694323632,90.55521847161816,1000.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3145111643,mercadolibre,casa,Jiutepec,El Zapote,45000000.0,14005271.660030844,30994728.33996916,68.87717408882035,4870.0,1695.0,16.0,16.0,16.0,medium,B,missing_coordinates
+MLM-5064745416,mercadolibre,terreno,Jiutepec,Sumiya,50000000.0,22071128.01497863,27928871.98502137,55.85774397004274,14850.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-5064730880,mercadolibre,casa,Jiutepec,Sumiya,46500000.0,23262666.43556458,23237333.56443542,49.97276035362456,4312.0,1681.0,8.0,9.0,9.0,medium,B,missing_coordinates
+MLM-2988471739,mercadolibre,casa,Jiutepec,Sumiya,35500000.0,46797998.19141205,11297998.191412048,31.825347018062107,7000.0,7000.0,5.0,7.0,7.0,medium,B,"missing_coordinates,same_land_and_construction_area,suspicious_construction_area"
+MLM-2309651041,mercadolibre,terreno,Jiutepec,José López Portillo,20776000.0,30044076.974456437,9268076.974456435,44.60953491748381,5936.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3246463249,mercadolibre,terreno,Emiliano Zapata,Tezoyuca,28700000.0,21019976.256174248,7680023.743825752,26.759664612633284,13022.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3233322585,mercadolibre,departamento,Cuernavaca,Villas Del Lago,11800000.0,4838676.15843694,6961323.84156306,58.99426984375474,217.0,217.0,9.0,5.0,5.0,medium,B,"missing_coordinates,same_land_and_construction_area"
+MLM-5468368160,mercadolibre,terreno,Cuernavaca,Vista Hermosa,11200000.0,5453404.094589623,5746595.905410377,51.30889201259266,800.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3101623379,mercadolibre,casa,Cuernavaca,Lomas de Tzompantle,12000000.0,6391098.312646755,5608901.687353245,46.74084739461038,354.0,315.0,2.0,4.0,4.0,medium,B,missing_coordinates
+MLM-3071833173,mercadolibre,terreno,Yautepec,Amates,41000000.0,46374767.31282295,5374767.312822953,13.10918856786086,36249.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-5338577512,mercadolibre,departamento,Cuernavaca,San Miguel Acapantzingo,7890000.0,2570429.65287025,5319570.34712975,67.42167740341888,363.0,,0.0,3.0,3.0,medium,C,"missing_construction_area,missing_coordinates"
+MLM-4761561668,mercadolibre,casa,Cuernavaca,Del Bosque,15300000.0,10215516.800599722,5084483.199400278,33.23191633594953,600.0,644.0,3.0,3.0,3.0,medium,B,missing_coordinates
+MLM-5844946628,mercadolibre,terreno,Emiliano Zapata,Palo Escrito,26000000.0,21266211.666426793,4733788.333573207,18.206878206050796,6672.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-2605315741,mercadolibre,terreno,Jiutepec,Tlahuapan,8190000.0,3513532.023066476,4676467.976933524,57.09973109808942,2925.0,,,,,medium,C,"missing_construction_area,missing_coordinates"
+MLM-3009407155,mercadolibre,casa,Atlatlahucan,Lomas De Cocoyoc,6950000.0,10961605.654560955,4011605.654560957,57.72094466994183,624.0,430.0,5.0,5.0,5.0,medium,B,missing_coordinates
+MLM-2470937067,mercadolibre,casa,Temixco,Burgos,10850000.0,6922475.2736110175,3927524.7263889825,36.19838457501366,680.0,360.0,3.0,4.0,4.0,medium,B,missing_coordinates

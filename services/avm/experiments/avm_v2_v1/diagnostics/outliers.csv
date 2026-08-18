@@ -1,0 +1,21 @@
+source_id,source,property_type,municipality,actual_price,predicted_price,percentage_error,outlier_type,reason
+MLM-3081127767,mercadolibre,departamento,Cuernavaca,2300000.0,5976334.394232618,159.8406258362008,error_modelo_extremo,error porcentual fuera de p95
+MLM-3145111643,mercadolibre,casa,Jiutepec,45000000.0,14005271.660030844,68.87717408882035,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5991350540,mercadolibre,casa,Yautepec,990000.0,1451741.2675390923,46.640532074655795,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-2880697277,mercadolibre,casa,Xochitepec,1000000.0,2112593.4534268416,111.25934534268416,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5844946628,mercadolibre,terreno,Emiliano Zapata,26000000.0,21266211.666426793,18.206878206050796,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-3246463249,mercadolibre,terreno,Emiliano Zapata,28700000.0,21019976.256174248,26.759664612633284,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5064745416,mercadolibre,terreno,Jiutepec,50000000.0,22071128.01497863,55.85774397004274,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+1a66-9fc1-1917371-e6d80237f422-75ff,icasas,casa,Cuautla,858500.0,2217253.9534107577,158.27069929071143,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-3071833173,mercadolibre,terreno,Yautepec,41000000.0,46374767.31282295,13.10918856786086,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5064730880,mercadolibre,casa,Jiutepec,46500000.0,23262666.43556458,49.97276035362456,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-4818521004,mercadolibre,departamento,Jiutepec,1100000.0,804431.2446447603,26.869886850476338,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-2705584815,mercadolibre,terreno,Xochitepec,1279999.0,4022036.1300029145,214.22181814227312,error_modelo_extremo,error porcentual fuera de p95
+MLM-2309651041,mercadolibre,terreno,Jiutepec,20776000.0,30044076.974456437,44.60953491748381,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-2988471739,mercadolibre,casa,Jiutepec,35500000.0,46797998.19141205,31.825347018062107,dato_probablemente_incorrecto,"missing_coordinates,same_land_and_construction_area,suspicious_construction_area"
+MLM-4571122436,mercadolibre,terreno,Xochitepec,500000.0,1247675.2046378232,149.5350409275646,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5824022714,mercadolibre,departamento,Emiliano Zapata,1100000.0,1606423.10771724,46.038464337930904,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-4904229866,mercadolibre,terreno,Xochitepec,2145000.0,24230010.83131247,1029.604234560022,error_modelo_extremo,error porcentual fuera de p95
+MLM-4747030498,mercadolibre,terreno,Jiutepec,250000.0,3397081.546660573,1258.8326186642294,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-5557575130,mercadolibre,departamento,Temixco,660000.0,2271647.7544132452,244.18905369897655,inmueble_estadisticamente_extremo,precio fuera de p05/p95
+MLM-4048570156,mercadolibre,terreno,Yautepec,750000.0,5289884.769268369,605.3179692357826,inmueble_estadisticamente_extremo,precio fuera de p05/p95

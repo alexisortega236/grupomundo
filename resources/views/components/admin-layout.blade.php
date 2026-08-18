@@ -17,6 +17,7 @@
             <nav class="mt-8 grid gap-2 text-sm">
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.dashboard') }}">Dashboard</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.properties.index') }}">Propiedades</a>
+                <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.valuations.index') }}">Valuaciones</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.amenities.index') }}">Amenidades</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.contact-requests.index') }}">Solicitudes</a>
                 @can('admin-only')<a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.users.index') }}">Usuarios</a>@endcan

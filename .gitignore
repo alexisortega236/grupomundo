@@ -21,7 +21,19 @@
 /storage/*.key
 /storage/pail
 /vendor
+services/avm/.venv/
+services/avm/data/listings*.sqlite3
+__pycache__/
+*.pyc
 _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# AVM - runtime/local datasets
+services/avm/data/inegi/
+services/avm/data/denue/
+services/avm/data/listings.sqlite3
+services/avm/data/listings*.sqlite3
+
+# AVM legacy model - large binary kept outside normal Git
+services/avm/app/model/modelo_precio.joblib

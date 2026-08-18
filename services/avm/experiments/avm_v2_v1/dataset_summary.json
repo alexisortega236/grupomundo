@@ -1,0 +1,32 @@
+{
+  "records": 155,
+  "by_source": {
+    "mercadolibre": 149,
+    "icasas": 6
+  },
+  "by_municipality": {
+    "Cuernavaca": 39,
+    "Atlatlahucan": 24,
+    "Yautepec": 23,
+    "Cuautla": 18,
+    "Jiutepec": 18,
+    "Xochitepec": 12,
+    "Emiliano Zapata": 9,
+    "Temixco": 8,
+    "Ayala": 4
+  },
+  "by_type": {
+    "casa": 84,
+    "departamento": 38,
+    "terreno": 33
+  },
+  "by_training_readiness": {
+    "B": 114,
+    "C": 40,
+    "A": 1
+  },
+  "by_coordinate_quality": {
+    "medium": 153,
+    "high": 2
+  }
+}

@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->hasMany(Property::class, 'created_by');
     }
 
+    public function valuationProperties(): HasMany
+    {
+        return $this->hasMany(Property::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

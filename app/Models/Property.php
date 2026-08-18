@@ -30,6 +30,8 @@ class Property extends Model
             'land_area' => 'decimal:2',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
+            'land_area_m2' => 'decimal:2',
+            'construction_area_m2' => 'decimal:2',
             'is_featured' => 'boolean',
             'published_at' => 'datetime',
         ];
@@ -43,6 +45,16 @@ class Property extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function valuations(): HasMany
+    {
+        return $this->hasMany(Valuation::class);
     }
 
     public function images(): HasMany

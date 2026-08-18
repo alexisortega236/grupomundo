@@ -1,0 +1,76 @@
+{
+  "created_at": "2026-08-18T15:09:03+00:00",
+  "input": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/avm_training_candidates.csv",
+  "output": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/experiments/avm_v2_dataset_v1.csv",
+  "records": 168,
+  "distribution_by_source": {
+    "mercadolibre": 162,
+    "icasas": 6
+  },
+  "distribution_by_municipality": {
+    "Cuernavaca": 39,
+    "Yautepec": 25,
+    "Atlatlahucan": 24,
+    "Jiutepec": 18,
+    "Cuautla": 18,
+    "Xochitepec": 13,
+    "Ayala": 13,
+    "Emiliano Zapata": 9,
+    "Temixco": 9
+  },
+  "distribution_by_type": {
+    "casa": 92,
+    "departamento": 43,
+    "terreno": 33
+  },
+  "distribution_by_training_readiness": {
+    "B": 127,
+    "C": 40,
+    "A": 1
+  },
+  "columns_used": [
+    "average_schooling",
+    "bathrooms",
+    "bedrooms",
+    "car_ownership_ratio",
+    "construction_area_m2",
+    "coordinate_quality",
+    "education_1km",
+    "education_500m",
+    "employment_ratio",
+    "establishments_1km",
+    "establishments_500m",
+    "financial_1km",
+    "financial_500m",
+    "health_1km",
+    "health_500m",
+    "housing_density",
+    "inegi_cve_ageb",
+    "internet_access_ratio",
+    "land_area_m2",
+    "municipality",
+    "neighborhood",
+    "parking_spaces",
+    "population_density",
+    "professional_services_1km",
+    "professional_services_500m",
+    "property_type",
+    "restaurants_hotels_1km",
+    "restaurants_hotels_500m",
+    "retail_1km",
+    "retail_500m"
+  ],
+  "filters_applied": [
+    "training_readiness in A/B/C from avm_training_candidates.csv",
+    "currency must be MXN",
+    "price must be present and > 0",
+    "duplicate groups kept together in validation splits",
+    "one representative retained for clearly repeated duplicate_group_id in experimental deduped dataset"
+  ],
+  "deduplication_rules": [
+    "group by source, price, municipality, neighborhood, land_area_m2, construction_area_m2, bedrooms, bathrooms",
+    "duplicate_group_id assigned before split",
+    "first record kept for training when duplicate group has more than one row"
+  ],
+  "source_records_original": 168
+}

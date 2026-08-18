@@ -1,0 +1,59 @@
+{
+  "created_at": "2026-08-18T17:08:27+00:00",
+  "source_db": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/listings.sqlite3",
+  "raw_total": 665,
+  "candidate_total_before_deduplication": 292,
+  "deduplicated_candidate_total": 272,
+  "duplicates_removed": 20,
+  "by_source": {
+    "mercadolibre": 266,
+    "icasas": 6
+  },
+  "by_property_type": {
+    "casa": 119,
+    "terreno": 83,
+    "departamento": 70
+  },
+  "by_market_segment": {
+    "residential": 189,
+    "land": 83
+  },
+  "by_municipality": {
+    "Cuernavaca": 54,
+    "Yautepec": 43,
+    "Atlatlahucan": 38,
+    "Jiutepec": 32,
+    "Cuautla": 30,
+    "Temixco": 24,
+    "Xochitepec": 23,
+    "Emiliano Zapata": 19,
+    "Ayala": 9
+  },
+  "by_price_band": {
+    "1M-2M": 67,
+    "2M-3M": 53,
+    "5M-8M": 46,
+    "3M-5M": 41,
+    "8M-12M": 21,
+    "<1M": 17,
+    ">20M": 16,
+    "12M-20M": 11
+  },
+  "by_training_readiness": {
+    "B": 265,
+    "C": 6,
+    "A": 1
+  },
+  "by_coordinate_quality": {
+    "medium": 270,
+    "high": 2
+  },
+  "readiness_rules": {
+    "residential_A": "price + type + physical features + coordinate_quality high + AGEB + Censo + DENUE",
+    "residential_B": "same as A with coordinate_quality medium",
+    "residential_C": "usable location + AGEB + Censo + DENUE + sufficient physical features",
+    "land_A": "price + land_area_m2 + coordinate_quality high + AGEB + Censo + DENUE",
+    "land_B": "same as A with coordinate_quality medium",
+    "land_C": "usable location + AGEB + Censo + DENUE + land_area_m2"
+  }
+}

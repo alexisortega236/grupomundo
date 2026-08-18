@@ -1,0 +1,178 @@
+{
+  "created_at": "2026-08-18T15:36:00+00:00",
+  "basis": "diagnostico avm_v2_v1 sobre 155 registros deduplicados",
+  "property_types": {
+    "casa": {
+      "current_count": 84,
+      "priority": "medium",
+      "recommended_target": 200,
+      "reason": "n=84, MAPE=33.89495771718233, within20=40.476190476190474; prioridad derivada de muestra y error observado."
+    },
+    "departamento": {
+      "current_count": 38,
+      "priority": "medium",
+      "recommended_target": 150,
+      "reason": "n=38, MAPE=36.64643456490432, within20=47.368421052631575; prioridad derivada de muestra y error observado."
+    },
+    "terreno": {
+      "current_count": 33,
+      "priority": "high",
+      "recommended_target": 120,
+      "reason": "n=33, MAPE=134.24078527570137, within20=36.36363636363637; prioridad derivada de muestra y error observado."
+    }
+  },
+  "municipalities": {
+    "Atlatlahucan": {
+      "current_count": 24,
+      "priority": "medium",
+      "recommended_target": 40,
+      "reason": "n=24, MAPE=25.749782171872514, within20=54.166666666666664; prioridad derivada de muestra y error observado."
+    },
+    "Ayala": {
+      "current_count": 4,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=4, MAPE=41.99333311185989, within20=50.0; prioridad derivada de muestra y error observado."
+    },
+    "Cuautla": {
+      "current_count": 18,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=18, MAPE=47.66748417334171, within20=44.44444444444444; prioridad derivada de muestra y error observado."
+    },
+    "Cuernavaca": {
+      "current_count": 39,
+      "priority": "medium",
+      "recommended_target": 40,
+      "reason": "n=39, MAPE=31.781207510525753, within20=48.717948717948715; prioridad derivada de muestra y error observado."
+    },
+    "Emiliano Zapata": {
+      "current_count": 9,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=9, MAPE=35.88175411397936, within20=22.22222222222222; prioridad derivada de muestra y error observado."
+    },
+    "Jiutepec": {
+      "current_count": 18,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=18, MAPE=98.10802691563134, within20=38.88888888888889; prioridad derivada de muestra y error observado."
+    },
+    "Temixco": {
+      "current_count": 8,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=8, MAPE=50.78889412840981, within20=25.0; prioridad derivada de muestra y error observado."
+    },
+    "Xochitepec": {
+      "current_count": 12,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=12, MAPE=139.47323991547879, within20=33.33333333333333; prioridad derivada de muestra y error observado."
+    },
+    "Yautepec": {
+      "current_count": 23,
+      "priority": "high",
+      "recommended_target": 40,
+      "reason": "n=23, MAPE=70.32028955150378, within20=30.434782608695656; prioridad derivada de muestra y error observado."
+    }
+  },
+  "price_bands": {
+    "<1M": {
+      "current_count": 6,
+      "priority": "high",
+      "recommended_target": 30,
+      "reason": "n=6, MAPE=410.46, ratio_mediano=3.012, sesgo=sobrevaluacion."
+    },
+    "1M-2M": {
+      "current_count": 33,
+      "priority": "low",
+      "recommended_target": 33,
+      "reason": "n=33, MAPE=47.32, ratio_mediano=1.213, sesgo=sobrevaluacion."
+    },
+    "2M-3M": {
+      "current_count": 30,
+      "priority": "medium",
+      "recommended_target": 30,
+      "reason": "n=30, MAPE=67.06, ratio_mediano=1.084, sesgo=sobrevaluacion."
+    },
+    "3M-5M": {
+      "current_count": 23,
+      "priority": "medium",
+      "recommended_target": 30,
+      "reason": "n=23, MAPE=35.02, ratio_mediano=1.016, sesgo=sobrevaluacion."
+    },
+    "5M-8M": {
+      "current_count": 33,
+      "priority": "low",
+      "recommended_target": 33,
+      "reason": "n=33, MAPE=28.36, ratio_mediano=1.061, sesgo=sobrevaluacion."
+    },
+    "8M-12M": {
+      "current_count": 19,
+      "priority": "medium",
+      "recommended_target": 30,
+      "reason": "n=19, MAPE=25.05, ratio_mediano=0.789, sesgo=subvaluacion."
+    },
+    "12M-20M": {
+      "current_count": 3,
+      "priority": "high",
+      "recommended_target": 30,
+      "reason": "n=3, MAPE=35.66, ratio_mediano=0.668, sesgo=subvaluacion."
+    },
+    ">20M": {
+      "current_count": 8,
+      "priority": "high",
+      "recommended_target": 30,
+      "reason": "n=8, MAPE=38.65, ratio_mediano=0.775, sesgo=subvaluacion."
+    }
+  },
+  "learning_curve": [
+    {
+      "training_size_pct": 25,
+      "mean_records": 39.0,
+      "mean_cv_mae": 3081757.6559251524,
+      "std_cv_mae": 805453.5431544122,
+      "mean_cv_r2": -0.025430918677425755,
+      "std_cv_r2": 0.6036980980435225,
+      "mean_within_20": 30.044642857142854,
+      "mean_within_30": 42.54464285714286
+    },
+    {
+      "training_size_pct": 50,
+      "mean_records": 77.0,
+      "mean_cv_mae": 2708650.2196532404,
+      "std_cv_mae": 498255.3716134317,
+      "mean_cv_r2": 0.10411534014542853,
+      "std_cv_r2": 0.7419786193527866,
+      "mean_within_20": 36.17708333333333,
+      "mean_within_30": 49.51041666666667
+    },
+    {
+      "training_size_pct": 75,
+      "mean_records": 116.0,
+      "mean_cv_mae": 2498235.488159174,
+      "std_cv_mae": 266821.55444186047,
+      "mean_cv_r2": 0.061784851538675384,
+      "std_cv_r2": 1.0200748187175557,
+      "mean_within_20": 34.89583333333333,
+      "mean_within_30": 49.45652173913044
+    },
+    {
+      "training_size_pct": 100,
+      "mean_records": 155.0,
+      "mean_cv_mae": 2325360.66489395,
+      "std_cv_mae": 0.0,
+      "mean_cv_r2": 0.2743243368131852,
+      "std_cv_r2": 0.0,
+      "mean_within_20": 40.64516129032258,
+      "mean_within_30": 55.483870967741936
+    }
+  ],
+  "priority_collection": [
+    "Aumentar departamentos y terrenos para reducir varianza por tipo.",
+    "Recolectar más registros de Ayala, Temixco, Xochitepec y Emiliano Zapata antes de interpretar municipio.",
+    "Priorizar propiedades de 1M-8M, donde el mercado objetivo es denso y el modelo aún mezcla sobre/subvaluación.",
+    "Recolectar propiedades caras >12M con verificación manual para separar mansiones plausibles de errores de superficie/precio."
+  ]
+}

@@ -8,6 +8,7 @@
         <button class="rounded p-2 md:hidden" @click="open = !open" aria-label="Abrir menu"><span class="block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span><span class="mt-1.5 block h-0.5 w-6 bg-[#0d2723]"></span></button>
         <nav class="hidden items-center gap-8 text-sm font-medium text-[#51635f] md:flex">
             <a href="{{ route('properties.index') }}">Propiedades</a>
+            <a href="{{ route('valuation.create') }}">Valuador</a>
             <a href="{{ route('services') }}">Servicios</a>
             <a href="{{ route('about') }}">Nosotros</a>
             <a href="{{ route('contact') }}">Contacto</a>
@@ -16,6 +17,7 @@
     </div>
     <nav x-show="open" x-cloak class="grid gap-2 border-t border-[#e6dfd2] bg-white px-4 pb-4 text-sm md:hidden">
         <a class="py-2" href="{{ route('properties.index') }}">Propiedades</a>
+        <a class="py-2" href="{{ route('valuation.create') }}">Valuador</a>
         <a class="py-2" href="{{ route('services') }}">Servicios</a>
         <a class="py-2" href="{{ route('about') }}">Nosotros</a>
         <a class="py-2" href="{{ route('contact') }}">Contacto</a>

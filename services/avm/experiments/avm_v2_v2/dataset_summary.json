@@ -1,0 +1,46 @@
+{
+  "records": 271,
+  "by_source": {
+    "mercadolibre": 265,
+    "icasas": 6
+  },
+  "by_market_segment": {
+    "residential": 188,
+    "land": 83
+  },
+  "by_property_type": {
+    "casa": 118,
+    "terreno": 83,
+    "departamento": 70
+  },
+  "by_municipality": {
+    "Cuernavaca": 54,
+    "Yautepec": 43,
+    "Atlatlahucan": 38,
+    "Jiutepec": 31,
+    "Cuautla": 30,
+    "Temixco": 24,
+    "Xochitepec": 23,
+    "Emiliano Zapata": 19,
+    "Ayala": 9
+  },
+  "by_price_band": {
+    "1M-2M": 67,
+    "2M-3M": 53,
+    "5M-8M": 46,
+    "3M-5M": 41,
+    "8M-12M": 21,
+    "<1M": 17,
+    ">20M": 15,
+    "12M-20M": 11
+  },
+  "by_training_readiness": {
+    "B": 264,
+    "C": 6,
+    "A": 1
+  },
+  "by_coordinate_quality": {
+    "medium": 269,
+    "high": 2
+  }
+}

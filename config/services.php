@@ -35,4 +35,32 @@ return [
         ],
     ],
 
+    'avm' => [
+        'url' => env('AVM_SERVICE_URL', 'http://127.0.0.1:8003'),
+        'token' => env('AVM_SERVICE_TOKEN'),
+        'timeout' => env('AVM_SERVICE_TIMEOUT', 20),
+    ],
+
+    'avm_v2' => [
+        'enabled' => env('AVM_V2_ENABLED', false),
+        'shadow_mode' => env('AVM_V2_SHADOW_MODE', true),
+        'public_result' => env('AVM_V2_PUBLIC_RESULT', false),
+        'url' => env('AVM_SERVICE_URL', 'http://127.0.0.1:8003'),
+        'token' => env('AVM_SERVICE_TOKEN'),
+        'timeout' => env('AVM_V2_TIMEOUT', env('AVM_SERVICE_TIMEOUT', 20)),
+    ],
+
+    'avm_v2_v1' => [
+        'enabled' => env('AVM_V2_V1_ENABLED', false),
+        'url' => env('AVM_SERVICE_URL', 'http://127.0.0.1:8003'),
+        'token' => env('AVM_SERVICE_TOKEN'),
+        'timeout' => env('AVM_V2_V1_TIMEOUT', env('AVM_SERVICE_TIMEOUT', 20)),
+    ],
+
+    'nominatim' => [
+        'url' => env('NOMINATIM_URL', 'https://nominatim.openstreetmap.org'),
+        'user_agent' => env('NOMINATIM_USER_AGENT', 'GrupoMundoPatrimonialValuador/1.0'),
+        'timeout' => env('NOMINATIM_TIMEOUT', 8),
+    ],
+
 ];
