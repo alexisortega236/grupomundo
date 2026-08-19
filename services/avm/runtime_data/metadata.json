@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-08-19T16:10:09.922436+00:00",
+  "purpose": "AVM v2 spatial inference only",
+  "source_datasets": {
+    "ageb": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/inegi/17_morelos/conjunto_de_datos/17a.shp",
+    "municipality": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/inegi/17_morelos/conjunto_de_datos/17mun.shp",
+    "locality": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/inegi/17_morelos/conjunto_de_datos/17l.shp",
+    "censo": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/RESAGEBURB_17CSV20.csv",
+    "denue": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/denue/denue_17_csv/conjunto_de_datos/denue_inegi_17_.csv"
+  },
+  "shape_files": [
+    "17a.shp",
+    "17a.shx",
+    "17a.dbf",
+    "17a.prj",
+    "17a.cpg",
+    "17mun.shp",
+    "17mun.shx",
+    "17mun.dbf",
+    "17mun.prj",
+    "17mun.cpg",
+    "17l.shp",
+    "17l.shx",
+    "17l.dbf",
+    "17l.prj",
+    "17l.cpg"
+  ],
+  "censo_columns": [
+    "ENTIDAD",
+    "MUN",
+    "LOC",
+    "AGEB",
+    "MZA",
+    "POBTOT",
+    "TVIVHAB",
+    "VPH_AUTOM",
+    "VPH_INTER",
+    "GRAPROES",
+    "PEA",
+    "POCUPADA"
+  ],
+  "censo_rows_mza_000": 1164,
+  "denue_columns": [
+    "codigo_act",
+    "latitud",
+    "longitud"
+  ],
+  "denue_rows": 113066,
+  "denue_categories": {
+    "retail": [
+      "46"
+    ],
+    "restaurants_hotels": [
+      "72"
+    ],
+    "health": [
+      "62"
+    ],
+    "education": [
+      "61"
+    ],
+    "financial": [
+      "52"
+    ],
+    "professional_services": [
+      "54"
+    ]
+  }
+}

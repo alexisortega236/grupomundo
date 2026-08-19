@@ -16,6 +16,7 @@ class DatasetPaths:
     censo_ageb_csv: Path
     denue_morelos_dir: Path
     denue_csv: Path
+    runtime_data_dir: Path
 
     @property
     def inegi_data_dir(self) -> Path:
@@ -23,15 +24,18 @@ class DatasetPaths:
 
     @property
     def ageb_shp(self) -> Path:
-        return self.inegi_data_dir / "17a.shp"
+        runtime = self.runtime_data_dir / "17a.shp"
+        return runtime if runtime.exists() else self.inegi_data_dir / "17a.shp"
 
     @property
     def municipality_shp(self) -> Path:
-        return self.inegi_data_dir / "17mun.shp"
+        runtime = self.runtime_data_dir / "17mun.shp"
+        return runtime if runtime.exists() else self.inegi_data_dir / "17mun.shp"
 
     @property
     def locality_shp(self) -> Path:
-        return self.inegi_data_dir / "17l.shp"
+        runtime = self.runtime_data_dir / "17l.shp"
+        return runtime if runtime.exists() else self.inegi_data_dir / "17l.shp"
 
     @property
     def block_shp(self) -> Path:
@@ -40,12 +44,18 @@ class DatasetPaths:
 
 def dataset_paths() -> DatasetPaths:
     data_dir = _path_env("AVM_DATA_DIR", AVM_ROOT / "data")
+    runtime_data_dir = _path_env("AVM_RUNTIME_DATA_DIR", AVM_ROOT / "runtime_data")
+    raw_censo = _path_env("CENSO_AGEB_CSV", data_dir / "RESAGEBURB_17CSV20.csv")
+    raw_denue = _path_env("DENUE_CSV", data_dir / "denue" / "denue_17_csv" / "conjunto_de_datos" / "denue_inegi_17_.csv")
+    runtime_censo = runtime_data_dir / "censo_ageb_features.csv"
+    runtime_denue = runtime_data_dir / "denue_points.csv"
     return DatasetPaths(
         avm_data_dir=data_dir,
         inegi_morelos_dir=_path_env("INEGI_MORELOS_DIR", data_dir / "inegi" / "17_morelos"),
-        censo_ageb_csv=_path_env("CENSO_AGEB_CSV", data_dir / "RESAGEBURB_17CSV20.csv"),
+        censo_ageb_csv=runtime_censo if runtime_censo.exists() else raw_censo,
         denue_morelos_dir=_path_env("DENUE_MORELOS_DIR", data_dir / "denue" / "denue_17_csv"),
-        denue_csv=_path_env("DENUE_CSV", data_dir / "denue" / "denue_17_csv" / "conjunto_de_datos" / "denue_inegi_17_.csv"),
+        denue_csv=runtime_denue if runtime_denue.exists() else raw_denue,
+        runtime_data_dir=runtime_data_dir,
     )
 
 
@@ -102,4 +112,3 @@ def _require_csv_columns(path: Path, required: set[str]) -> list[str]:
     normalized = {column.replace("\ufeff", "").strip() for column in header}
     missing = sorted(required - normalized)
     return [f"Faltan columnas en {path}: {', '.join(missing)}"] if missing else []
-
