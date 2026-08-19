@@ -6,7 +6,9 @@ use App\Enums\AvmPropertyType;
 use App\Models\PostalSettlement;
 use App\Services\Valuation\LegacyLocationMapper;
 use App\Services\Valuation\SupportedValuationLocations;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
@@ -60,7 +62,7 @@ class StoreValuationRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'location_source' => ['nullable', Rule::in(['device', 'manual_geocode', 'sepomex_geocoded'])],
-            'location_precision' => ['nullable', Rule::in(['device', 'neighborhood', 'locality', 'municipality'])],
+            'location_precision' => ['nullable', Rule::in(['device', 'neighborhood', 'postal_code', 'locality', 'municipality'])],
             'land_area_m2' => ['required_unless:property_type,apartment', 'nullable', 'numeric', 'gt:0'],
             'construction_area_m2' => ['required_unless:property_type,land', 'nullable', 'numeric', 'gt:0'],
             'bedrooms' => ['nullable', 'integer', 'min:0'],
@@ -126,6 +128,16 @@ class StoreValuationRequest extends FormRequest
                 $validator->errors()->add('postal_settlement_id', 'Selecciona nuevamente la colonia después de modificar el texto.');
             }
         });
+    }
+
+    protected function failedValidation(ValidatorContract $validator): void
+    {
+        Log::warning('Public valuation request validation failed', [
+            'keys' => array_keys($this->all()),
+            'validation_errors' => $validator->errors()->toArray(),
+        ]);
+
+        parent::failedValidation($validator);
     }
 
     private function normalize(string $value): string

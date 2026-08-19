@@ -177,6 +177,65 @@ class PublicValuationTest extends TestCase
         $this->assertSame('Año de Juárez', \App\Models\Property::first()->neighborhood);
     }
 
+    public function test_production_manual_payload_with_postal_code_precision_passes_validation(): void
+    {
+        PostalSettlement::create([
+            'id' => 1131,
+            'state' => 'Morelos',
+            'state_code' => '17',
+            'municipality' => 'Cuautla',
+            'municipality_code' => '006',
+            'settlement' => 'Año de Juárez',
+            'settlement_type' => 'Colonia',
+            'postal_code' => '62748',
+            'source' => 'sepomex',
+        ]);
+
+        config([
+            'services.nominatim.url' => 'https://nominatim.test',
+            'services.avm_v2.enabled' => false,
+            'services.avm_v2_v1.enabled' => false,
+        ]);
+        Http::fake([
+            'https://nominatim.test/search*' => Http::response([[
+                'lat' => '18.8501289',
+                'lon' => '-98.9468706',
+                'display_name' => '62748, Cuautla, Morelos, México',
+                'address' => [
+                    'country_code' => 'mx',
+                    'country' => 'México',
+                    'state' => 'Morelos',
+                    'county' => 'Cuautla',
+                    'postcode' => '62748',
+                ],
+            ]]),
+        ]);
+
+        $response = $this->post(route('valuation.store'), [
+            'state' => 'Morelos',
+            'municipality' => 'Cuautla',
+            'postal_settlement_id' => 1131,
+            'neighborhood' => 'Año de Juárez',
+            'latitude' => '18.8501289',
+            'longitude' => '-98.9468706',
+            'location_source' => 'manual_geocode',
+            'location_precision' => 'postal_code',
+            'property_type' => 'house',
+            'land_area_m2' => 200,
+            'construction_area_m2' => 95,
+            'bedrooms' => 3,
+            'bathrooms' => 2,
+            'parking_spaces' => 2,
+            'property_age_years' => 10,
+        ]);
+
+        $response->assertRedirect();
+        $property = Property::first();
+        $this->assertSame('Año de Juárez', $property->neighborhood);
+        $this->assertSame('18.8501289', $property->latitude);
+        $this->assertSame('-98.9468706', $property->longitude);
+    }
+
     public function test_public_valuation_stores_real_location_and_does_not_send_unverified_legacy_fallback(): void
     {
         config([
