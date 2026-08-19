@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Models\PostalSettlement;
 use App\Services\Valuation\PublicLocationGeocoder;
 use App\Services\Valuation\SupportedValuationLocations;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Throwable;
 
 class LocationController
@@ -16,6 +18,7 @@ class LocationController
             'state' => ['required', 'in:Morelos'],
             'municipality' => ['required', 'string', 'max:120'],
             'neighborhood' => ['required', 'string', 'min:3', 'max:120'],
+            'postal_code' => ['nullable', 'string', 'max:10'],
         ]);
 
         if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalities())) {
@@ -23,7 +26,12 @@ class LocationController
         }
 
         try {
-            return response()->json(['location' => $geocoder->geocode(...$data)]);
+            return response()->json(['location' => $geocoder->geocode(
+                $data['state'],
+                $data['municipality'],
+                $data['neighborhood'],
+                $data['postal_code'] ?? null
+            )]);
         } catch (Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -41,5 +49,55 @@ class LocationController
         } catch (Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
+    }
+
+    public function municipalities(Request $request, SupportedValuationLocations $locations): JsonResponse
+    {
+        $state = $request->query('state', 'Morelos');
+        if ($state !== 'Morelos') {
+            return response()->json([]);
+        }
+
+        $catalogMunicipalities = PostalSettlement::query()
+            ->where('state', $state)
+            ->distinct()
+            ->orderBy('municipality')
+            ->pluck('municipality')
+            ->values();
+
+        return response()->json($catalogMunicipalities->isNotEmpty()
+            ? $catalogMunicipalities
+            : array_values($locations->municipalities()));
+    }
+
+    public function settlements(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'state' => ['required', 'in:Morelos'],
+            'municipality' => ['required', 'string', 'max:120'],
+            'q' => ['required', 'string', 'min:2', 'max:80'],
+        ]);
+
+        if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalities())) {
+            return response()->json(['message' => 'Selecciona un municipio disponible.'], 422);
+        }
+
+        $query = Str::of($data['q'])->trim()->value();
+        $settlements = PostalSettlement::query()
+            ->where('state', $data['state'])
+            ->where('municipality', $data['municipality'])
+            ->where('settlement', 'like', '%'.$query.'%')
+            ->orderBy('settlement')
+            ->limit(15)
+            ->get(['id', 'settlement', 'settlement_type', 'postal_code'])
+            ->map(fn (PostalSettlement $settlement) => [
+                'id' => $settlement->id,
+                'name' => $settlement->settlement,
+                'type' => $settlement->settlement_type,
+                'postal_code' => $settlement->postal_code,
+            ])
+            ->values();
+
+        return response()->json($settlements);
     }
 }

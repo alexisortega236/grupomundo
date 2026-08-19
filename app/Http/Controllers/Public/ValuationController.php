@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\StoreValuationRequest;
 use App\Models\Valuation;
 use App\Services\Valuation\PublicValuationResultResolver;
+use App\Services\Valuation\PublicValuationLocationResolver;
 use App\Services\Valuation\SupportedValuationLocations;
 use App\Services\Valuation\ValuationService;
 
@@ -22,9 +23,9 @@ class ValuationController extends Controller
         ]);
     }
 
-    public function store(StoreValuationRequest $request, ValuationService $valuations)
+    public function store(StoreValuationRequest $request, ValuationService $valuations, PublicValuationLocationResolver $locations)
     {
-        $data = $request->validated();
+        $data = $locations->resolve($request->validated());
         $valuation = $valuations->createAndRun($data, null, 'public');
 
         return redirect()->route('valuation.show', $valuation->uuid);

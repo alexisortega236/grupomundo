@@ -3,6 +3,7 @@
     $selectedMunicipality = old('municipality', 'Cuautla');
     $oldLatitude = old('latitude');
     $oldLongitude = old('longitude');
+    $oldSettlementId = old('settlement_id');
 @endphp
 
 <x-public-layout title="Valuador | Grupo Mundo Patrimonial" description="Obtén una estimación preliminar del valor de tu propiedad.">
@@ -37,6 +38,8 @@
             <input id="valuation-longitude" type="hidden" name="longitude" value="{{ $oldLongitude }}">
             <input id="valuation-location-source" type="hidden" name="location_source" value="{{ old('location_source') }}">
             <input id="valuation-location-precision" type="hidden" name="location_precision" value="{{ old('location_precision') }}">
+            <input id="valuation-settlement-id" type="hidden" name="settlement_id" value="{{ $oldSettlementId }}">
+            <input id="valuation-postal-code" type="hidden" name="postal_code" value="{{ old('postal_code') }}">
             <input type="hidden" name="state" value="Morelos">
 
             <div class="grid gap-6">
@@ -63,9 +66,10 @@
                             :value="$selectedMunicipality"
                         />
                         <div class="md:col-span-2">
-                            <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Ej. Centro, Reforma, Oaxtepec" autocomplete="off" />
+                            <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
                             <div id="valuation-location-suggestions" class="mt-2 hidden rounded-md border border-[#d8ccb8] bg-[#fbfaf7] p-3 text-sm text-[#51635f]"></div>
-                            <p class="mt-1 text-xs text-[#687773]">Escribe una colonia o fraccionamiento para encontrar una ubicación aproximada.</p>
+                            <p class="mt-1 text-xs text-[#687773]">Selecciona una colonia o fraccionamiento real de la lista.</p>
+                            @error('settlement_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                         </div>
                     </div>
                     @error('latitude')<p class="mt-2 text-xs text-red-600">{{ $message }}</p>@enderror
@@ -149,6 +153,8 @@
             const lngInput = document.getElementById('valuation-longitude');
             const sourceInput = document.getElementById('valuation-location-source');
             const precisionInput = document.getElementById('valuation-location-precision');
+            const settlementIdInput = document.getElementById('valuation-settlement-id');
+            const postalCodeInput = document.getElementById('valuation-postal-code');
             const status = document.getElementById('valuation-location-status');
             const suggestions = document.getElementById('valuation-location-suggestions');
             const geolocate = document.getElementById('valuation-geolocate');
@@ -160,20 +166,26 @@
                 precisionInput.value = '';
             };
 
-            const applyLocation = (location, message) => {
+            const invalidateSettlement = () => {
+                settlementIdInput.value = '';
+                postalCodeInput.value = '';
+                neighborhood.setAttribute('aria-expanded', 'false');
+            };
+
+            const applyLocation = (location, message, preserveSettlement = false) => {
                 latInput.value = Number(location.latitude).toFixed(7);
                 lngInput.value = Number(location.longitude).toFixed(7);
                 sourceInput.value = location.location_source || 'manual_geocode';
                 precisionInput.value = location.location_precision || 'neighborhood';
                 if (location.municipality) municipality.value = location.municipality;
-                if (location.neighborhood) neighborhood.value = location.neighborhood;
+                if (location.neighborhood && !preserveSettlement) neighborhood.value = location.neighborhood;
+                if (location.postal_code && !preserveSettlement) postalCodeInput.value = location.postal_code;
                 status.textContent = message;
             };
 
-            const geocodeManualLocation = async () => {
-                if (neighborhood.value.trim().length < 3 || !municipality.value) {
+            const geocodeSettlement = async () => {
+                if (!settlementIdInput.value || !municipality.value) {
                     clearCoordinates();
-                    suggestions.classList.add('hidden');
                     return;
                 }
 
@@ -182,34 +194,87 @@
                     state: 'Morelos',
                     municipality: municipality.value,
                     neighborhood: neighborhood.value.trim(),
+                    postal_code: postalCodeInput.value,
                 });
 
                 try {
                     const response = await fetch(`{{ route('valuation.geocode') }}?${params}`);
                     const data = await response.json();
                     if (!response.ok) throw new Error(data.message || 'No encontramos esa ubicación.');
-                    applyLocation(data.location, 'Ubicación encontrada. Puedes corregir los campos si lo necesitas.');
+                    applyLocation(data.location, 'Ubicación encontrada.', true);
                     suggestions.classList.add('hidden');
                 } catch (error) {
                     clearCoordinates();
-                    status.textContent = error.message || 'No encontramos esa ubicación. Revisa municipio y colonia.';
+                    status.textContent = error.message || 'No pudimos ubicar esa colonia. También puedes usar tu ubicación.';
                     suggestions.classList.add('hidden');
                 }
             };
 
-            let geocodeTimer = null;
+            const renderSuggestions = (items) => {
+                suggestions.innerHTML = '';
+                if (!items.length) {
+                    suggestions.textContent = 'No encontramos coincidencias en este municipio.';
+                    suggestions.classList.remove('hidden');
+                    return;
+                }
+
+                items.forEach((item) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'block w-full rounded px-3 py-2 text-left hover:bg-[#efe9dc] focus:bg-[#efe9dc] focus:outline-none';
+                    button.innerHTML = `<span class="block font-semibold text-[#0d2723]"></span><span class="block text-xs text-[#687773]"></span>`;
+                    button.children[0].textContent = item.name;
+                    button.children[1].textContent = [item.type, item.postal_code ? `CP ${item.postal_code}` : ''].filter(Boolean).join(' · ');
+                    button.addEventListener('click', () => {
+                        neighborhood.value = item.name;
+                        settlementIdInput.value = item.id;
+                        postalCodeInput.value = item.postal_code || '';
+                        clearCoordinates();
+                        suggestions.classList.add('hidden');
+                        neighborhood.setAttribute('aria-expanded', 'false');
+                        status.textContent = 'Colonia seleccionada. Verificando ubicación...';
+                        geocodeSettlement();
+                    });
+                    suggestions.appendChild(button);
+                });
+                suggestions.classList.remove('hidden');
+                neighborhood.setAttribute('aria-expanded', 'true');
+            };
+
+            let searchTimer = null;
             neighborhood.addEventListener('input', () => {
                 clearCoordinates();
-                clearTimeout(geocodeTimer);
-                geocodeTimer = setTimeout(geocodeManualLocation, 650);
+                invalidateSettlement();
+                clearTimeout(searchTimer);
+                const query = neighborhood.value.trim();
+                if (query.length < 2 || !municipality.value) {
+                    suggestions.classList.add('hidden');
+                    return;
+                }
+                status.textContent = 'Buscando colonias...';
+                searchTimer = setTimeout(async () => {
+                    const params = new URLSearchParams({ state: 'Morelos', municipality: municipality.value, q: query });
+                    try {
+                        const response = await fetch(`{{ route('valuation.locations.settlements') }}?${params}`);
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.message || 'No pudimos buscar colonias.');
+                        renderSuggestions(data);
+                        status.textContent = data.length ? 'Selecciona una colonia de la lista.' : 'No encontramos coincidencias.';
+                    } catch (error) {
+                        suggestions.textContent = error.message || 'No pudimos buscar colonias.';
+                        suggestions.classList.remove('hidden');
+                        status.textContent = 'Revisa el municipio o utiliza tu ubicación.';
+                    }
+                }, 300);
             });
 
             municipality.addEventListener('change', () => {
                 clearCoordinates();
-                status.textContent = 'Busca nuevamente la colonia dentro del municipio seleccionado.';
+                invalidateSettlement();
+                neighborhood.value = '';
+                suggestions.classList.add('hidden');
+                status.textContent = 'Busca una colonia dentro del municipio seleccionado.';
             });
-
-            neighborhood.addEventListener('blur', geocodeManualLocation);
 
             geolocate.addEventListener('click', () => {
                 if (!navigator.geolocation) {
@@ -217,6 +282,7 @@
                     return;
                 }
                 status.textContent = 'Buscando tu ubicación...';
+                invalidateSettlement();
                 navigator.geolocation.getCurrentPosition((position) => {
                     const params = new URLSearchParams({
                         latitude: position.coords.latitude,
@@ -240,6 +306,13 @@
                             : 'No pudimos obtener tu ubicación. Captúrala manualmente.';
                     status.textContent = message;
                 }, { enableHighAccuracy: true, timeout: 10000 });
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!suggestions.contains(event.target) && event.target !== neighborhood) {
+                    suggestions.classList.add('hidden');
+                    neighborhood.setAttribute('aria-expanded', 'false');
+                }
             });
         });
     </script>

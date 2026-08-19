@@ -121,7 +121,8 @@ class PublicValuationTest extends TestCase
             'neighborhood' => '',
             'latitude' => '',
             'longitude' => '',
-        ])->assertSessionHasErrors(['property_type', 'municipality', 'neighborhood', 'latitude', 'longitude', 'land_area_m2', 'construction_area_m2']);
+        ])->assertSessionHasErrors(['property_type', 'municipality', 'settlement_id', 'land_area_m2', 'construction_area_m2'])
+            ->assertSessionDoesntHaveErrors(['latitude', 'longitude']);
     }
 
     public function test_public_valuation_stores_real_location_and_does_not_send_unverified_legacy_fallback(): void
@@ -129,6 +130,7 @@ class PublicValuationTest extends TestCase
         config([
             'services.avm.url' => 'https://avm.test',
             'services.avm_v2.enabled' => false,
+            'services.avm_v2_v1.enabled' => false,
         ]);
         Http::fake();
 

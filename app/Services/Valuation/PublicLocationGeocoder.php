@@ -11,27 +11,36 @@ use RuntimeException;
 
 class PublicLocationGeocoder
 {
-    public function geocode(string $state, string $municipality, string $neighborhood): array
+    public function geocode(string $state, string $municipality, string $neighborhood, ?string $postalCode = null): array
     {
-        $query = implode(', ', [$neighborhood, $municipality, $state, 'México']);
-        $queryParams = [
-            'q' => $query,
-            'format' => 'jsonv2',
-            'addressdetails' => 1,
-            'limit' => 5,
-            'countrycodes' => 'mx',
-        ];
-        $places = Cache::remember(
-            'public-location:search:'.sha1($this->normalize($query)),
-            now()->addHours(6),
-            fn () => $this->request('/search', $queryParams)->json() ?? []
-        );
+        $queries = array_values(array_filter([
+            implode(', ', array_filter([$neighborhood, $municipality, $state, $postalCode, 'México'])),
+            implode(', ', [$neighborhood, $municipality, $state, 'México']),
+            implode(', ', [$municipality, $state, 'México']),
+        ]));
 
-        foreach ($places as $place) {
-            $address = $place['address'] ?? [];
+        foreach ($queries as $index => $query) {
+            $places = Cache::remember(
+                'public-location:search:'.sha1($this->normalize($query)),
+                now()->addHours(6),
+                fn () => $this->request('/search', [
+                    'q' => $query,
+                    'format' => 'jsonv2',
+                    'addressdetails' => 1,
+                    'limit' => 5,
+                    'countrycodes' => 'mx',
+                ])->json() ?? []
+            );
 
-            if ($this->matchesState($address, $state) && $this->matchesMunicipality($address, $place, $municipality)) {
-                return $this->normalizePlace($place, 'manual_geocode');
+            foreach ($places as $place) {
+                $address = $place['address'] ?? [];
+
+                if ($index < 2
+                    && $this->matchesState($address, $state)
+                    && $this->matchesMunicipality($address, $place, $municipality)
+                    && $this->matchesNeighborhood($address, $place, $neighborhood)) {
+                    return $this->normalizePlace($place, 'manual_geocode');
+                }
             }
         }
 
@@ -133,6 +142,27 @@ class PublicLocationGeocoder
         return $candidate && ($this->normalize($candidate) === $target
             || Str::contains($this->normalize($candidate), $target)
             || Str::contains($this->normalize($place['display_name'] ?? ''), $target));
+    }
+
+    private function matchesNeighborhood(array $address, array $place, string $neighborhood): bool
+    {
+        $target = $this->normalize($neighborhood);
+        $candidates = array_filter([
+            $address['neighbourhood'] ?? null,
+            $address['suburb'] ?? null,
+            $address['quarter'] ?? null,
+            $address['residential'] ?? null,
+            $place['display_name'] ?? null,
+        ]);
+
+        foreach ($candidates as $candidate) {
+            $normalized = $this->normalize((string) $candidate);
+            if ($normalized === $target || Str::contains($normalized, $target) || Str::contains($target, $normalized)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function normalize(string $value): string
