@@ -380,7 +380,9 @@ class PublicValuationTest extends TestCase
         $this->get(route('valuation.show', $valuation->uuid))
             ->assertOk()
             ->assertSee('$931,920 MXN')
-            ->assertSee('Rango estimado: $700,000 - $1,200,000 MXN')
+            ->assertDontSee('Rango estimado')
+            ->assertDontSee('$700,000')
+            ->assertDontSee('$1,200,000')
             ->assertDontSee('$2,980,242 MXN')
             ->assertDontSee('avm_residential_v2')
             ->assertDontSee('MEDIUM')
@@ -389,6 +391,9 @@ class PublicValuationTest extends TestCase
             ->assertDontSee('DENUE');
 
         $this->assertSame('2980242.00', $valuation->fresh()->estimated_value);
+        $prediction = $valuation->modelPredictions()->first();
+        $this->assertSame('700000.00', $prediction->range_low);
+        $this->assertSame('1200000.00', $prediction->range_high);
     }
 
     public function test_public_result_ignores_v2_when_flag_is_disabled(): void

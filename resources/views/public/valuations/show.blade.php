@@ -28,9 +28,6 @@
             <h1 class="mt-4 font-serif text-4xl sm:text-5xl">Valor estimado</h1>
             @if($publicResult->available)
                 <p class="mt-6 text-5xl font-bold sm:text-6xl">${{ number_format((float) $publicResult->estimatedValue, 0) }} {{ $valuation->currency ?: 'MXN' }}</p>
-                @if($publicResult->rangeLow && $publicResult->rangeHigh)
-                    <p class="mt-4 text-xl font-semibold text-white/85">Rango estimado: ${{ number_format((float) $publicResult->rangeLow, 0) }} - ${{ number_format((float) $publicResult->rangeHigh, 0) }} {{ $valuation->currency ?: 'MXN' }}</p>
-                @endif
                 <p class="mt-4 max-w-2xl text-white/70">Estimación automatizada basada en los datos proporcionados y en el contexto disponible de la ubicación.</p>
             @else
                 <p class="mt-6 max-w-2xl rounded-lg bg-white/10 p-5 text-white/85">{{ $unavailableMessage }}</p>
