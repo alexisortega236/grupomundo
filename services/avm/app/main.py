@@ -23,7 +23,7 @@ POI_RADIUS_M = int(os.getenv("POI_RADIUS_M", "1000"))
 POI_CACHE_TTL_SECONDS = int(os.getenv("POI_CACHE_TTL_SECONDS", str(6 * 60 * 60)))  # 6h
 POI_GRID_DECIMALS = int(os.getenv("POI_GRID_DECIMALS", "3"))  # ~111m
 
-pipe = joblib.load(MODEL_PATH)
+pipe = joblib.load(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
 residential_v2_pipe = joblib.load(RESIDENTIAL_V2_MODEL_PATH) if os.path.exists(RESIDENTIAL_V2_MODEL_PATH) else None
 avm_v2_v1_pipe = joblib.load(AVM_V2_V1_MODEL_PATH) if os.path.exists(AVM_V2_V1_MODEL_PATH) else None
 residential_v2_previous_predictions = pd.read_csv(RESIDENTIAL_V2_PREDS_PATH) if os.path.exists(RESIDENTIAL_V2_PREDS_PATH) else pd.DataFrame()
@@ -291,6 +291,12 @@ def predict_v2_v1():
 @app.post("/predict")
 def predict():
     data = request.get_json(force=True) or {}
+
+    if pipe is None:
+        return jsonify({
+            "error": "legacy_model_not_loaded",
+            "message": "El modelo legacy no está disponible en este despliegue."
+        }), 503
 
     colonia = str(data.get("colonia", "")).strip()
     if not colonia:

@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+data/inegi/
+data/denue/
+data/RESAGEBURB_17CSV20.csv
+data/listings.sqlite3
+data/listings.sqlite3-shm
+data/listings.sqlite3-wal
+app/model/modelo_precio.joblib
