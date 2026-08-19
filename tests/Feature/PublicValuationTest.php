@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ValuationStatus;
 use App\Models\Property;
+use App\Models\PostalSettlement;
 use App\Models\User;
 use App\Models\Valuation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -121,8 +122,59 @@ class PublicValuationTest extends TestCase
             'neighborhood' => '',
             'latitude' => '',
             'longitude' => '',
-        ])->assertSessionHasErrors(['property_type', 'municipality', 'settlement_id', 'land_area_m2', 'construction_area_m2'])
+        ])->assertSessionHasErrors(['property_type', 'municipality', 'postal_settlement_id', 'land_area_m2', 'construction_area_m2'])
             ->assertSessionDoesntHaveErrors(['latitude', 'longitude']);
+    }
+
+    public function test_public_form_exposes_canonical_postal_settlement_id_and_accepts_manual_settlement_without_coordinates(): void
+    {
+        $settlement = PostalSettlement::create([
+            'state' => 'Morelos',
+            'state_code' => '17',
+            'municipality' => 'Cuautla',
+            'municipality_code' => '006',
+            'settlement' => 'Año de Juárez',
+            'settlement_type' => 'Colonia',
+            'postal_code' => '62748',
+            'source' => 'sepomex',
+        ]);
+
+        $this->get('/valuador')
+            ->assertOk()
+            ->assertSee('name="postal_settlement_id"', false)
+            ->assertDontSee('name="settlement_id"', false);
+
+        Http::fake([
+            'https://nominatim.test/search*' => Http::response([[
+                'lat' => '18.8123',
+                'lon' => '-98.9556',
+                'display_name' => 'Año de Juárez, Cuautla, Morelos, México',
+                'address' => [
+                    'state' => 'Morelos',
+                    'county' => 'Cuautla',
+                    'neighbourhood' => 'Año de Juárez',
+                    'postcode' => '62748',
+                ],
+            ]]),
+        ]);
+        config(['services.nominatim.url' => 'https://nominatim.test']);
+
+        $response = $this->post(route('valuation.store'), [
+            'property_type' => 'house',
+            'state' => 'Morelos',
+            'municipality' => 'Cuautla',
+            'neighborhood' => 'Año de Juárez',
+            'postal_settlement_id' => $settlement->id,
+            'land_area_m2' => 100,
+            'construction_area_m2' => 80,
+            'bedrooms' => 3,
+            'bathrooms' => 2,
+            'parking_spaces' => 2,
+            'property_age_years' => 5,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertSame('Año de Juárez', \App\Models\Property::first()->neighborhood);
     }
 
     public function test_public_valuation_stores_real_location_and_does_not_send_unverified_legacy_fallback(): void

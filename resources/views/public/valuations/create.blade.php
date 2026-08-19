@@ -3,7 +3,7 @@
     $selectedMunicipality = old('municipality', 'Cuautla');
     $oldLatitude = old('latitude');
     $oldLongitude = old('longitude');
-    $oldSettlementId = old('settlement_id');
+    $oldSettlementId = old('postal_settlement_id', old('settlement_id'));
 @endphp
 
 <x-public-layout title="Valuador | Grupo Mundo Patrimonial" description="Obtén una estimación preliminar del valor de tu propiedad.">
@@ -38,7 +38,7 @@
             <input id="valuation-longitude" type="hidden" name="longitude" value="{{ $oldLongitude }}">
             <input id="valuation-location-source" type="hidden" name="location_source" value="{{ old('location_source') }}">
             <input id="valuation-location-precision" type="hidden" name="location_precision" value="{{ old('location_precision') }}">
-            <input id="valuation-settlement-id" type="hidden" name="settlement_id" value="{{ $oldSettlementId }}">
+            <input id="valuation-settlement-id" type="hidden" name="postal_settlement_id" value="{{ $oldSettlementId }}">
             <input id="valuation-postal-code" type="hidden" name="postal_code" value="{{ old('postal_code') }}">
             <input type="hidden" name="state" value="Morelos">
 
@@ -68,8 +68,8 @@
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
                             <div id="valuation-location-suggestions" class="mt-2 hidden rounded-md border border-[#d8ccb8] bg-[#fbfaf7] p-3 text-sm text-[#51635f]"></div>
-                            <p class="mt-1 text-xs text-[#687773]">Selecciona una colonia o fraccionamiento real de la lista.</p>
-                            @error('settlement_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                            <p class="mt-1 text-xs text-[#687773]">Escribe y selecciona una colonia o fraccionamiento real de la lista.</p>
+                            @error('postal_settlement_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                         </div>
                     </div>
                     @error('latitude')<p class="mt-2 text-xs text-red-600">{{ $message }}</p>@enderror
@@ -152,7 +152,7 @@
             const latInput = document.getElementById('valuation-latitude');
             const lngInput = document.getElementById('valuation-longitude');
             const sourceInput = document.getElementById('valuation-location-source');
-            const precisionInput = document.getElementById('valuation-location-precision');
+                const precisionInput = document.getElementById('valuation-location-precision');
             const settlementIdInput = document.getElementById('valuation-settlement-id');
             const postalCodeInput = document.getElementById('valuation-postal-code');
             const status = document.getElementById('valuation-location-status');
@@ -193,8 +193,7 @@
                 const params = new URLSearchParams({
                     state: 'Morelos',
                     municipality: municipality.value,
-                    neighborhood: neighborhood.value.trim(),
-                    postal_code: postalCodeInput.value,
+                    postal_settlement_id: settlementIdInput.value,
                 });
 
                 try {

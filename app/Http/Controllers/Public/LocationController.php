@@ -17,7 +17,8 @@ class LocationController
         $data = $request->validate([
             'state' => ['required', 'in:Morelos'],
             'municipality' => ['required', 'string', 'max:120'],
-            'neighborhood' => ['required', 'string', 'min:3', 'max:120'],
+            'postal_settlement_id' => ['nullable', 'integer'],
+            'neighborhood' => ['nullable', 'string', 'min:3', 'max:120'],
             'postal_code' => ['nullable', 'string', 'max:10'],
         ]);
 
@@ -25,12 +26,29 @@ class LocationController
             return response()->json(['message' => 'Selecciona un municipio disponible.'], 422);
         }
 
+        $settlement = null;
+        if (filled($data['postal_settlement_id'] ?? null)) {
+            $settlement = PostalSettlement::query()
+                ->whereKey($data['postal_settlement_id'])
+                ->where('state', $data['state'])
+                ->where('municipality', $data['municipality'])
+                ->first();
+
+            if (! $settlement) {
+                return response()->json(['message' => 'Selecciona una colonia válida dentro del municipio elegido.'], 422);
+            }
+        }
+
+        if (! $settlement && blank($data['neighborhood'] ?? null)) {
+            return response()->json(['message' => 'Selecciona una colonia de la lista de sugerencias.'], 422);
+        }
+
         try {
             return response()->json(['location' => $geocoder->geocode(
                 $data['state'],
                 $data['municipality'],
-                $data['neighborhood'],
-                $data['postal_code'] ?? null
+                $settlement?->settlement ?? $data['neighborhood'],
+                $settlement?->postal_code ?? ($data['postal_code'] ?? null)
             )]);
         } catch (Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);

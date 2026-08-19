@@ -16,14 +16,17 @@ class StoreValuationRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $typedNeighborhood = $this->input('neighborhood');
-        $settlement = filled($this->input('settlement_id'))
-            ? PostalSettlement::query()->find($this->input('settlement_id'))
+        $postalSettlementId = $this->input('postal_settlement_id') ?? $this->input('settlement_id');
+        $settlement = filled($postalSettlementId)
+            ? PostalSettlement::query()->find($postalSettlementId)
             : null;
 
         $this->merge([
             'state' => $this->input('state') ?: 'Morelos',
             'locality' => $this->input('locality') ?: $this->input('municipality'),
             'legacy_colonia' => app(LegacyLocationMapper::class)->map($this->all()),
+            'postal_settlement_id' => $postalSettlementId,
+            'settlement_id' => $postalSettlementId,
             '_typed_neighborhood' => $typedNeighborhood,
             ...($settlement ? [
                 'state' => $settlement->state,
@@ -52,7 +55,7 @@ class StoreValuationRequest extends FormRequest
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'locality' => ['nullable', 'string', 'max:120'],
             'postal_code' => ['nullable', 'string', 'max:10'],
-            'settlement_id' => ['nullable', 'integer'],
+            'postal_settlement_id' => ['nullable', 'integer'],
             'state' => ['nullable', Rule::in(['Morelos'])],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
@@ -78,7 +81,7 @@ class StoreValuationRequest extends FormRequest
             'latitude.between' => 'La ubicación seleccionada no es válida.',
             'longitude.numeric' => 'La ubicación seleccionada no es válida.',
             'longitude.between' => 'La ubicación seleccionada no es válida.',
-            'settlement_id.integer' => 'Selecciona una colonia de la lista de sugerencias.',
+            'postal_settlement_id.integer' => 'Selecciona una colonia de la lista de sugerencias.',
             'land_area_m2.required_unless' => 'Ingresa la superficie del terreno.',
             'land_area_m2.numeric' => 'La superficie del terreno debe ser numérica.',
             'land_area_m2.gt' => 'La superficie del terreno debe ser mayor a 0.',
@@ -100,10 +103,10 @@ class StoreValuationRequest extends FormRequest
     {
         $validator->after(function (Validator $validator): void {
             $hasCoordinates = filled($this->input('latitude')) && filled($this->input('longitude'));
-            $settlementId = $this->input('settlement_id');
+            $settlementId = $this->input('postal_settlement_id');
 
             if (! $hasCoordinates && ! filled($settlementId)) {
-                $validator->errors()->add('settlement_id', 'Selecciona una colonia o utiliza “Usar mi ubicación”.');
+                $validator->errors()->add('postal_settlement_id', 'Selecciona una colonia o utiliza “Usar mi ubicación”.');
             }
 
             if (! filled($settlementId)) {
@@ -114,13 +117,13 @@ class StoreValuationRequest extends FormRequest
             if (! $settlement
                 || $settlement->state !== ($this->input('state') ?: 'Morelos')
                 || $settlement->municipality !== $this->input('municipality')) {
-                $validator->errors()->add('settlement_id', 'Selecciona una colonia válida dentro del municipio elegido.');
+                $validator->errors()->add('postal_settlement_id', 'Selecciona una colonia válida dentro del municipio elegido.');
                 return;
             }
 
             $typedNeighborhood = $this->input('_typed_neighborhood');
             if (filled($typedNeighborhood) && $this->normalize($typedNeighborhood) !== $this->normalize($settlement->settlement)) {
-                $validator->errors()->add('settlement_id', 'Selecciona nuevamente la colonia después de modificar el texto.');
+                $validator->errors()->add('postal_settlement_id', 'Selecciona nuevamente la colonia después de modificar el texto.');
             }
         });
     }
