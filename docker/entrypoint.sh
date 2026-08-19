@@ -14,6 +14,11 @@ fi
 php artisan config:clear --no-interaction
 php artisan storage:link --force --no-interaction || true
 php artisan migrate --force --no-interaction
+echo "Seeding Morelos postal settlements..."
+php artisan db:seed --class=MorelosPostalSettlementsSeeder --force --no-interaction || {
+  echo "ERROR: MorelosPostalSettlementsSeeder failed; aborting container startup." >&2
+  exit 1
+}
 
 if [ "${RUN_SEEDERS:-true}" = "true" ]; then
   php artisan db:seed --force --no-interaction
