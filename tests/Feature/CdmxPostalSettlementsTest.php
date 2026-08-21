@@ -107,6 +107,11 @@ class CdmxPostalSettlementsTest extends TestCase
             'municipality' => 'Benito Juárez',
             'neighborhood' => 'Del Valle Centro',
             'postal_settlement_id' => $settlement->id,
+            'postal_code' => '03100',
+            'latitude' => '19.3860000',
+            'longitude' => '-99.1680000',
+            'location_source' => 'sepomex_geocoded',
+            'location_precision' => 'neighborhood',
             'land_area_m2' => '',
             'construction_area_m2' => 80,
             'bedrooms' => 2,
@@ -119,5 +124,46 @@ class CdmxPostalSettlementsTest extends TestCase
         $this->assertSame('Ciudad de México', \App\Models\Property::first()->state);
         $this->assertSame('Benito Juárez', \App\Models\Property::first()->municipality);
         $this->assertSame('03100', \App\Models\Property::first()->postal_code);
+    }
+
+    public function test_cdmx_location_selection_is_restored_after_an_unrelated_validation_error(): void
+    {
+        $this->seed(CdmxPostalSettlementsSeeder::class);
+        $settlement = PostalSettlement::where('state', 'Ciudad de México')
+            ->where('municipality', 'Benito Juárez')
+            ->where('settlement', 'Del Valle Centro')
+            ->firstOrFail();
+
+        $response = $this->from('/valuador')->post(route('valuation.store'), [
+            'property_type' => 'apartment',
+            'state' => 'Ciudad de México',
+            'municipality' => 'Benito Juárez',
+            'neighborhood' => 'Del Valle Centro',
+            'postal_settlement_id' => $settlement->id,
+            'postal_code' => '03100',
+            'latitude' => '19.3860000',
+            'longitude' => '-99.1680000',
+            'location_precision' => 'neighborhood',
+            'construction_area_m2' => '',
+            'bedrooms' => 2,
+            'bathrooms' => 2,
+            'parking_spaces' => 1,
+        ]);
+
+        $response->assertRedirect('/valuador')->assertSessionHasErrors('construction_area_m2');
+        $response->assertSessionHas('_old_input.state', 'Ciudad de México');
+        $response->assertSessionHas('_old_input.municipality', 'Benito Juárez');
+        $response->assertSessionHas('_old_input.neighborhood', 'Del Valle Centro');
+        $response->assertSessionHas('_old_input.postal_settlement_id', $settlement->id);
+        $response->assertSessionHas('_old_input.postal_code', '03100');
+
+        $this->withSession($response->getSession()->all())
+            ->get('/valuador')
+            ->assertSee('value="'.$settlement->id.'"', false)
+            ->assertSee('value="Del Valle Centro"', false)
+            ->assertSee('value="03100"', false)
+            ->assertSee('value="Ciudad de México"', false)
+            ->assertSee('selectedNeighborhood', false)
+            ->assertSee('query === selectedNeighborhood', false);
     }
 }

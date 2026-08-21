@@ -153,6 +153,7 @@
             const status = document.getElementById('valuation-location-status');
             const suggestions = document.getElementById('valuation-location-suggestions');
             const geolocate = document.getElementById('valuation-geolocate');
+            let selectedNeighborhood = settlementIdInput.value ? neighborhood.value.trim() : '';
 
             const clearCoordinates = () => {
                 latInput.value = '';
@@ -162,6 +163,7 @@
             };
 
             const invalidateSettlement = () => {
+                selectedNeighborhood = '';
                 settlementIdInput.value = '';
                 postalCodeInput.value = '';
                 neighborhood.setAttribute('aria-expanded', 'false');
@@ -173,7 +175,10 @@
                 sourceInput.value = location.location_source || 'manual_geocode';
                 precisionInput.value = location.location_precision || 'neighborhood';
                 if (location.municipality) municipality.value = location.municipality;
-                if (location.neighborhood && !preserveSettlement) neighborhood.value = location.neighborhood;
+                if (location.neighborhood && !preserveSettlement) {
+                    neighborhood.value = location.neighborhood;
+                    selectedNeighborhood = location.neighborhood;
+                }
                 if (location.postal_code && !preserveSettlement) postalCodeInput.value = location.postal_code;
                 status.textContent = message;
             };
@@ -220,6 +225,7 @@
                     button.children[0].textContent = item.name;
                     button.children[1].textContent = [item.type, item.postal_code ? `CP ${item.postal_code}` : ''].filter(Boolean).join(' · ');
                     button.addEventListener('click', () => {
+                        selectedNeighborhood = item.name;
                         neighborhood.value = item.name;
                         settlementIdInput.value = item.id;
                         postalCodeInput.value = item.postal_code || '';
@@ -237,10 +243,15 @@
 
             let searchTimer = null;
             neighborhood.addEventListener('input', () => {
+                const query = neighborhood.value.trim();
+                if (selectedNeighborhood && query === selectedNeighborhood) {
+                    return;
+                }
+
+                selectedNeighborhood = '';
                 clearCoordinates();
                 invalidateSettlement();
                 clearTimeout(searchTimer);
-                const query = neighborhood.value.trim();
                 if (query.length < 2 || !municipality.value) {
                     suggestions.classList.add('hidden');
                     return;
@@ -263,6 +274,7 @@
             });
 
             municipality.addEventListener('change', () => {
+                selectedNeighborhood = '';
                 clearCoordinates();
                 invalidateSettlement();
                 neighborhood.value = '';
@@ -271,6 +283,7 @@
             });
 
             state.addEventListener('change', async () => {
+                selectedNeighborhood = '';
                 clearCoordinates();
                 invalidateSettlement();
                 neighborhood.value = '';

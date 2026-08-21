@@ -132,6 +132,16 @@ class StoreValuationRequest extends FormRequest
     {
         Log::warning('Public valuation request validation failed', [
             'keys' => array_keys($this->all()),
+            'location_payload' => $this->only([
+                'state',
+                'municipality',
+                'neighborhood',
+                'postal_settlement_id',
+                'postal_code',
+                'latitude',
+                'longitude',
+                'location_precision',
+            ]),
             'validation_errors' => $validator->errors()->toArray(),
         ]);
 
