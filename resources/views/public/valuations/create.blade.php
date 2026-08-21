@@ -42,6 +42,7 @@
             <input id="valuation-location-precision" type="hidden" name="location_precision" value="{{ old('location_precision') }}">
             <input id="valuation-settlement-id" type="hidden" name="postal_settlement_id" value="{{ $oldSettlementId }}">
             <input id="valuation-postal-code" type="hidden" name="postal_code" value="{{ old('postal_code') }}">
+            <input id="municipality-value" type="hidden" name="municipality" value="{{ old('municipality', $selectedMunicipality) }}">
 
             <div class="grid gap-6">
                 <section class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-[#e4dccd]">
@@ -57,7 +58,7 @@
                             <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
                         </label>
                         <label class="block text-sm font-semibold text-[#0d2723]"><span id="valuation-municipality-label">{{ $selectedState === 'Ciudad de México' ? 'Alcaldía' : 'Municipio' }}</span>
-                            <select id="municipality" name="municipality" form="valuation-form" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
+                            <select id="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
                         </label>
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
@@ -143,6 +144,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('valuation-form');
             const municipality = document.getElementById('municipality');
+            const municipalityValue = document.getElementById('municipality-value');
             const state = document.querySelector('[name="state"]');
             const municipalityLabel = document.getElementById('valuation-municipality-label');
             const neighborhood = document.querySelector('[name="neighborhood"]');
@@ -157,30 +159,14 @@
             const geolocate = document.getElementById('valuation-geolocate');
             let selectedNeighborhood = settlementIdInput.value ? neighborhood.value.trim() : '';
 
-            form.addEventListener('submit', () => {
-                // Keep the canonical HTTP contract even if a future loading state disables the select.
-                municipality.name = 'municipality';
-                municipality.disabled = false;
+            form.addEventListener('submit', (event) => {
+                municipalityValue.value = municipality.value;
+                const formData = new FormData(form);
 
-                if (window.__VALUATION_DEBUG__) {
-                    const formData = new FormData(form);
-                    console.debug('public valuation submit audit', {
-                        value: municipality.value,
-                        name: municipality.name,
-                        disabled: municipality.disabled,
-                        formId: municipality.form?.id,
-                        isConnected: municipality.isConnected,
-                        formDataHasMunicipality: formData.has('municipality'),
-                        formDataMunicipality: formData.get('municipality'),
-                    });
-                }
-            });
-
-            form.addEventListener('formdata', (event) => {
-                const municipalityValue = municipality.value;
-
-                if (municipalityValue && !event.formData.has('municipality')) {
-                    event.formData.set('municipality', municipalityValue);
+                if (formData.get('municipality') !== municipality.value) {
+                    event.preventDefault();
+                    status.textContent = 'Selecciona un municipio o alcaldía válido.';
+                    return;
                 }
             });
 
@@ -203,7 +189,10 @@
                 lngInput.value = Number(location.longitude).toFixed(7);
                 sourceInput.value = location.location_source || 'manual_geocode';
                 precisionInput.value = location.location_precision || 'neighborhood';
-                if (location.municipality) municipality.value = location.municipality;
+                if (location.municipality) {
+                    municipality.value = location.municipality;
+                    municipalityValue.value = municipality.value;
+                }
                 if (location.neighborhood && !preserveSettlement) {
                     neighborhood.value = location.neighborhood;
                     selectedNeighborhood = location.neighborhood;
@@ -303,6 +292,7 @@
             });
 
             municipality.addEventListener('change', () => {
+                municipalityValue.value = municipality.value;
                 selectedNeighborhood = '';
                 clearCoordinates();
                 invalidateSettlement();
@@ -317,6 +307,8 @@
                 invalidateSettlement();
                 neighborhood.value = '';
                 municipality.innerHTML = '<option value="">Selecciona una opción</option>';
+                municipality.value = '';
+                municipalityValue.value = '';
                 municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
                 suggestions.classList.add('hidden');
                 status.textContent = 'Cargando municipios...';
@@ -331,6 +323,8 @@
                         option.textContent = item;
                         municipality.appendChild(option);
                     });
+                    municipality.value = '';
+                    municipalityValue.value = '';
                     status.textContent = 'Selecciona un municipio o alcaldía.';
                 } catch (error) {
                     status.textContent = error.message || 'No pudimos cargar las opciones de ubicación.';

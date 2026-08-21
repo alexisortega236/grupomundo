@@ -235,30 +235,36 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertOk()
             ->assertSee('id="valuation-form"', false)
             ->assertSee('name="state"', false)
-            ->assertSee('id="municipality" name="municipality" form="valuation-form"', false)
+            ->assertSee('id="municipality"', false)
             ->assertSee('name="neighborhood"', false)
             ->assertSee('name="postal_settlement_id"', false)
             ->assertSee('value="Azcapotzalco"', false)
             ->assertSee('selectedNeighborhood', false)
-            ->assertSee("municipality.name = 'municipality'", false)
-            ->assertSee('municipality.disabled = false', false)
-            ->assertSee("form.addEventListener('formdata'", false)
-            ->assertSee("event.formData.set('municipality', municipalityValue)", false)
-            ->assertDontSee('id="municipality" name="municipality" disabled', false);
+            ->assertSee('municipalityValue.value = municipality.value', false);
 
         $dom = new \DOMDocument();
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $forms = $xpath->query('//form[@id="valuation-form"]');
         $municipalities = $xpath->query('//*[@id="municipality"]');
+        $canonicalMunicipalities = $xpath->query('//*[@id="municipality-value"]');
         $municipality = $municipalities->item(0);
+        $canonicalMunicipality = $canonicalMunicipalities->item(0);
 
         $this->assertSame(1, $forms->length);
         $this->assertSame(1, $municipalities->length);
+        $this->assertSame(1, $canonicalMunicipalities->length);
+        $this->assertSame(1, $xpath->query('//*[@name="municipality"]')->length);
         $this->assertNotNull($municipality);
-        $this->assertSame('municipality', $municipality->getAttribute('name'));
-        $this->assertSame('valuation-form', $municipality->getAttribute('form'));
+        $this->assertNotNull($canonicalMunicipality);
+        $this->assertSame('', $municipality->getAttribute('name'));
+        $this->assertSame('municipality', $canonicalMunicipality->getAttribute('name'));
+        $selectedOption = $xpath->query('//select[@id="municipality"]/option[@selected]')->item(0);
+        $this->assertNotNull($selectedOption);
+        $this->assertSame('Azcapotzalco', $selectedOption->getAttribute('value'));
+        $this->assertSame('Azcapotzalco', $canonicalMunicipality->getAttribute('value'));
         $this->assertFalse($municipality->hasAttribute('disabled'));
-        $this->assertSame(1, $xpath->query('//form[@id="valuation-form"]//*[@id="municipality"]')->length);
+        $this->assertSame(1, $xpath->query('//form[@id="valuation-form"]//*[@id="municipality-value"]')->length);
+        $this->assertSame(0, $xpath->query('//select[@id="municipality"][@name]')->length);
     }
 }
