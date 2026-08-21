@@ -62,6 +62,9 @@ class ResidentialAvmV2Client
     {
         return [
             'property_type' => $property->property_type,
+            // PublicValuationLocationResolver canonicalizes this from the
+            // validated PostalSettlement before the Property is persisted.
+            'neighborhood' => filled($property->neighborhood) ? trim((string) $property->neighborhood) : null,
             'latitude' => $property->latitude !== null ? (float) $property->latitude : null,
             'longitude' => $property->longitude !== null ? (float) $property->longitude : null,
             'land_area_m2' => $property->land_area_m2 !== null ? (float) $property->land_area_m2 : null,

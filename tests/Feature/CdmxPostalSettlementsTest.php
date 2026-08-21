@@ -167,7 +167,7 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('query === selectedNeighborhood', false);
     }
 
-    public function test_cdmx_production_payload_includes_municipality_for_el_rosario(): void
+    public function test_cdmx_production_payload_includes_canonical_neighborhood_for_el_rosario(): void
     {
         $this->seed(CdmxPostalSettlementsSeeder::class);
         $settlement = PostalSettlement::where('state', 'Ciudad de México')
@@ -176,7 +176,13 @@ class CdmxPostalSettlementsTest extends TestCase
             ->where('postal_code', '02100')
             ->firstOrFail();
 
-        config(['services.nominatim.url' => 'https://nominatim.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
+        config([
+            'services.nominatim.url' => 'https://nominatim.test',
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => true,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => false,
+        ]);
         Http::fake([
             'https://nominatim.test/search*' => Http::response([[
                 'lat' => '19.5045485',
@@ -190,6 +196,14 @@ class CdmxPostalSettlementsTest extends TestCase
                     'postcode' => '02100',
                 ],
             ]]),
+            'https://avm.test/predict/v2/residential' => Http::response([
+                'eligible' => true,
+                'model_version' => 'avm_cdmx_v2_1_hybrid',
+                'estimated_value' => 3429473,
+                'currency' => 'MXN',
+                'range' => ['low' => 2918919, 'high' => 3761379],
+                'confidence' => 'MEDIUM',
+            ]),
         ]);
 
         $response = $this->post(route('valuation.store'), [
@@ -217,6 +231,9 @@ class CdmxPostalSettlementsTest extends TestCase
             'Selecciona una colonia válida dentro del municipio elegido.',
             implode(' ', session()->get('errors', collect())->all())
         );
+        Http::assertSent(fn ($request) => $request->url() === 'https://avm.test/predict/v2/residential'
+            && $request['neighborhood'] === 'El Rosario'
+            && $request['property_type'] === 'apartment');
     }
 
     public function test_form_exposes_canonical_location_field_names_and_restores_cdmx_municipality(): void

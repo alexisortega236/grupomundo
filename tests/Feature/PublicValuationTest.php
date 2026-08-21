@@ -306,6 +306,7 @@ class PublicValuationTest extends TestCase
 
         Http::assertSent(fn ($request) => $request->url() === 'https://avm.test/predict/v2/residential'
             && $request['property_type'] === 'house'
+            && $request['neighborhood'] === 'Centro'
             && $request['latitude'] === 18.8123
             && $request['longitude'] === -98.9556);
         Http::assertNotSent(fn ($request) => $request->url() === 'https://avm.test/predict'
