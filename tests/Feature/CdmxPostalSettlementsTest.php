@@ -166,4 +166,81 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('selectedNeighborhood', false)
             ->assertSee('query === selectedNeighborhood', false);
     }
+
+    public function test_cdmx_production_payload_includes_municipality_for_el_rosario(): void
+    {
+        $this->seed(CdmxPostalSettlementsSeeder::class);
+        $settlement = PostalSettlement::where('state', 'Ciudad de México')
+            ->where('municipality', 'Azcapotzalco')
+            ->where('settlement', 'El Rosario')
+            ->where('postal_code', '02100')
+            ->firstOrFail();
+
+        config(['services.nominatim.url' => 'https://nominatim.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
+        Http::fake([
+            'https://nominatim.test/search*' => Http::response([[
+                'lat' => '19.5045485',
+                'lon' => '-99.1997919',
+                'display_name' => 'El Rosario, Azcapotzalco, Ciudad de México, México',
+                'address' => [
+                    'country_code' => 'mx',
+                    'state' => 'Ciudad de México',
+                    'county' => 'Azcapotzalco',
+                    'neighbourhood' => 'El Rosario',
+                    'postcode' => '02100',
+                ],
+            ]]),
+        ]);
+
+        $response = $this->post(route('valuation.store'), [
+            'state' => 'Ciudad de México',
+            'municipality' => 'Azcapotzalco',
+            'neighborhood' => 'El Rosario',
+            'postal_settlement_id' => $settlement->id,
+            'postal_code' => '02100',
+            'latitude' => '19.5045485',
+            'longitude' => '-99.1997919',
+            'location_precision' => 'neighborhood',
+            'location_source' => 'sepomex_geocoded',
+            'property_type' => 'apartment',
+            'construction_area_m2' => 80,
+            'bedrooms' => 2,
+            'bathrooms' => 2,
+            'parking_spaces' => 1,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertSame('Azcapotzalco', \App\Models\Property::first()->municipality);
+        $this->assertSame('El Rosario', \App\Models\Property::first()->neighborhood);
+        $this->assertSame('02100', \App\Models\Property::first()->postal_code);
+        $this->assertStringNotContainsString(
+            'Selecciona una colonia válida dentro del municipio elegido.',
+            implode(' ', session()->get('errors', collect())->all())
+        );
+    }
+
+    public function test_form_exposes_canonical_location_field_names_and_restores_cdmx_municipality(): void
+    {
+        $this->seed(CdmxPostalSettlementsSeeder::class);
+
+        $this->withSession([
+            '_old_input' => [
+                'state' => 'Ciudad de México',
+                'municipality' => 'Azcapotzalco',
+                'neighborhood' => 'El Rosario',
+                'postal_settlement_id' => 1958,
+                'postal_code' => '02100',
+            ],
+        ])->get('/valuador')
+            ->assertOk()
+            ->assertSee('name="state"', false)
+            ->assertSee('id="municipality" name="municipality"', false)
+            ->assertSee('name="neighborhood"', false)
+            ->assertSee('name="postal_settlement_id"', false)
+            ->assertSee('value="Azcapotzalco"', false)
+            ->assertSee('selectedNeighborhood', false)
+            ->assertSee("municipality.name = 'municipality'", false)
+            ->assertSee('municipality.disabled = false', false)
+            ->assertDontSee('id="municipality" name="municipality" disabled', false);
+    }
 }
