@@ -1,7 +1,8 @@
 @php
     $selectedType = old('property_type', 'house');
     $selectedState = old('state', 'Morelos');
-    $selectedMunicipality = old('municipality', $selectedState === 'Ciudad de México' ? 'Álvaro Obregón' : 'Cuautla');
+    $hasOldLocation = old('state') !== null || old('municipality') !== null || old('neighborhood') !== null;
+    $selectedMunicipality = old('municipality', $hasOldLocation ? '' : ($selectedState === 'Ciudad de México' ? 'Álvaro Obregón' : 'Cuautla'));
     $oldLatitude = old('latitude');
     $oldLongitude = old('longitude');
     $oldSettlementId = old('postal_settlement_id', old('settlement_id'));
@@ -42,7 +43,6 @@
             <input id="valuation-location-precision" type="hidden" name="location_precision" value="{{ old('location_precision') }}">
             <input id="valuation-settlement-id" type="hidden" name="postal_settlement_id" value="{{ $oldSettlementId }}">
             <input id="valuation-postal-code" type="hidden" name="postal_code" value="{{ old('postal_code') }}">
-            <input id="municipality-value" type="hidden" name="municipality" value="{{ old('municipality', $selectedMunicipality) }}">
 
             <div class="grid gap-6">
                 <section class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-[#e4dccd]">
@@ -58,7 +58,7 @@
                             <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
                         </label>
                         <label class="block text-sm font-semibold text-[#0d2723]"><span id="valuation-municipality-label">{{ $selectedState === 'Ciudad de México' ? 'Alcaldía' : 'Municipio' }}</span>
-                            <select id="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
+                            <select id="municipality" name="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
                         </label>
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
@@ -143,232 +143,297 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('valuation-form');
+            const state = document.getElementById('valuation-state');
             const municipality = document.getElementById('municipality');
-            const municipalityValue = document.getElementById('municipality-value');
-            const state = document.querySelector('[name="state"]');
             const municipalityLabel = document.getElementById('valuation-municipality-label');
-            const neighborhood = document.querySelector('[name="neighborhood"]');
-            const latInput = document.getElementById('valuation-latitude');
-            const lngInput = document.getElementById('valuation-longitude');
-            const sourceInput = document.getElementById('valuation-location-source');
-                const precisionInput = document.getElementById('valuation-location-precision');
-            const settlementIdInput = document.getElementById('valuation-settlement-id');
-            const postalCodeInput = document.getElementById('valuation-postal-code');
+            const neighborhood = form.querySelector('[name="neighborhood"]');
+            const settlementId = document.getElementById('valuation-settlement-id');
+            const postalCode = document.getElementById('valuation-postal-code');
+            const latitude = document.getElementById('valuation-latitude');
+            const longitude = document.getElementById('valuation-longitude');
+            const locationSource = document.getElementById('valuation-location-source');
+            const locationPrecision = document.getElementById('valuation-location-precision');
             const status = document.getElementById('valuation-location-status');
             const suggestions = document.getElementById('valuation-location-suggestions');
             const geolocate = document.getElementById('valuation-geolocate');
-            let selectedNeighborhood = settlementIdInput.value ? neighborhood.value.trim() : '';
+            const submitButton = form.querySelector('button[type="submit"]');
+            const initialLocation = @js([
+                'state' => $selectedState,
+                'municipality' => $selectedMunicipality,
+                'neighborhood' => old('neighborhood', ''),
+                'postal_settlement_id' => $oldSettlementId,
+                'postal_code' => old('postal_code', ''),
+            ]);
 
-            const syncMunicipalityValue = () => {
-                municipalityValue.value = municipality.value || '';
+            let locationPending = false;
+            let selectedNeighborhood = '';
+            let municipalitiesRequestId = 0;
+            let settlementsRequestId = 0;
+            let municipalitiesController = null;
+            let settlementsController = null;
+            let searchTimer = null;
+
+            const setPending = (pending) => {
+                locationPending = pending;
+                municipality.disabled = pending;
+                submitButton.disabled = pending;
             };
-
-            // Keep the canonical field aligned with the server-rendered/restored select.
-            syncMunicipalityValue();
-
-            form.addEventListener('submit', (event) => {
-                syncMunicipalityValue();
-                const formData = new FormData(form);
-
-                if (formData.get('municipality') !== municipality.value) {
-                    event.preventDefault();
-                    status.textContent = 'Selecciona un municipio o alcaldía válido.';
-                    console.error('Municipality synchronization failed');
-                    return;
-                }
-            });
 
             const clearCoordinates = () => {
-                latInput.value = '';
-                lngInput.value = '';
-                sourceInput.value = '';
-                precisionInput.value = '';
+                latitude.value = '';
+                longitude.value = '';
+                locationSource.value = '';
+                locationPrecision.value = '';
             };
 
-            const invalidateSettlement = () => {
+            const resetSettlement = () => {
                 selectedNeighborhood = '';
-                settlementIdInput.value = '';
-                postalCodeInput.value = '';
+                neighborhood.value = '';
+                settlementId.value = '';
+                postalCode.value = '';
+                clearCoordinates();
+                suggestions.innerHTML = '';
+                suggestions.classList.add('hidden');
                 neighborhood.setAttribute('aria-expanded', 'false');
             };
 
-            const applyLocation = (location, message, preserveSettlement = false) => {
-                latInput.value = Number(location.latitude).toFixed(7);
-                lngInput.value = Number(location.longitude).toFixed(7);
-                sourceInput.value = location.location_source || 'manual_geocode';
-                precisionInput.value = location.location_precision || 'neighborhood';
-                if (location.municipality) {
-                    municipality.value = location.municipality;
-                    syncMunicipalityValue();
-                }
-                if (location.neighborhood && !preserveSettlement) {
-                    neighborhood.value = location.neighborhood;
-                    selectedNeighborhood = location.neighborhood;
-                }
-                if (location.postal_code && !preserveSettlement) postalCodeInput.value = location.postal_code;
+            const resetMunicipality = () => {
+                municipality.value = '';
+                resetSettlement();
+            };
+
+            const setStatus = (message) => {
                 status.textContent = message;
             };
 
-            const geocodeSettlement = async () => {
-                if (!settlementIdInput.value || !municipality.value) {
-                    clearCoordinates();
-                    return;
-                }
+            const normalize = (value) => (value || '').trim().toLocaleLowerCase('es-MX');
 
-                status.textContent = 'Buscando ubicación...';
-                const params = new URLSearchParams({
-                    state: state.value,
-                    municipality: municipality.value,
-                    postal_settlement_id: settlementIdInput.value,
-                });
-
-                try {
-                    const response = await fetch(`{{ route('valuation.geocode') }}?${params}`);
-                    const data = await response.json();
-                    if (!response.ok) throw new Error(data.message || 'No encontramos esa ubicación.');
-                    applyLocation(data.location, 'Ubicación encontrada.', true);
-                    suggestions.classList.add('hidden');
-                } catch (error) {
-                    clearCoordinates();
-                    status.textContent = error.message || 'No pudimos ubicar esa colonia. También puedes usar tu ubicación.';
-                    suggestions.classList.add('hidden');
-                }
-            };
-
-            const renderSuggestions = (items) => {
-                suggestions.innerHTML = '';
-                if (!items.length) {
-                    suggestions.textContent = 'No encontramos coincidencias en este municipio.';
-                    suggestions.classList.remove('hidden');
-                    return;
-                }
-
-                items.forEach((item) => {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'block w-full rounded px-3 py-2 text-left hover:bg-[#efe9dc] focus:bg-[#efe9dc] focus:outline-none';
-                    button.innerHTML = `<span class="block font-semibold text-[#0d2723]"></span><span class="block text-xs text-[#687773]"></span>`;
-                    button.children[0].textContent = item.name;
-                    button.children[1].textContent = [item.type, item.postal_code ? `CP ${item.postal_code}` : ''].filter(Boolean).join(' · ');
-                    button.addEventListener('click', () => {
-                        selectedNeighborhood = item.name;
-                        neighborhood.value = item.name;
-                        settlementIdInput.value = item.id;
-                        postalCodeInput.value = item.postal_code || '';
-                        clearCoordinates();
-                        suggestions.classList.add('hidden');
-                        neighborhood.setAttribute('aria-expanded', 'false');
-                        status.textContent = 'Colonia seleccionada. Verificando ubicación...';
-                        geocodeSettlement();
-                    });
-                    suggestions.appendChild(button);
-                });
-                suggestions.classList.remove('hidden');
-                neighborhood.setAttribute('aria-expanded', 'true');
-            };
-
-            let searchTimer = null;
-            neighborhood.addEventListener('input', () => {
-                const query = neighborhood.value.trim();
-                if (selectedNeighborhood && query === selectedNeighborhood) {
-                    return;
-                }
-
-                selectedNeighborhood = '';
-                clearCoordinates();
-                invalidateSettlement();
-                clearTimeout(searchTimer);
-                if (query.length < 2 || !municipality.value) {
-                    suggestions.classList.add('hidden');
-                    return;
-                }
-                status.textContent = 'Buscando colonias...';
-                searchTimer = setTimeout(async () => {
-                    const params = new URLSearchParams({ state: state.value, municipality: municipality.value, q: query });
-                    try {
-                        const response = await fetch(`{{ route('valuation.locations.settlements') }}?${params}`);
-                        const data = await response.json();
-                        if (!response.ok) throw new Error(data.message || 'No pudimos buscar colonias.');
-                        renderSuggestions(data);
-                        status.textContent = data.length ? 'Selecciona una colonia de la lista.' : 'No encontramos coincidencias.';
-                    } catch (error) {
-                        suggestions.textContent = error.message || 'No pudimos buscar colonias.';
-                        suggestions.classList.remove('hidden');
-                        status.textContent = 'Revisa el municipio o utiliza tu ubicación.';
-                    }
-                }, 300);
-            });
-
-            municipality.addEventListener('change', () => {
-                syncMunicipalityValue();
-                selectedNeighborhood = '';
-                clearCoordinates();
-                invalidateSettlement();
-                neighborhood.value = '';
-                suggestions.classList.add('hidden');
-                status.textContent = 'Busca una colonia dentro del municipio seleccionado.';
-            });
-
-            state.addEventListener('change', async () => {
-                selectedNeighborhood = '';
-                clearCoordinates();
-                invalidateSettlement();
-                neighborhood.value = '';
-                municipality.innerHTML = '<option value="">Selecciona una opción</option>';
+            const loadMunicipalities = async (stateValue, desiredMunicipality = '') => {
+                const requestId = ++municipalitiesRequestId;
+                municipalitiesController?.abort();
+                municipalitiesController = new AbortController();
+                municipality.disabled = true;
+                municipality.innerHTML = '<option value="">Cargando opciones...</option>';
                 municipality.value = '';
-                syncMunicipalityValue();
-                municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
-                suggestions.classList.add('hidden');
-                status.textContent = 'Cargando municipios...';
+
                 try {
-                    const params = new URLSearchParams({ state: state.value });
-                    const response = await fetch(`{{ route('valuation.locations.municipalities') }}?${params}`);
+                    const params = new URLSearchParams({ state: stateValue });
+                    const response = await fetch(`{{ route('valuation.locations.municipalities') }}?${params}`, { signal: municipalitiesController.signal });
                     const data = await response.json();
                     if (!response.ok) throw new Error('No pudimos cargar las opciones de ubicación.');
+                    if (requestId !== municipalitiesRequestId) return false;
+
+                    municipality.innerHTML = '<option value="">Selecciona una opción</option>';
                     data.forEach((item) => {
                         const option = document.createElement('option');
                         option.value = item;
                         option.textContent = item;
                         municipality.appendChild(option);
                     });
-                    municipality.value = '';
-                    syncMunicipalityValue();
-                    status.textContent = 'Selecciona un municipio o alcaldía.';
+
+                    const optionExists = Array.from(municipality.options).some((option) => option.value === desiredMunicipality);
+                    municipality.value = optionExists ? desiredMunicipality : '';
+                    return optionExists || !desiredMunicipality;
                 } catch (error) {
-                    status.textContent = error.message || 'No pudimos cargar las opciones de ubicación.';
+                    if (error.name === 'AbortError' || requestId !== municipalitiesRequestId) return false;
+                    municipality.innerHTML = '<option value="">Selecciona una opción</option>';
+                    municipality.value = '';
+                    throw error;
+                }
+            };
+
+            const validateLocationState = () => {
+                const valid = Boolean(state.value && municipality.value && settlementId.value && neighborhood.value.trim());
+                const impossible = !municipality.value && (Boolean(settlementId.value) || Boolean(neighborhood.value.trim()));
+                if (impossible) resetSettlement();
+                if (window.__VALUATION_DEBUG__) {
+                    console.debug('valuation location state', {
+                        state: state.value,
+                        municipality: municipality.value,
+                        neighborhood: neighborhood.value,
+                        postalSettlementId: settlementId.value,
+                        valid,
+                        impossible,
+                    });
+                }
+                return valid && !impossible;
+            };
+
+            const geocodeSettlement = async () => {
+                if (!state.value || !municipality.value || !settlementId.value) return false;
+                const requestId = ++settlementsRequestId;
+                setPending(true);
+                setStatus('Buscando ubicación...');
+                try {
+                    const params = new URLSearchParams({
+                        state: state.value,
+                        municipality: municipality.value,
+                        postal_settlement_id: settlementId.value,
+                    });
+                    const response = await fetch(`{{ route('valuation.geocode') }}?${params}`);
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'No encontramos esa ubicación.');
+                    if (requestId !== settlementsRequestId) return false;
+                    if (data.location.state !== state.value || data.location.municipality !== municipality.value) {
+                        throw new Error('La ubicación no corresponde al municipio seleccionado.');
+                    }
+                    latitude.value = Number(data.location.latitude).toFixed(7);
+                    longitude.value = Number(data.location.longitude).toFixed(7);
+                    locationSource.value = data.location.location_source || 'manual_geocode';
+                    locationPrecision.value = data.location.location_precision || 'neighborhood';
+                    setStatus('Ubicación encontrada.');
+                    suggestions.classList.add('hidden');
+                    return validateLocationState();
+                } catch (error) {
+                    if (error.name === 'AbortError') return false;
+                    clearCoordinates();
+                    setStatus(error.message || 'No pudimos ubicar esa colonia. Captúrala manualmente.');
+                    return false;
+                } finally {
+                    if (requestId === settlementsRequestId) setPending(false);
+                }
+            };
+
+            const selectSettlement = async (item) => {
+                selectedNeighborhood = item.name;
+                neighborhood.value = item.name;
+                settlementId.value = item.id;
+                postalCode.value = item.postal_code || '';
+                clearCoordinates();
+                suggestions.classList.add('hidden');
+                neighborhood.setAttribute('aria-expanded', 'false');
+                setStatus('Colonia seleccionada. Verificando ubicación...');
+                return geocodeSettlement();
+            };
+
+            const searchSettlements = async (query) => {
+                const requestId = ++settlementsRequestId;
+                settlementsController?.abort();
+                settlementsController = new AbortController();
+                try {
+                    const params = new URLSearchParams({ state: state.value, municipality: municipality.value, q: query });
+                    const response = await fetch(`{{ route('valuation.locations.settlements') }}?${params}`, { signal: settlementsController.signal });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'No pudimos buscar colonias.');
+                    if (requestId !== settlementsRequestId) return;
+                    suggestions.innerHTML = '';
+                    data.forEach((item) => {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'block w-full rounded px-3 py-2 text-left hover:bg-[#efe9dc] focus:bg-[#efe9dc] focus:outline-none';
+                        button.innerHTML = `<span class="block font-semibold text-[#0d2723]"></span><span class="block text-xs text-[#687773]"></span>`;
+                        button.children[0].textContent = item.name;
+                        button.children[1].textContent = [item.type, item.postal_code ? `CP ${item.postal_code}` : ''].filter(Boolean).join(' · ');
+                        button.addEventListener('click', () => selectSettlement(item));
+                        suggestions.appendChild(button);
+                    });
+                    suggestions.classList.remove('hidden');
+                    neighborhood.setAttribute('aria-expanded', 'true');
+                    setStatus(data.length ? 'Selecciona una colonia de la lista.' : 'No encontramos coincidencias.');
+                    return data;
+                } catch (error) {
+                    if (error.name === 'AbortError' || requestId !== settlementsRequestId) return;
+                    setStatus(error.message || 'No pudimos buscar colonias.');
+                    return [];
+                }
+            };
+
+            const restoreInitialLocation = async () => {
+                state.value = initialLocation.state;
+                municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
+                if (!initialLocation.municipality) {
+                    resetMunicipality();
+                    setPending(false);
+                    setStatus('Selecciona manualmente un municipio o alcaldía.');
+                    return;
+                }
+                const municipalityRestored = await loadMunicipalities(initialLocation.state, initialLocation.municipality);
+                if (!municipalityRestored) {
+                    resetMunicipality();
+                    setStatus('Selecciona manualmente un municipio o alcaldía.');
+                    return;
+                }
+                neighborhood.value = initialLocation.neighborhood || '';
+                settlementId.value = initialLocation.postal_settlement_id || '';
+                postalCode.value = initialLocation.postal_code || '';
+                selectedNeighborhood = settlementId.value ? neighborhood.value.trim() : '';
+                if (settlementId.value) validateLocationState();
+                setPending(false);
+            };
+
+            const handleStateChange = async () => {
+                resetMunicipality();
+                municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
+                setStatus('Cargando municipios...');
+                setPending(true);
+                try {
+                    await loadMunicipalities(state.value);
+                    setStatus('Selecciona un municipio o alcaldía.');
+                } catch (error) {
+                    setStatus(error.message || 'No pudimos cargar las opciones de ubicación.');
+                } finally {
+                    setPending(false);
+                }
+            };
+
+            municipality.addEventListener('change', () => {
+                resetSettlement();
+                setStatus('Busca una colonia dentro del municipio seleccionado.');
+            });
+
+            state.addEventListener('change', handleStateChange);
+
+            neighborhood.addEventListener('input', () => {
+                const query = neighborhood.value.trim();
+                if (selectedNeighborhood && query === selectedNeighborhood) return;
+                resetSettlement();
+                neighborhood.value = query;
+                clearTimeout(searchTimer);
+                if (query.length < 2 || !state.value || !municipality.value) return;
+                setStatus('Buscando colonias...');
+                searchTimer = setTimeout(() => searchSettlements(query), 300);
+            });
+
+            geolocate.addEventListener('click', async () => {
+                if (!navigator.geolocation) {
+                    setStatus('Tu navegador no permite detectar la ubicación. Captúrala manualmente.');
+                    return;
+                }
+                setPending(true);
+                resetMunicipality();
+                setStatus('Buscando tu ubicación...');
+                try {
+                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 }));
+                    const reverseParams = new URLSearchParams({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+                    const reverseResponse = await fetch(`{{ route('valuation.reverse-geocode') }}?${reverseParams}`);
+                    const reverseData = await reverseResponse.json();
+                    if (!reverseResponse.ok) throw new Error(reverseData.message || 'No pudimos identificar esa ubicación.');
+                    const reverse = reverseData.location;
+                    state.value = reverse.state || '';
+                    municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
+                    const municipalityLoaded = await loadMunicipalities(state.value, reverse.municipality || '');
+                    if (!municipalityLoaded || municipality.value !== reverse.municipality) throw new Error('No pudimos asociar la ubicación a un municipio disponible. Captúrala manualmente.');
+                    const query = (reverse.neighborhood || '').trim();
+                    if (query.length < 2) throw new Error('No pudimos identificar una colonia del catálogo. Captúrala manualmente.');
+                    const settlements = await searchSettlements(query);
+                    const exact = settlements.find((item) => normalize(item.name) === normalize(query))
+                        || settlements.find((item) => reverse.postal_code && item.postal_code === reverse.postal_code);
+                    if (!exact) throw new Error('No pudimos asociar la colonia al catálogo SEPOMEX. Captúrala manualmente.');
+                    await selectSettlement(exact);
+                } catch (error) {
+                    resetMunicipality();
+                    clearCoordinates();
+                    setStatus(error.message || 'No pudimos identificar tu ubicación. Captúrala manualmente.');
+                } finally {
+                    setPending(false);
                 }
             });
 
-            geolocate.addEventListener('click', () => {
-                if (!navigator.geolocation) {
-                    status.textContent = 'Tu navegador no permite detectar la ubicación. Captúrala manualmente.';
-                    return;
+            form.addEventListener('submit', (event) => {
+                if (locationPending || !validateLocationState()) {
+                    event.preventDefault();
+                    setStatus(locationPending ? 'Espera a que terminemos de resolver la ubicación.' : 'Selecciona estado, municipio y una colonia válida.');
                 }
-                status.textContent = 'Buscando tu ubicación...';
-                invalidateSettlement();
-                navigator.geolocation.getCurrentPosition((position) => {
-                    const params = new URLSearchParams({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    });
-                    fetch(`{{ route('valuation.reverse-geocode') }}?${params}`)
-                        .then(async (response) => {
-                            const data = await response.json();
-                            if (!response.ok) throw new Error(data.message || 'No pudimos identificar esa ubicación.');
-                            applyLocation(data.location, 'Ubicación detectada. Puedes corregir municipio o colonia.');
-                        })
-                        .catch((error) => {
-                            clearCoordinates();
-                            status.textContent = error.message || 'No pudimos identificar tu ubicación. Captúrala manualmente.';
-                        });
-                }, (error) => {
-                    const message = error.code === 1
-                        ? 'Permiso de ubicación rechazado. Captura municipio y colonia manualmente.'
-                        : error.code === 3
-                            ? 'La ubicación tardó demasiado. Captúrala manualmente.'
-                            : 'No pudimos obtener tu ubicación. Captúrala manualmente.';
-                    status.textContent = message;
-                }, { enableHighAccuracy: true, timeout: 10000 });
             });
 
             document.addEventListener('click', (event) => {
@@ -376,6 +441,13 @@
                     suggestions.classList.add('hidden');
                     neighborhood.setAttribute('aria-expanded', 'false');
                 }
+            });
+
+            setPending(true);
+            restoreInitialLocation().catch(() => {
+                resetMunicipality();
+                setPending(false);
+                setStatus('Selecciona manualmente el municipio y la colonia.');
             });
         });
     </script>
