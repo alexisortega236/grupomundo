@@ -99,7 +99,7 @@ class PublicLocationGeocoder
             'score' => $bestScore,
         ]);
 
-        return $this->normalizePlace($best, 'manual_geocode');
+        return $this->normalizePlace($best, 'manual_geocode', $state, $municipality);
     }
 
     public function reverse(float $latitude, float $longitude): array
@@ -118,15 +118,17 @@ class PublicLocationGeocoder
         );
 
         $address = $place['address'] ?? [];
-        $municipality = $this->canonicalMunicipality($this->municipalityFromAddress($address));
+        $state = (string) ($address['state'] ?? '');
+        $municipality = $this->canonicalMunicipality($this->municipalityFromAddress($address, $state), $state);
 
-        if (! $this->matchesState($address, 'Morelos')
+        if (! app(SupportedValuationLocations::class)->isSupportedState($state)
+            || ! $this->matchesState($address, $state)
             || ! $municipality
-            || ! array_key_exists($municipality, app(SupportedValuationLocations::class)->municipalities())) {
+            || ! array_key_exists($municipality, app(SupportedValuationLocations::class)->municipalitiesForState($state))) {
             throw new RuntimeException('La ubicación detectada está fuera de las zonas disponibles.');
         }
 
-        return $this->normalizePlace($place, 'device');
+        return $this->normalizePlace($place, 'device', $state, $municipality);
     }
 
     private function request(string $path, array $query): Response
@@ -175,8 +177,8 @@ class PublicLocationGeocoder
             return 'state_mismatch';
         }
 
-        if ($latitude === false || $longitude === false || ! $this->insideMorelos((float) $latitude, (float) $longitude)) {
-            return 'coordinates_outside_morelos';
+        if ($latitude === false || $longitude === false || ! $this->insideState($state, (float) $latitude, (float) $longitude)) {
+            return 'coordinates_outside_state';
         }
 
         $municipalityMatch = $this->municipalityMatch($address, $place, $municipality);
@@ -215,16 +217,17 @@ class PublicLocationGeocoder
         return $score;
     }
 
-    private function normalizePlace(array $place, string $source): array
+    private function normalizePlace(array $place, string $source, ?string $expectedState = null, ?string $expectedMunicipality = null): array
     {
         $address = $place['address'] ?? [];
-        $municipality = $this->canonicalMunicipality($this->municipalityFromAddress($address));
+        $state = $expectedState ?: (string) ($address['state'] ?? 'Morelos');
+        $municipality = $this->canonicalMunicipality($this->municipalityFromAddress($address, $state), $state) ?: $expectedMunicipality;
         $neighborhood = $this->neighborhoodFromAddress($address);
 
         return [
             'latitude' => (float) ($place['lat'] ?? 0),
             'longitude' => (float) ($place['lon'] ?? 0),
-            'state' => $address['state'] ?? 'Morelos',
+            'state' => $address['state'] ?? $state,
             'municipality' => $municipality,
             'locality' => $address['city'] ?? $address['town'] ?? $address['village'] ?? $municipality,
             'neighborhood' => $neighborhood,
@@ -234,15 +237,15 @@ class PublicLocationGeocoder
         ];
     }
 
-    private function municipalityFromAddress(array $address): ?string
+    private function municipalityFromAddress(array $address, ?string $state = null): ?string
     {
         $fallback = null;
 
         foreach (['municipality', 'county', 'city_district', 'city', 'town', 'village'] as $key) {
             if (filled($address[$key] ?? null)) {
                 $fallback ??= (string) $address[$key];
-                $canonical = $this->canonicalMunicipality((string) $address[$key]);
-                if ($canonical && array_key_exists($canonical, app(SupportedValuationLocations::class)->municipalities())) {
+                $canonical = $this->canonicalMunicipality((string) $address[$key], $state);
+                if ($canonical && array_key_exists($canonical, app(SupportedValuationLocations::class)->municipalitiesForState($state ?: 'Morelos'))) {
                     return $canonical;
                 }
             }
@@ -323,9 +326,13 @@ class PublicLocationGeocoder
         return false;
     }
 
-    private function insideMorelos(float $latitude, float $longitude): bool
+    private function insideState(string $state, float $latitude, float $longitude): bool
     {
-        return $latitude >= 18.2 && $latitude <= 19.2 && $longitude >= -99.6 && $longitude <= -98.5;
+        return match ($state) {
+            'Morelos' => $latitude >= 18.2 && $latitude <= 19.2 && $longitude >= -99.6 && $longitude <= -98.5,
+            'Ciudad de México' => $latitude >= 19.0 && $latitude <= 19.7 && $longitude >= -99.5 && $longitude <= -98.8,
+            default => false,
+        };
     }
 
     private function normalize(string $value): string
@@ -333,13 +340,14 @@ class PublicLocationGeocoder
         return Str::of($value)->ascii()->lower()->replaceMatches('/[^a-z0-9]+/', ' ')->trim()->value();
     }
 
-    private function canonicalMunicipality(?string $candidate): ?string
+    private function canonicalMunicipality(?string $candidate, ?string $state = null): ?string
     {
         if (! $candidate) {
             return null;
         }
 
-        foreach (app(SupportedValuationLocations::class)->municipalities() as $key => $label) {
+        $municipalities = app(SupportedValuationLocations::class)->municipalitiesForState($state ?: 'Morelos');
+        foreach ($municipalities as $key => $label) {
             if ($this->normalize($candidate) === $this->normalize($key)
                 || Str::contains($this->normalize($candidate), $this->normalize($key))) {
                 return $key;

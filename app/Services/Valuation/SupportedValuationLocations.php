@@ -2,8 +2,20 @@
 
 namespace App\Services\Valuation;
 
+use App\Models\PostalSettlement;
+
 class SupportedValuationLocations
 {
+    public function states(): array
+    {
+        return ['Morelos' => 'Morelos', 'Ciudad de México' => 'Ciudad de México'];
+    }
+
+    public function isSupportedState(?string $state): bool
+    {
+        return $state !== null && array_key_exists($state, $this->states());
+    }
+
     /**
      * Municipalities currently represented by the AVM listings pipeline.
      */
@@ -20,6 +32,24 @@ class SupportedValuationLocations
             'Emiliano Zapata' => 'Emiliano Zapata',
             'Xochitepec' => 'Xochitepec',
         ];
+    }
+
+    public function municipalitiesForState(string $state): array
+    {
+        if (! $this->isSupportedState($state)) {
+            return [];
+        }
+
+        $catalog = PostalSettlement::query()
+            ->where('state', $state)
+            ->whereNotNull('municipality')
+            ->distinct()
+            ->orderBy('municipality')
+            ->pluck('municipality')
+            ->mapWithKeys(fn (string $municipality) => [$municipality => $municipality])
+            ->all();
+
+        return $catalog ?: ($state === 'Morelos' ? $this->municipalities() : []);
     }
 
     public function centers(): array

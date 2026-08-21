@@ -1,6 +1,7 @@
 @php
     $selectedType = old('property_type', 'house');
-    $selectedMunicipality = old('municipality', 'Cuautla');
+    $selectedState = old('state', 'Morelos');
+    $selectedMunicipality = old('municipality', $selectedState === 'Ciudad de México' ? 'Álvaro Obregón' : 'Cuautla');
     $oldLatitude = old('latitude');
     $oldLongitude = old('longitude');
     $oldSettlementId = old('postal_settlement_id', old('settlement_id'));
@@ -40,7 +41,6 @@
             <input id="valuation-location-precision" type="hidden" name="location_precision" value="{{ old('location_precision') }}">
             <input id="valuation-settlement-id" type="hidden" name="postal_settlement_id" value="{{ $oldSettlementId }}">
             <input id="valuation-postal-code" type="hidden" name="postal_code" value="{{ old('postal_code') }}">
-            <input type="hidden" name="state" value="Morelos">
 
             <div class="grid gap-6">
                 <section class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-[#e4dccd]">
@@ -52,19 +52,12 @@
                     <p id="valuation-location-status" class="mt-3 text-sm text-[#51635f]" role="status" aria-live="polite">También puedes capturar la ubicación manualmente.</p>
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
-                        <x-form.select
-                            label="Estado"
-                            name="state_display"
-                            :options="['Morelos' => 'Morelos']"
-                            value="Morelos"
-                            disabled
-                        />
-                        <x-form.select
-                            label="Municipio"
-                            name="municipality"
-                            :options="$municipalities"
-                            :value="$selectedMunicipality"
-                        />
+                        <label class="block text-sm font-semibold text-[#0d2723]">Estado
+                            <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
+                        </label>
+                        <label class="block text-sm font-semibold text-[#0d2723]"><span id="valuation-municipality-label">{{ $selectedState === 'Ciudad de México' ? 'Alcaldía' : 'Municipio' }}</span>
+                            <select id="valuation-municipality" name="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
+                        </label>
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
                             <div id="valuation-location-suggestions" class="mt-2 hidden rounded-md border border-[#d8ccb8] bg-[#fbfaf7] p-3 text-sm text-[#51635f]"></div>
@@ -148,6 +141,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const municipality = document.querySelector('[name="municipality"]');
+            const state = document.querySelector('[name="state"]');
+            const municipalityLabel = document.getElementById('valuation-municipality-label');
             const neighborhood = document.querySelector('[name="neighborhood"]');
             const latInput = document.getElementById('valuation-latitude');
             const lngInput = document.getElementById('valuation-longitude');
@@ -191,7 +186,7 @@
 
                 status.textContent = 'Buscando ubicación...';
                 const params = new URLSearchParams({
-                    state: 'Morelos',
+                    state: state.value,
                     municipality: municipality.value,
                     postal_settlement_id: settlementIdInput.value,
                 });
@@ -252,7 +247,7 @@
                 }
                 status.textContent = 'Buscando colonias...';
                 searchTimer = setTimeout(async () => {
-                    const params = new URLSearchParams({ state: 'Morelos', municipality: municipality.value, q: query });
+                    const params = new URLSearchParams({ state: state.value, municipality: municipality.value, q: query });
                     try {
                         const response = await fetch(`{{ route('valuation.locations.settlements') }}?${params}`);
                         const data = await response.json();
@@ -273,6 +268,31 @@
                 neighborhood.value = '';
                 suggestions.classList.add('hidden');
                 status.textContent = 'Busca una colonia dentro del municipio seleccionado.';
+            });
+
+            state.addEventListener('change', async () => {
+                clearCoordinates();
+                invalidateSettlement();
+                neighborhood.value = '';
+                municipality.innerHTML = '<option value="">Selecciona una opción</option>';
+                municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
+                suggestions.classList.add('hidden');
+                status.textContent = 'Cargando municipios...';
+                try {
+                    const params = new URLSearchParams({ state: state.value });
+                    const response = await fetch(`{{ route('valuation.locations.municipalities') }}?${params}`);
+                    const data = await response.json();
+                    if (!response.ok) throw new Error('No pudimos cargar las opciones de ubicación.');
+                    data.forEach((item) => {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        municipality.appendChild(option);
+                    });
+                    status.textContent = 'Selecciona un municipio o alcaldía.';
+                } catch (error) {
+                    status.textContent = error.message || 'No pudimos cargar las opciones de ubicación.';
+                }
             });
 
             geolocate.addEventListener('click', () => {

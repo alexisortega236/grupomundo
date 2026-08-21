@@ -19,6 +19,11 @@ php artisan db:seed --class=MorelosPostalSettlementsSeeder --force --no-interact
   echo "ERROR: MorelosPostalSettlementsSeeder failed; aborting container startup." >&2
   exit 1
 }
+echo "Seeding Ciudad de México postal settlements..."
+php artisan db:seed --class=CdmxPostalSettlementsSeeder --force --no-interaction || {
+  echo "ERROR: CdmxPostalSettlementsSeeder failed; aborting container startup." >&2
+  exit 1
+}
 
 if [ "${RUN_SEEDERS:-true}" = "true" ]; then
   php artisan db:seed --force --no-interaction

@@ -15,14 +15,14 @@ class LocationController
     public function geocode(Request $request, PublicLocationGeocoder $geocoder): JsonResponse
     {
         $data = $request->validate([
-            'state' => ['required', 'in:Morelos'],
+            'state' => ['required', 'in:Morelos,Ciudad de México'],
             'municipality' => ['required', 'string', 'max:120'],
             'postal_settlement_id' => ['nullable', 'integer'],
             'neighborhood' => ['nullable', 'string', 'min:3', 'max:120'],
             'postal_code' => ['nullable', 'string', 'max:10'],
         ]);
 
-        if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalities())) {
+        if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalitiesForState($data['state']))) {
             return response()->json(['message' => 'Selecciona un municipio disponible.'], 422);
         }
 
@@ -72,7 +72,7 @@ class LocationController
     public function municipalities(Request $request, SupportedValuationLocations $locations): JsonResponse
     {
         $state = $request->query('state', 'Morelos');
-        if ($state !== 'Morelos') {
+        if (! app(SupportedValuationLocations::class)->isSupportedState($state)) {
             return response()->json([]);
         }
 
@@ -85,18 +85,18 @@ class LocationController
 
         return response()->json($catalogMunicipalities->isNotEmpty()
             ? $catalogMunicipalities
-            : array_values($locations->municipalities()));
+            : array_values($locations->municipalitiesForState($state)));
     }
 
     public function settlements(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'state' => ['required', 'in:Morelos'],
+            'state' => ['required', 'in:Morelos,Ciudad de México'],
             'municipality' => ['required', 'string', 'max:120'],
             'q' => ['required', 'string', 'min:2', 'max:80'],
         ]);
 
-        if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalities())) {
+        if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalitiesForState($data['state']))) {
             return response()->json(['message' => 'Selecciona un municipio disponible.'], 422);
         }
 
