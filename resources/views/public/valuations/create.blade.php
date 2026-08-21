@@ -169,6 +169,7 @@
             let selectedNeighborhood = '';
             let municipalitiesRequestId = 0;
             let settlementsRequestId = 0;
+            let locationOperationId = 0;
             let municipalitiesController = null;
             let settlementsController = null;
             let searchTimer = null;
@@ -208,20 +209,25 @@
 
             const normalize = (value) => (value || '').trim().toLocaleLowerCase('es-MX');
 
-            const loadMunicipalities = async (stateValue, desiredMunicipality = '') => {
+            const loadMunicipalities = async (stateValue, desiredMunicipality = '', { keepPending = false } = {}) => {
                 const requestId = ++municipalitiesRequestId;
                 municipalitiesController?.abort();
-                municipalitiesController = new AbortController();
+                const controller = new AbortController();
+                municipalitiesController = controller;
                 municipality.disabled = true;
                 municipality.innerHTML = '<option value="">Cargando opciones...</option>';
                 municipality.value = '';
+                const url = `{{ route('valuation.locations.municipalities') }}?${new URLSearchParams({ state: stateValue })}`;
+                if (window.__VALUATION_DEBUG__) console.debug('[valuation] municipalities request', url);
 
                 try {
-                    const params = new URLSearchParams({ state: stateValue });
-                    const response = await fetch(`{{ route('valuation.locations.municipalities') }}?${params}`, { signal: municipalitiesController.signal });
+                    const response = await fetch(url, { signal: controller.signal });
+                    if (window.__VALUATION_DEBUG__) console.debug('[valuation] municipalities response', { status: response.status, ok: response.ok });
                     const data = await response.json();
+                    if (window.__VALUATION_DEBUG__) console.debug('[valuation] municipalities data', data);
                     if (!response.ok) throw new Error('No pudimos cargar las opciones de ubicación.');
                     if (requestId !== municipalitiesRequestId) return false;
+                    if (!Array.isArray(data)) throw new Error('La respuesta de municipios no tiene un formato válido.');
 
                     municipality.innerHTML = '<option value="">Selecciona una opción</option>';
                     data.forEach((item) => {
@@ -239,6 +245,14 @@
                     municipality.innerHTML = '<option value="">Selecciona una opción</option>';
                     municipality.value = '';
                     throw error;
+                } finally {
+                    if (requestId === municipalitiesRequestId) {
+                        municipality.disabled = false;
+                        if (status.textContent === 'Cargando municipios...' || status.textContent === 'Cargando opciones...') {
+                            setStatus('No fue posible cargar los municipios. Intenta nuevamente.');
+                        }
+                        if (!keepPending) setPending(false);
+                    }
                 }
             };
 
@@ -339,6 +353,7 @@
             };
 
             const restoreInitialLocation = async () => {
+                const operationId = locationOperationId;
                 state.value = initialLocation.state;
                 municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
                 if (!initialLocation.municipality) {
@@ -347,9 +362,12 @@
                     setStatus('Selecciona manualmente un municipio o alcaldía.');
                     return;
                 }
-                const municipalityRestored = await loadMunicipalities(initialLocation.state, initialLocation.municipality);
+                const expectedRequestId = municipalitiesRequestId + 1;
+                const municipalityRestored = await loadMunicipalities(initialLocation.state, initialLocation.municipality, { keepPending: true });
+                if (operationId !== locationOperationId || expectedRequestId !== municipalitiesRequestId) return;
                 if (!municipalityRestored) {
                     resetMunicipality();
+                    setPending(false);
                     setStatus('Selecciona manualmente un municipio o alcaldía.');
                     return;
                 }
@@ -362,21 +380,22 @@
             };
 
             const handleStateChange = async () => {
+                ++locationOperationId;
                 resetMunicipality();
                 municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
                 setStatus('Cargando municipios...');
                 setPending(true);
                 try {
-                    await loadMunicipalities(state.value);
+                    const municipalitiesLoaded = await loadMunicipalities(state.value);
+                    if (!municipalitiesLoaded) return;
                     setStatus('Selecciona un municipio o alcaldía.');
                 } catch (error) {
                     setStatus(error.message || 'No pudimos cargar las opciones de ubicación.');
-                } finally {
-                    setPending(false);
                 }
             };
 
             municipality.addEventListener('change', () => {
+                ++locationOperationId;
                 resetSettlement();
                 setStatus('Busca una colonia dentro del municipio seleccionado.');
             });
@@ -399,6 +418,7 @@
                     setStatus('Tu navegador no permite detectar la ubicación. Captúrala manualmente.');
                     return;
                 }
+                const operationId = ++locationOperationId;
                 setPending(true);
                 resetMunicipality();
                 setStatus('Buscando tu ubicación...');
@@ -408,14 +428,17 @@
                     const reverseResponse = await fetch(`{{ route('valuation.reverse-geocode') }}?${reverseParams}`);
                     const reverseData = await reverseResponse.json();
                     if (!reverseResponse.ok) throw new Error(reverseData.message || 'No pudimos identificar esa ubicación.');
+                    if (operationId !== locationOperationId) return;
                     const reverse = reverseData.location;
                     state.value = reverse.state || '';
                     municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
-                    const municipalityLoaded = await loadMunicipalities(state.value, reverse.municipality || '');
+                    const municipalityLoaded = await loadMunicipalities(state.value, reverse.municipality || '', { keepPending: true });
+                    if (!municipalityLoaded) return;
                     if (!municipalityLoaded || municipality.value !== reverse.municipality) throw new Error('No pudimos asociar la ubicación a un municipio disponible. Captúrala manualmente.');
                     const query = (reverse.neighborhood || '').trim();
                     if (query.length < 2) throw new Error('No pudimos identificar una colonia del catálogo. Captúrala manualmente.');
                     const settlements = await searchSettlements(query);
+                    if (operationId !== locationOperationId) return;
                     const exact = settlements.find((item) => normalize(item.name) === normalize(query))
                         || settlements.find((item) => reverse.postal_code && item.postal_code === reverse.postal_code);
                     if (!exact) throw new Error('No pudimos asociar la colonia al catálogo SEPOMEX. Captúrala manualmente.');
@@ -425,7 +448,7 @@
                     clearCoordinates();
                     setStatus(error.message || 'No pudimos identificar tu ubicación. Captúrala manualmente.');
                 } finally {
-                    setPending(false);
+                    if (operationId === locationOperationId) setPending(false);
                 }
             });
 

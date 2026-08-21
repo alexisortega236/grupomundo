@@ -243,6 +243,12 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('const selectSettlement = async', false)
             ->assertSee('const restoreInitialLocation = async', false)
             ->assertSee('await loadMunicipalities(state.value, reverse.municipality ||', false)
+            ->assertSee("console.debug('[valuation] municipalities request'", false)
+            ->assertSee("console.debug('[valuation] municipalities response'", false)
+            ->assertSee("console.debug('[valuation] municipalities data'", false)
+            ->assertSee('if (!Array.isArray(data))', false)
+            ->assertSee('} finally {', false)
+            ->assertSee('error.name === \'AbortError\'', false)
             ->assertDontSee('municipality-value', false)
             ->assertDontSee("form.addEventListener('formdata'", false);
 
