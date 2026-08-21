@@ -79,12 +79,17 @@ def index():
 
 @app.get("/health")
 def health():
+    try:
+        cdmx_v2_1_loaded = _cdmx_registry().specs["09"].version == "avm_cdmx_v2_1_hybrid"
+    except Exception:
+        cdmx_v2_1_loaded = False
     return jsonify({
         "status": "ok",
         "model_loaded": pipe is not None,
         "legacy_model_loaded": pipe is not None,
         "residential_v2_model_loaded": residential_v2_pipe is not None,
         "avm_v2_v1_model_loaded": avm_v2_v1_pipe is not None,
+        "cdmx_v2_1_loaded": cdmx_v2_1_loaded,
     }), 200
 
 def _spatial_services():
@@ -217,7 +222,10 @@ def predict_v2_residential():
     row = {
         "property_type": "casa" if property_type == "house" else "departamento",
         "municipality": match.municipality or data.get("municipality"),
+        "neighborhood": data.get("neighborhood"),
         "inegi_cve_ageb": match.cve_ageb,
+        "latitude": lat,
+        "longitude": lng,
         "land_area_m2": data.get("land_area_m2"),
         "construction_area_m2": data.get("construction_area_m2"),
         "bedrooms": data.get("bedrooms"),
@@ -227,23 +235,34 @@ def predict_v2_residential():
         **cdmx_context.denue_values,
     }
     try:
-        prediction = registry.predict(cdmx_context, row)
+        ml_prediction = registry.predict(cdmx_context, row)
+        hybrid = registry.reconcile_cdmx(cdmx_context, row, ml_prediction)
+        prediction = hybrid["reconciliation"]["estimated_value"]
     except (KeyError, ValueError) as exc:
         logger.exception("CDMX v1 feature contract or prediction failed")
         return jsonify({"eligible": False, "reason": "feature_contract_mismatch", "detail": str(exc)}), 503
     observed = row["municipality"] in registry.specs["09"].observed_municipalities
-    confidence = "MEDIUM" if observed else "LOW"
+    market = hybrid["market"]
+    reconciliation = hybrid["reconciliation"]
+    confidence = reconciliation["confidence"] if observed else "LOW"
     return jsonify({
         "eligible": True,
-        "model": "avm_residential_v2",
+        "model": "avm_cdmx_v2_1_hybrid",
         "model_version": registry.specs["09"].version,
         "regional_model": registry.specs["09"].model_id,
         "segment": "residential",
         "property_type": property_type,
         "estimated_value": round(prediction),
         "currency": "MXN",
-        "range": None,
+        "range": {"low": round(market["range_low"]), "high": round(market["range_high"])} if market.get("range_low") is not None else None,
         "confidence": confidence,
+        "market": {
+            "base": round(market["market_base"]) if market.get("market_base") is not None else None,
+            "comparable_count": market["comparable_count"], "strategy": market["strategy"],
+            "strength": market["market_strength"], "p25": market["p25"], "p50": market["p50"], "p75": market["p75"],
+            "dispersion": market["dispersion"],
+        },
+        "ml": {"prediction": round(ml_prediction), "vs_market_ratio": reconciliation.get("ml_vs_market_ratio")},
         "coverage": {"observed_in_training": observed, "note": None if observed else "Alcaldía sin observaciones válidas de entrenamiento CDMX v1."},
         "location": {
             "municipality": row["municipality"],

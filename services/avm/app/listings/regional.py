@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import math
 import os
 from dataclasses import dataclass
@@ -20,12 +21,14 @@ import shapefile
 
 from app.listings.spatial.datasets import dataset_paths
 from app.listings.spatial.enrichment import AgebMatch, CensoRepository, DenueIndex, InegiSpatialIndex, _clean_code, _read_prj, _shape_encoding
+from app.listings.comparables import ComparableEngine
 
 
 AVM_ROOT = Path(__file__).resolve().parents[2]
 CDMX_RUNTIME = AVM_ROOT / "runtime_data" / "cdmx_v1"
+CDMX_HYBRID_RUNTIME = AVM_ROOT / "runtime_data" / "cdmx_v2_1"
 CDMX_MODEL = CDMX_RUNTIME / "model_best_experimental.joblib"
-CDMX_VERSION = "avm_cdmx_v1_experimental"
+CDMX_VERSION = "avm_cdmx_v2_1_hybrid"
 MORELOS_VERSION = "avm_residential_v2_v2_experimental"
 
 CDMX_CENSO_FEATURES = ["population_density", "housing_density", "car_ownership_ratio", "internet_access_ratio", "average_schooling", "employment_ratio"]
@@ -56,13 +59,17 @@ class RegionalModelRegistry:
         paths = dataset_paths()
         morelos_path = _configured_path("RESIDENTIAL_V2_MODEL_PATH", AVM_ROOT / "experiments/avm_v2_v2/model_residential_experimental.joblib")
         self.specs = {
-            "09": RegionalModelSpec("09", "avm_cdmx_v1", CDMX_VERSION, CDMX_MODEL, "log1p_price", ("Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa de Morelos", "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco")),
+            "09": RegionalModelSpec("09", "avm_cdmx_v2_1", CDMX_VERSION, CDMX_MODEL, "log1p_price", ("Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa de Morelos", "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "La Magdalena Contreras", "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco")),
             "17": RegionalModelSpec("17", "avm_residential_v2", MORELOS_VERSION, morelos_path, "log1p_price", ()),
         }
         self.models = {}
         self._validate_and_load("09")
         self._validate_and_load("17")
         self.providers = {"09": CdmxDataProvider(CDMX_RUNTIME), "17": MorelosDataProvider(paths)}
+        config_path = CDMX_HYBRID_RUNTIME / "config.json"
+        if not config_path.exists():
+            raise RuntimeError(f"CDMX v2.1 config not found: {config_path}")
+        self.cdmx_comparables = ComparableEngine(CDMX_HYBRID_RUNTIME / "comparables.csv", json.loads(config_path.read_text(encoding="utf-8")))
 
     def _validate_and_load(self, entity_code: str):
         spec = self.specs[entity_code]
@@ -108,6 +115,17 @@ class RegionalModelRegistry:
         frame = pd.DataFrame([row])
         raw = float(model.predict(frame)[0])
         return float(max(1, np.expm1(raw) if spec.target_transform == "log1p_price" else raw))
+
+    def reconcile_cdmx(self, context: RegionalContext, row: dict, ml_prediction: float) -> dict:
+        target = {
+            "property_type": row["property_type"], "latitude": row["latitude"], "longitude": row["longitude"],
+            "municipality": row.get("municipality"), "neighborhood": row.get("neighborhood"),
+            "inegi_cve_ageb": row.get("inegi_cve_ageb"), "construction_area_m2": row.get("construction_area_m2"),
+            "land_area_m2": row.get("land_area_m2"), "bedrooms": row.get("bedrooms"),
+            "bathrooms": row.get("bathrooms"), "parking_spaces": row.get("parking_spaces"),
+        }
+        market = self.cdmx_comparables.find(target)
+        return {"market": market, "reconciliation": self.cdmx_comparables.reconcile(ml_prediction, market)}
 
 
 class MorelosDataProvider:

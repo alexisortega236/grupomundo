@@ -1,0 +1,9 @@
+{
+  "version": "avm_cdmx_v2_1",
+  "entity_code": "09",
+  "rows": 866,
+  "source_sha256": "c6b4abcabf9ef564c4834bc431dd9dd1d0f60d5d212ccebb4404042d3e17e4da",
+  "model_reused_from": "runtime_data/cdmx_v1/model_best_experimental.joblib",
+  "source_currency": "MXN",
+  "generated_by": "services/avm/scripts/build_cdmx_v2_1_runtime_bundle.py"
+}

@@ -15,7 +15,7 @@ class RegionalAvmTest(unittest.TestCase):
     def test_model_registry_keeps_both_regional_models(self):
         cdmx_spec, cdmx_model = self.registry.model_for_entity("09")
         morelos_spec, morelos_model = self.registry.model_for_entity("17")
-        self.assertEqual(cdmx_spec.model_id, "avm_cdmx_v1")
+        self.assertEqual(cdmx_spec.model_id, "avm_cdmx_v2_1")
         self.assertEqual(morelos_spec.model_id, "avm_residential_v2")
         self.assertEqual(pipeline_feature_contract(cdmx_model)[1], ["property_type", "inegi_cve_ageb"])
         self.assertIn("municipality", pipeline_feature_contract(morelos_model)[1])
@@ -42,12 +42,14 @@ class RegionalAvmTest(unittest.TestCase):
                 })
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(response.json["eligible"])
-                self.assertEqual(response.json["regional_model"], "avm_cdmx_v1")
-                self.assertEqual(response.json["model_version"], "avm_cdmx_v1_experimental")
+                self.assertEqual(response.json["regional_model"], "avm_cdmx_v2_1")
+                self.assertEqual(response.json["model_version"], "avm_cdmx_v2_1_hybrid")
                 self.assertEqual(response.json["location"]["municipality"], municipality)
                 self.assertTrue(response.json["location"]["ageb"])
                 self.assertIsInstance(response.json["estimated_value"], int)
                 self.assertGreater(response.json["estimated_value"], 0)
+                self.assertIn("market", response.json)
+                self.assertIn("ml", response.json)
 
     def test_morelos_coordinate_keeps_existing_model_route(self):
         response = self.client.post("/predict/v2/residential", json={
