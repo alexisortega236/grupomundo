@@ -270,19 +270,19 @@ class AvmServiceTest(unittest.TestCase):
         self.assertFalse(response.json["eligible"])
         self.assertEqual(response.json["reason"], "missing_construction_area")
 
-    def test_residential_v2_rejects_location_outside_validated_area(self):
+    def test_residential_v2_rejects_location_outside_supported_regions(self):
         with self.fake_residential_v2(ageb=None):
             response = self.client.post("/predict/v2/residential", json={
                 "property_type": "house",
-                "latitude": 19.4,
-                "longitude": -99.1,
+                "latitude": 20.5,
+                "longitude": -100.5,
                 "land_area_m2": 200,
                 "construction_area_m2": 160,
             })
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.json["eligible"])
-        self.assertEqual(response.json["reason"], "outside_validated_location")
+        self.assertEqual(response.json["reason"], "outside_supported_region")
 
     def baseline_payload(self):
         return {

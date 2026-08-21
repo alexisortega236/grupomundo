@@ -9,6 +9,7 @@ from app.services import poi_cache_sqlite
 from app.services.pois_overpass import PoiProviderUnavailable, fetch_pois_enriched
 from app.listings.spatial.datasets import dataset_paths, validate_datasets
 from app.listings.spatial.enrichment import CensoRepository, DenueIndex, InegiSpatialIndex
+from app.listings.regional import RegionalModelRegistry
 
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ residential_v2_previous_predictions = pd.read_csv(RESIDENTIAL_V2_PREDS_PATH) if 
 _spatial_index = None
 _censo_repo = None
 _denue_index = None
+_regional_registry = None
 
 df_cat = pd.read_csv(CATALOGO_PATH)
 df_cat["colonia"] = df_cat["colonia"].astype(str).str.strip()
@@ -126,6 +128,24 @@ def _real_location_context(data: dict):
         return None
     return match, censo.features(match), denue.counts(lat, lng)
 
+
+def _cdmx_registry() -> RegionalModelRegistry:
+    global _regional_registry
+    if _regional_registry is None:
+        _regional_registry = RegionalModelRegistry()
+    return _regional_registry
+
+
+def _cdmx_context(latitude: float, longitude: float):
+    registry = _cdmx_registry()
+    provider = registry.providers["09"]
+    match = provider.match(latitude, longitude)
+    if not match.cve_ageb:
+        return None
+    spec = registry.specs["09"]
+    from app.listings.regional import RegionalContext
+    return RegionalContext(spec, match, provider.censo.features(match), provider.denue.counts(latitude, longitude))
+
 def _price_band(price: float) -> str:
     if price < 1_000_000:
         return "<1M"
@@ -179,12 +199,61 @@ def predict_v2_residential():
     except Exception:
         return jsonify({"eligible": False, "reason": "invalid_coordinates"}), 200
     try:
-        context = _real_location_context(data)
+        # Preserve the existing Morelos path and contract first. If its AGEB
+        # index does not contain the point, resolve the regional CDMX model.
+        morelos_context = _real_location_context(data)
+        if morelos_context is not None:
+            return _predict_morelos_residential(data, morelos_context)
+        cdmx_context = _cdmx_context(lat, lng)
     except Exception:
-        logger.exception("Residential v2 spatial enrichment failed")
+        logger.exception("Regional residential spatial enrichment failed")
         return jsonify({"eligible": False, "reason": "spatial_enrichment_failed"}), 503
-    if context is None:
-        return jsonify({"eligible": False, "reason": "outside_validated_location"}), 200
+    if cdmx_context is None:
+        return jsonify({"eligible": False, "reason": "outside_supported_region"}), 200
+
+    registry = _cdmx_registry()
+    match = cdmx_context.match
+    property_type = data.get("property_type")
+    row = {
+        "property_type": "casa" if property_type == "house" else "departamento",
+        "municipality": match.municipality or data.get("municipality"),
+        "inegi_cve_ageb": match.cve_ageb,
+        "land_area_m2": data.get("land_area_m2"),
+        "construction_area_m2": data.get("construction_area_m2"),
+        "bedrooms": data.get("bedrooms"),
+        "bathrooms": data.get("bathrooms"),
+        "parking_spaces": data.get("parking_spaces"),
+        **cdmx_context.censo_values,
+        **cdmx_context.denue_values,
+    }
+    try:
+        prediction = registry.predict(cdmx_context, row)
+    except (KeyError, ValueError) as exc:
+        logger.exception("CDMX v1 feature contract or prediction failed")
+        return jsonify({"eligible": False, "reason": "feature_contract_mismatch", "detail": str(exc)}), 503
+    observed = row["municipality"] in registry.specs["09"].observed_municipalities
+    confidence = "MEDIUM" if observed else "LOW"
+    return jsonify({
+        "eligible": True,
+        "model": "avm_residential_v2",
+        "model_version": registry.specs["09"].version,
+        "regional_model": registry.specs["09"].model_id,
+        "segment": "residential",
+        "property_type": property_type,
+        "estimated_value": round(prediction),
+        "currency": "MXN",
+        "range": None,
+        "confidence": confidence,
+        "coverage": {"observed_in_training": observed, "note": None if observed else "Alcaldía sin observaciones válidas de entrenamiento CDMX v1."},
+        "location": {
+            "municipality": row["municipality"],
+            "locality": match.locality,
+            "ageb": match.cve_ageb,
+        },
+    }), 200
+
+
+def _predict_morelos_residential(data: dict, context):
     match, censo_values, denue_values = context
     property_type = data.get("property_type")
     row = {
@@ -211,17 +280,9 @@ def predict_v2_residential():
         "property_type": property_type,
         "estimated_value": round(prediction),
         "currency": "MXN",
-        "range": {
-            "low": round(low),
-            "high": round(high),
-            "nominal_coverage": coverage,
-        },
+        "range": {"low": round(low), "high": round(high), "nominal_coverage": coverage},
         "confidence": confidence,
-        "location": {
-            "municipality": row["municipality"],
-            "locality": match.locality,
-            "ageb": match.cve_ageb,
-        },
+        "location": {"municipality": row["municipality"], "locality": match.locality, "ageb": match.cve_ageb},
     }), 200
 
 @app.post("/predict/v2/v1")

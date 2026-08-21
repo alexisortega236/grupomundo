@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-08-21T16:08:38.138202+00:00",
+  "region": "Ciudad de México",
+  "entity_code": "09",
+  "model_id": "avm_cdmx_v1",
+  "model_version": "avm_cdmx_v1_experimental",
+  "purpose": "Regional AVM inference bundle; experimental only.",
+  "source_datasets": {
+    "ageb": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/storage/app/data/2025_1_09_A.shp",
+    "censo": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/storage/app/data/conjunto_de_datos/conjunto_de_datos_ageb_urbana_09_cpv2020.csv",
+    "denue": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/storage/app/data/denue_09_csv/conjunto_de_datos/denue_inegi_09_.csv",
+    "model": "/Users/alexisortega/Desktop/GM/grupo-mundo-patrimonial/services/avm/data/experiments/cdmx_v1/model_best_experimental.joblib"
+  },
+  "files": [
+    "09a.shp",
+    "09a.shx",
+    "09a.dbf",
+    "09a.prj",
+    "09a.cpg",
+    "model_best_experimental.joblib",
+    "censo_ageb_features.csv",
+    "denue_points.csv",
+    "metadata.json"
+  ],
+  "ageb_crs": "EPSG:6372",
+  "ageb_polygons": 2430,
+  "censo_rows_mza_000_ageb": 2433,
+  "denue_rows": 462729,
+  "denue_outside_cdmx_excluded": 3,
+  "censo_columns": [
+    "ENTIDAD",
+    "NOM_ENT",
+    "MUN",
+    "NOM_MUN",
+    "LOC",
+    "NOM_LOC",
+    "AGEB",
+    "MZA",
+    "POBTOT",
+    "TVIVHAB",
+    "VPH_AUTOM",
+    "VPH_INTER",
+    "GRAPROES",
+    "PEA",
+    "POCUPADA"
+  ],
+  "denue_columns": [
+    "codigo_act",
+    "latitud",
+    "longitud"
+  ]
+}
