@@ -236,6 +236,7 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('id="valuation-form"', false)
             ->assertSee('name="state"', false)
             ->assertSee('id="municipality" name="municipality"', false)
+            ->assertSee('type="submit"', false)
             ->assertSee('name="neighborhood"', false)
             ->assertSee('name="postal_settlement_id"', false)
             ->assertSee('value="Azcapotzalco"', false)
@@ -270,5 +271,6 @@ class CdmxPostalSettlementsTest extends TestCase
         $this->assertFalse($municipality->hasAttribute('disabled'));
         $this->assertSame(1, $xpath->query('//form[@id="valuation-form"]//select[@id="municipality"]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="municipality-value"]')->length);
+        $this->assertSame(1, $xpath->query('//form[@id="valuation-form"]//button[@type="submit"]')->length);
     }
 }

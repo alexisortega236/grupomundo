@@ -126,7 +126,7 @@
                     <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">Revisa los campos marcados antes de calcular la estimación.</div>
                 @endif
 
-                <button class="w-full rounded bg-[#0d2723] px-6 py-4 text-sm font-bold uppercase tracking-[.16em] text-white disabled:opacity-70 sm:w-auto" x-bind:disabled="submitting" x-text="submitting ? 'Analizando propiedad...' : 'Calcular valor estimado'">Calcular valor estimado</button>
+                <button type="submit" class="w-full rounded bg-[#0d2723] px-6 py-4 text-sm font-bold uppercase tracking-[.16em] text-white disabled:opacity-70 sm:w-auto" x-bind:disabled="submitting" x-text="submitting ? 'Analizando propiedad...' : 'Calcular valor estimado'">Calcular valor estimado</button>
                 <p class="-mt-3 text-sm text-[#687773]" x-show="submitting" x-cloak>Estamos considerando las características del inmueble y su ubicación.</p>
             </div>
 
