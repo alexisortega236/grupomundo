@@ -240,7 +240,9 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('name="postal_settlement_id"', false)
             ->assertSee('value="Azcapotzalco"', false)
             ->assertSee('selectedNeighborhood', false)
-            ->assertSee('municipalityValue.value = municipality.value', false);
+            ->assertSee('const syncMunicipalityValue = () =>', false)
+            ->assertSee("municipalityValue.value = municipality.value || '';", false)
+            ->assertSee('syncMunicipalityValue();', false);
 
         $dom = new \DOMDocument();
         @$dom->loadHTML($response->getContent());

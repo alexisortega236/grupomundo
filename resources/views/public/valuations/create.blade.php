@@ -159,13 +159,21 @@
             const geolocate = document.getElementById('valuation-geolocate');
             let selectedNeighborhood = settlementIdInput.value ? neighborhood.value.trim() : '';
 
+            const syncMunicipalityValue = () => {
+                municipalityValue.value = municipality.value || '';
+            };
+
+            // Keep the canonical field aligned with the server-rendered/restored select.
+            syncMunicipalityValue();
+
             form.addEventListener('submit', (event) => {
-                municipalityValue.value = municipality.value;
+                syncMunicipalityValue();
                 const formData = new FormData(form);
 
                 if (formData.get('municipality') !== municipality.value) {
                     event.preventDefault();
                     status.textContent = 'Selecciona un municipio o alcaldía válido.';
+                    console.error('Municipality synchronization failed');
                     return;
                 }
             });
@@ -191,7 +199,7 @@
                 precisionInput.value = location.location_precision || 'neighborhood';
                 if (location.municipality) {
                     municipality.value = location.municipality;
-                    municipalityValue.value = municipality.value;
+                    syncMunicipalityValue();
                 }
                 if (location.neighborhood && !preserveSettlement) {
                     neighborhood.value = location.neighborhood;
@@ -292,7 +300,7 @@
             });
 
             municipality.addEventListener('change', () => {
-                municipalityValue.value = municipality.value;
+                syncMunicipalityValue();
                 selectedNeighborhood = '';
                 clearCoordinates();
                 invalidateSettlement();
@@ -308,7 +316,7 @@
                 neighborhood.value = '';
                 municipality.innerHTML = '<option value="">Selecciona una opción</option>';
                 municipality.value = '';
-                municipalityValue.value = '';
+                syncMunicipalityValue();
                 municipalityLabel.textContent = state.value === 'Ciudad de México' ? 'Alcaldía' : 'Municipio';
                 suggestions.classList.add('hidden');
                 status.textContent = 'Cargando municipios...';
@@ -324,7 +332,7 @@
                         municipality.appendChild(option);
                     });
                     municipality.value = '';
-                    municipalityValue.value = '';
+                    syncMunicipalityValue();
                     status.textContent = 'Selecciona un municipio o alcaldía.';
                 } catch (error) {
                     status.textContent = error.message || 'No pudimos cargar las opciones de ubicación.';
