@@ -176,6 +176,14 @@
                 }
             });
 
+            form.addEventListener('formdata', (event) => {
+                const municipalityValue = municipality.value;
+
+                if (municipalityValue && !event.formData.has('municipality')) {
+                    event.formData.set('municipality', municipalityValue);
+                }
+            });
+
             const clearCoordinates = () => {
                 latInput.value = '';
                 lngInput.value = '';

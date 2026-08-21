@@ -242,6 +242,8 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee('selectedNeighborhood', false)
             ->assertSee("municipality.name = 'municipality'", false)
             ->assertSee('municipality.disabled = false', false)
+            ->assertSee("form.addEventListener('formdata'", false)
+            ->assertSee("event.formData.set('municipality', municipalityValue)", false)
             ->assertDontSee('id="municipality" name="municipality" disabled', false);
 
         $dom = new \DOMDocument();
