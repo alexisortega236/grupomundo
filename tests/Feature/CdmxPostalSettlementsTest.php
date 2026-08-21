@@ -223,7 +223,7 @@ class CdmxPostalSettlementsTest extends TestCase
     {
         $this->seed(CdmxPostalSettlementsSeeder::class);
 
-        $this->withSession([
+        $response = $this->withSession([
             '_old_input' => [
                 'state' => 'Ciudad de México',
                 'municipality' => 'Azcapotzalco',
@@ -233,8 +233,9 @@ class CdmxPostalSettlementsTest extends TestCase
             ],
         ])->get('/valuador')
             ->assertOk()
+            ->assertSee('id="valuation-form"', false)
             ->assertSee('name="state"', false)
-            ->assertSee('id="municipality" name="municipality"', false)
+            ->assertSee('id="municipality" name="municipality" form="valuation-form"', false)
             ->assertSee('name="neighborhood"', false)
             ->assertSee('name="postal_settlement_id"', false)
             ->assertSee('value="Azcapotzalco"', false)
@@ -242,5 +243,20 @@ class CdmxPostalSettlementsTest extends TestCase
             ->assertSee("municipality.name = 'municipality'", false)
             ->assertSee('municipality.disabled = false', false)
             ->assertDontSee('id="municipality" name="municipality" disabled', false);
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $forms = $xpath->query('//form[@id="valuation-form"]');
+        $municipalities = $xpath->query('//*[@id="municipality"]');
+        $municipality = $municipalities->item(0);
+
+        $this->assertSame(1, $forms->length);
+        $this->assertSame(1, $municipalities->length);
+        $this->assertNotNull($municipality);
+        $this->assertSame('municipality', $municipality->getAttribute('name'));
+        $this->assertSame('valuation-form', $municipality->getAttribute('form'));
+        $this->assertFalse($municipality->hasAttribute('disabled'));
+        $this->assertSame(1, $xpath->query('//form[@id="valuation-form"]//*[@id="municipality"]')->length);
     }
 }

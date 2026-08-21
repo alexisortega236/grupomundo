@@ -28,6 +28,7 @@
 
     <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <form
+            id="valuation-form"
             method="POST"
             action="{{ route('valuation.store') }}"
             class="grid gap-8 lg:grid-cols-[1fr_360px]"
@@ -56,7 +57,7 @@
                             <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
                         </label>
                         <label class="block text-sm font-semibold text-[#0d2723]"><span id="valuation-municipality-label">{{ $selectedState === 'Ciudad de México' ? 'Alcaldía' : 'Municipio' }}</span>
-                            <select id="municipality" name="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
+                            <select id="municipality" name="municipality" form="valuation-form" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
                         </label>
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
@@ -140,7 +141,8 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const municipality = document.querySelector('[name="municipality"]');
+            const form = document.getElementById('valuation-form');
+            const municipality = document.getElementById('municipality');
             const state = document.querySelector('[name="state"]');
             const municipalityLabel = document.getElementById('valuation-municipality-label');
             const neighborhood = document.querySelector('[name="neighborhood"]');
@@ -153,13 +155,25 @@
             const status = document.getElementById('valuation-location-status');
             const suggestions = document.getElementById('valuation-location-suggestions');
             const geolocate = document.getElementById('valuation-geolocate');
-            const form = municipality.form;
             let selectedNeighborhood = settlementIdInput.value ? neighborhood.value.trim() : '';
 
             form.addEventListener('submit', () => {
                 // Keep the canonical HTTP contract even if a future loading state disables the select.
                 municipality.name = 'municipality';
                 municipality.disabled = false;
+
+                if (window.__VALUATION_DEBUG__) {
+                    const formData = new FormData(form);
+                    console.debug('public valuation submit audit', {
+                        value: municipality.value,
+                        name: municipality.name,
+                        disabled: municipality.disabled,
+                        formId: municipality.form?.id,
+                        isConnected: municipality.isConnected,
+                        formDataHasMunicipality: formData.has('municipality'),
+                        formDataMunicipality: formData.get('municipality'),
+                    });
+                }
             });
 
             const clearCoordinates = () => {
