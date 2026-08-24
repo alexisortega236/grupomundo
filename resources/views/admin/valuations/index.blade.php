@@ -5,7 +5,7 @@
     <div class="overflow-hidden rounded-lg bg-white shadow-sm">
         <table class="w-full text-left text-sm">
             <thead class="bg-[#efe9dc] text-[#0d2723]">
-                <tr><th class="p-3">Fecha</th><th class="p-3">Tipo</th><th class="p-3">Estado</th><th class="p-3">Valor estimado</th><th class="p-3"></th></tr>
+                <tr><th class="p-3">Fecha</th><th class="p-3">Tipo de propiedad</th><th class="p-3">Estado</th><th class="p-3">Valor estimado</th><th class="p-3"></th></tr>
             </thead>
             <tbody>
                 @forelse($valuations as $valuation)

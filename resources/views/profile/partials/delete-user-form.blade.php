@@ -28,14 +28,14 @@
             </p>
 
             <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
+                <x-input-label for="password" value="Contraseña" class="sr-only" />
 
                 <x-text-input
                     id="password"
                     name="password"
                     type="password"
                     class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
+                    placeholder="Contraseña"
                 />
 
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
@@ -43,7 +43,7 @@
 
             <div class="mt-6 flex justify-end">
                 <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
+                    Cancelar
                 </x-secondary-button>
 
                 <x-danger-button class="ms-3">

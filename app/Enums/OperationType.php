@@ -14,7 +14,7 @@ enum OperationType: string
         return match ($this) {
             self::Sale => 'Venta',
             self::Rent => 'Renta',
-            self::SaleRent => 'Venta/Renta',
+            self::SaleRent => 'Venta y renta',
             self::Presale => 'Preventa',
         };
     }

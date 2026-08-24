@@ -18,7 +18,7 @@ class DashboardController extends Controller
                 'Borradores' => Property::where('status', 'draft')->count(),
                 'En venta' => Property::where('operation_type', OperationType::Sale)->count(),
                 'En renta' => Property::where('operation_type', OperationType::Rent)->count(),
-                'Venta/Renta' => Property::where('operation_type', OperationType::SaleRent)->count(),
+                'Venta y renta' => Property::where('operation_type', OperationType::SaleRent)->count(),
                 'Preventa' => Property::where('operation_type', OperationType::Presale)->count(),
                 'Vendidas' => Property::where('status', 'sold')->count(),
                 'Rentadas' => Property::where('status', 'rented')->count(),

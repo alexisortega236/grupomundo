@@ -1,8 +1,8 @@
 @php
     $selectedType = old('property_type', 'house');
-    $selectedState = old('state', 'Morelos');
+    $selectedState = old('state', '');
     $hasOldLocation = old('state') !== null || old('municipality') !== null || old('neighborhood') !== null;
-    $selectedMunicipality = old('municipality', $hasOldLocation ? '' : ($selectedState === 'Ciudad de México' ? 'Álvaro Obregón' : 'Cuautla'));
+    $selectedMunicipality = old('municipality', '');
     $oldLatitude = old('latitude');
     $oldLongitude = old('longitude');
     $oldSettlementId = old('postal_settlement_id', old('settlement_id'));
@@ -55,7 +55,7 @@
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
                         <label class="block text-sm font-semibold text-[#0d2723]">Estado
-                            <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
+                            <select id="valuation-state" name="state" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]"><option value="">Selecciona un estado</option><option value="Morelos" @selected($selectedState === 'Morelos')>Morelos</option><option value="Ciudad de México" @selected($selectedState === 'Ciudad de México')>Ciudad de México</option></select>
                         </label>
                         <label class="block text-sm font-semibold text-[#0d2723]"><span id="valuation-municipality-label">{{ $selectedState === 'Ciudad de México' ? 'Alcaldía' : 'Municipio' }}</span>
                             <select id="municipality" name="municipality" class="mt-1 w-full rounded border-[#d8ccb8] bg-white px-3 py-2 text-sm focus:border-[#b89752] focus:ring-[#b89752]">@foreach($municipalities as $key => $text)<option value="{{ $key }}" @selected($selectedMunicipality === $key)>{{ $text }}</option>@endforeach</select>
@@ -63,7 +63,7 @@
                         <div class="md:col-span-2">
                             <x-form.input label="Colonia / Fraccionamiento" name="neighborhood" :value="old('neighborhood')" placeholder="Escribe al menos 2 caracteres" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="valuation-location-suggestions" aria-expanded="false" />
                             <div id="valuation-location-suggestions" class="mt-2 hidden rounded-md border border-[#d8ccb8] bg-[#fbfaf7] p-3 text-sm text-[#51635f]"></div>
-                            <p class="mt-1 text-xs text-[#687773]">Escribe y selecciona una colonia o fraccionamiento real de la lista.</p>
+                            <p class="mt-1 text-xs text-[#687773]">La ubicación debe corresponder al catálogo disponible para el municipio o alcaldía seleccionado.</p>
                             @error('postal_settlement_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                         </div>
                     </div>

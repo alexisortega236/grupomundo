@@ -152,7 +152,21 @@ class PublicPropertyTest extends TestCase
     public function test_authorized_user_can_enter_admin_panel(): void
     {
         $user = User::factory()->create(['role' => 'editor']);
-        $this->actingAs($user)->get('/admin')->assertOk()->assertSee('Dashboard');
+        $this->actingAs($user)->get('/admin')->assertOk()->assertSee('Panel');
+    }
+
+    public function test_public_operation_filters_include_sale_rent_in_sale_and_rent(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $sale = Property::factory()->create(['created_by' => $admin->id, 'title' => 'Solo venta', 'operation_type' => 'sale', 'status' => 'published', 'published_at' => now()]);
+        $rent = Property::factory()->create(['created_by' => $admin->id, 'title' => 'Solo renta', 'operation_type' => 'rent', 'status' => 'published', 'published_at' => now()]);
+        $both = Property::factory()->create(['created_by' => $admin->id, 'title' => 'Venta y renta', 'operation_type' => 'sale_rent', 'status' => 'published', 'published_at' => now()]);
+        $presale = Property::factory()->create(['created_by' => $admin->id, 'title' => 'Solo preventa', 'operation_type' => 'presale', 'status' => 'published', 'published_at' => now()]);
+
+        $this->get('/propiedades?operation_type=sale')->assertSee($sale->title)->assertSee($both->title)->assertDontSee($rent->title)->assertDontSee($presale->title);
+        $this->get('/propiedades?operation_type=rent')->assertSee($rent->title)->assertSee($both->title)->assertDontSee($sale->title)->assertDontSee($presale->title);
+        $this->get('/propiedades?operation_type=presale')->assertSee($presale->title)->assertDontSee($sale->title)->assertDontSee($rent->title)->assertDontSee($both->title);
+        $this->get('/propiedades')->assertSee($sale->title)->assertSee($rent->title)->assertSee($both->title)->assertSee($presale->title);
     }
 
     public function test_admin_can_create_edit_and_delete_property(): void
@@ -163,7 +177,7 @@ class PublicPropertyTest extends TestCase
         $this->actingAs($admin)->get(route('admin.properties.create'))
             ->assertOk()
             ->assertSee('Preventa')
-            ->assertSee('Venta/Renta')
+            ->assertSee('Venta y renta')
             ->assertDontSee('Slug')
             ->assertDontSee('Latitud')
             ->assertDontSee('Longitud')
@@ -174,7 +188,7 @@ class PublicPropertyTest extends TestCase
         $this->actingAs($admin)->get(route('admin.properties.index'))
             ->assertOk()
             ->assertSee('Preventa')
-            ->assertSee('Venta/Renta')
+            ->assertSee('Venta y renta')
             ->assertSee('Despublicar')
             ->assertSee('Eliminar definitivamente');
 

@@ -25,4 +25,17 @@ enum AvmPropertyType: string
             ->mapWithKeys(fn (self $type) => [$type->value => $type->label()])
             ->all();
     }
+
+    public static function labelFor(?string $value): string
+    {
+        $value = trim((string) $value);
+
+        return match (strtolower($value)) {
+            self::House->value => self::House->label(),
+            self::Apartment->value => self::Apartment->label(),
+            self::Land->value => self::Land->label(),
+            self::Commercial->value => self::Commercial->label(),
+            default => $value,
+        };
+    }
 }

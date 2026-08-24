@@ -16,13 +16,13 @@ class ValuationController extends Controller
 {
     public function create(SupportedValuationLocations $locations)
     {
-        $state = old('state', 'Morelos');
+        $state = old('state', '');
 
         return view('public.valuations.create', [
             'propertyTypes' => collect(AvmPropertyType::options())->only(['house', 'apartment', 'land'])->all(),
             'states' => $locations->states(),
             'selectedState' => $state,
-            'municipalities' => $locations->municipalitiesForState($state),
+            'municipalities' => $state !== '' ? $locations->municipalitiesForState($state) : [],
             'municipalityCenters' => $locations->centers(),
         ]);
     }

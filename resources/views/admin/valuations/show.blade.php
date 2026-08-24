@@ -16,7 +16,7 @@
         <aside class="rounded-lg bg-white p-6">
             <h2 class="font-serif text-2xl">Propiedad</h2>
             <dl class="mt-4 grid gap-3 text-sm">
-                <div><dt class="text-[#687773]">Tipo</dt><dd class="font-bold">{{ $valuation->property->property_type }}</dd></div>
+                <div><dt class="text-[#687773]">Tipo de propiedad</dt><dd class="font-bold">{{ \App\Enums\AvmPropertyType::labelFor($valuation->property->property_type) }}</dd></div>
                 <div><dt class="text-[#687773]">Ubicación</dt><dd class="font-bold">{{ $valuation->property->neighborhood ?: '-' }}, {{ $valuation->property->municipality ?: '-' }}</dd></div>
                 <div><dt class="text-[#687773]">Coordenadas capturadas</dt><dd class="font-bold">{{ $valuation->property->latitude }}, {{ $valuation->property->longitude }}</dd></div>
                 <div><dt class="text-[#687773]">Terreno</dt><dd class="font-bold">{{ $valuation->property->land_area_m2 ?? '-' }} m²</dd></div>

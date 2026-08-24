@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Enums\AvmPropertyType;
+use App\Enums\OperationType;
 use App\Enums\PropertyStatus;
 use App\Models\Property;
 use Illuminate\Http\Request;
@@ -13,9 +15,21 @@ class PropertyController extends Controller
     {
         $query = Property::published()->with(['images', 'coverImage']);
 
-        foreach (['operation_type', 'property_type', 'state', 'city', 'neighborhood'] as $filter) {
+        foreach (['property_type', 'state', 'city', 'neighborhood'] as $filter) {
             $query->when($request->filled($filter), fn ($q) => $q->where($filter, $request->string($filter)));
         }
+
+        $operation = $request->string('operation_type')->toString();
+        $query->when($operation !== '', function ($q) use ($operation) {
+            $values = match ($operation) {
+                OperationType::Sale->value => [OperationType::Sale->value, OperationType::SaleRent->value],
+                OperationType::Rent->value => [OperationType::Rent->value, OperationType::SaleRent->value],
+                OperationType::Presale->value => [OperationType::Presale->value],
+                default => [$operation],
+            };
+
+            $q->whereIn('operation_type', $values);
+        });
 
         $query
             ->when($request->filled('min_price'), fn ($q) => $q->where('price', '>=', $request->float('min_price')))
@@ -38,7 +52,8 @@ class PropertyController extends Controller
             'properties' => $query->paginate(9)->withQueryString(),
             'filters' => $request->query(),
             'options' => [
-                'types' => Property::published()->distinct()->pluck('property_type')->filter(),
+                'types' => Property::published()->distinct()->pluck('property_type')->filter()
+                    ->mapWithKeys(fn ($type) => [$type => AvmPropertyType::labelFor($type)]),
                 'states' => Property::published()->distinct()->pluck('state')->filter(),
                 'cities' => Property::published()->distinct()->pluck('city')->filter(),
             ],
