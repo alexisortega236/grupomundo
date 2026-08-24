@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -22,6 +24,7 @@ def main() -> int:
     parser.add_argument("--state", required=True)
     parser.add_argument("--municipality", default=None)
     parser.add_argument("--municipalities", default=None, help="Lista separada por comas. Usa guion bajo para espacios.")
+    parser.add_argument("--neighborhoods", default=None, help="JSON con colonias por alcaldía; activa discovery granular para Mercado Libre.")
     parser.add_argument("--operation", choices=["venta", "renta"], default="venta")
     parser.add_argument("--max-pages", type=int, default=2)
     parser.add_argument("--max-listings", type=int, default=50)
@@ -47,11 +50,22 @@ def main() -> int:
 
     try:
         municipalities = municipality_list(args.municipalities, args.municipality)
+        neighborhoods = load_neighborhood_catalog(args.neighborhoods) if args.neighborhoods else None
+        if neighborhoods is not None and args.source != "mercadolibre":
+            raise SystemExit("--neighborhoods sólo está soportado por Mercado Libre.")
         seed_urls = [*args.start_url, *read_seed_file(args.seed_file)]
-        urls_by_municipality = discover_urls(source, args.state, municipalities, args.operation, args.max_pages, seed_urls)
+        urls_by_municipality = discover_urls(
+            source,
+            args.state,
+            municipalities,
+            args.operation,
+            args.max_pages,
+            seed_urls,
+            neighborhoods_by_municipality=neighborhoods,
+        )
         candidates = flatten_unique(urls_by_municipality)[: args.max_listings]
 
-        for url, municipality in candidates:
+        for url, municipality, _neighborhood in candidates:
             try:
                 canonical = canonical_url(url)
                 source_id = source._source_id(canonical) if hasattr(source, "_source_id") else source_id_from_url(canonical)
@@ -119,38 +133,95 @@ def read_seed_file(path: str | None) -> list[str]:
     return urls
 
 
-def discover_urls(source, state: str, municipalities: list[str], operation: str, max_pages: int, seed_urls: list[str]) -> dict[str, list[str]]:
-    discovered: dict[str, list[str]] = {}
+def discover_urls(
+    source,
+    state: str,
+    municipalities: list[str],
+    operation: str,
+    max_pages: int,
+    seed_urls: list[str],
+    neighborhoods_by_municipality: dict[str, list[str]] | None = None,
+) -> dict[str, dict]:
+    discovered: dict[str, dict] = {}
     for municipality in municipalities:
-        urls = source.discover(
-            state=state,
-            municipality=municipality,
-            operation=operation,
-            max_pages=max_pages,
-            start_urls=seed_urls or None,
+        neighborhoods = (
+            neighborhoods_by_municipality.get(municipality, [])
+            if neighborhoods_by_municipality is not None
+            else [None]
         )
-        discovered[municipality] = urls
-        logging.info("%s: %s URLs descubiertas", municipality, len(urls))
+        for neighborhood in neighborhoods:
+            key = discovery_key(municipality, neighborhood)
+            audit: list[dict] = []
+            kwargs = {
+                "state": state,
+                "municipality": municipality,
+                "operation": operation,
+                "max_pages": max_pages,
+                "start_urls": seed_urls or None,
+            }
+            if neighborhood is not None:
+                kwargs["neighborhood"] = neighborhood
+            if hasattr(source, "last_discovery_audit"):
+                kwargs["audit_sink"] = audit
+            urls = source.discover(**kwargs)
+            discovered[key] = {
+                "municipality": municipality,
+                "neighborhood": neighborhood,
+                "urls": urls,
+                "audit": audit,
+            }
+            label = f"{municipality} / {neighborhood}" if neighborhood else municipality
+            logging.info("%s: %s URLs descubiertas", label, len(urls))
     return discovered
 
 
-def flatten_unique(urls_by_municipality: dict[str, list[str]]) -> list[tuple[str, str]]:
+def flatten_unique(urls_by_municipality: dict[str, dict]) -> list[tuple[str, str, str | None]]:
     seen: set[str] = set()
-    flattened: list[tuple[str, str]] = []
-    municipalities = list(urls_by_municipality.keys())
-    max_len = max((len(urls) for urls in urls_by_municipality.values()), default=0)
+    flattened: list[tuple[str, str, str | None]] = []
+    targets = list(urls_by_municipality.values())
+    max_len = max((len(target["urls"]) for target in targets), default=0)
     for index in range(max_len):
-        for municipality in municipalities:
-            urls = urls_by_municipality[municipality]
+        for target in targets:
+            urls = target["urls"]
             if index >= len(urls):
                 continue
             url = urls[index]
             canonical = canonical_url(url)
-            if canonical in seen:
+            identity = listing_identity(canonical)
+            if identity in seen:
                 continue
-            seen.add(canonical)
-            flattened.append((canonical, municipality))
+            seen.add(identity)
+            flattened.append((canonical, target["municipality"], target["neighborhood"]))
     return flattened
+
+
+def discovery_key(municipality: str, neighborhood: str | None) -> str:
+    return f"{municipality}\x1f{neighborhood or ''}"
+
+
+def listing_identity(url: str) -> str:
+    match = re.search(r"/(MLM-\d+)(?:[-_/]|$)", url, flags=re.I)
+    return match.group(1).upper() if match else source_id_from_url(url)
+
+
+def load_neighborhood_catalog(path: str) -> dict[str, list[str]]:
+    catalog_path = Path(path)
+    if not catalog_path.exists():
+        raise SystemExit(f"No existe catálogo de colonias: {catalog_path}")
+    try:
+        data = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Catálogo de colonias inválido: {exc}") from exc
+    if not isinstance(data, dict):
+        raise SystemExit("El catálogo de colonias debe ser un objeto alcaldía -> lista de colonias.")
+    normalized: dict[str, list[str]] = {}
+    for municipality, neighborhoods in data.items():
+        if not isinstance(municipality, str) or not isinstance(neighborhoods, list):
+            raise SystemExit("Cada entrada del catálogo debe tener alcaldía string y lista de colonias.")
+        if any(not isinstance(neighborhood, str) or not neighborhood.strip() for neighborhood in neighborhoods):
+            raise SystemExit(f"Colonias inválidas para {municipality}.")
+        normalized[municipality] = list(dict.fromkeys(neighborhood.strip() for neighborhood in neighborhoods))
+    return normalized
 
 
 def print_summary(discovered: int, downloaded: int, listings: list, errors: int, skipped_existing: int) -> None:

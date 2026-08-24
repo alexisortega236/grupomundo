@@ -2,7 +2,8 @@
 set -euo pipefail
 
 if [ -z "${APP_KEY:-}" ]; then
-  export APP_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+  echo "ERROR: APP_KEY must be configured before starting the application." >&2
+  exit 1
 fi
 
 if [ "${DB_CONNECTION:-sqlite}" = "sqlite" ]; then
@@ -25,7 +26,9 @@ php artisan db:seed --class=CdmxPostalSettlementsSeeder --force --no-interaction
   exit 1
 }
 
-if [ "${RUN_SEEDERS:-true}" = "true" ]; then
+# DatabaseSeeder contains development/demo data. Production must opt in
+# explicitly; the catalog seeders above remain part of the application boot.
+if [ "${RUN_SEEDERS:-false}" = "true" ]; then
   php artisan db:seed --force --no-interaction
 fi
 

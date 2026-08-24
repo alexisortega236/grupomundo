@@ -9,14 +9,14 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_screen_is_not_publicly_available(): void
     {
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertNotFound();
     }
 
-    public function test_new_users_can_register(): void
+    public function test_public_registration_cannot_create_users(): void
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -25,7 +25,17 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertNotFound();
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'test@example.com']);
+    }
+
+    public function test_docker_entrypoint_does_not_enable_demo_seeders_by_default(): void
+    {
+        $entrypoint = file_get_contents(base_path('docker/entrypoint.sh'));
+
+        $this->assertIsString($entrypoint);
+        $this->assertStringContainsString('${RUN_SEEDERS:-false}', $entrypoint);
+        $this->assertStringContainsString('APP_KEY must be configured', $entrypoint);
     }
 }

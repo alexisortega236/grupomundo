@@ -193,6 +193,7 @@ class ValuationModuleTest extends TestCase
             'services.avm_v2.enabled' => true,
             'services.avm_v2.shadow_mode' => true,
             'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => false,
         ]);
         Http::fake([
             'https://avm.test/predict' => Http::response($this->legacySuccessResponse()),
@@ -235,6 +236,7 @@ class ValuationModuleTest extends TestCase
             'services.avm_v2.enabled' => true,
             'services.avm_v2.shadow_mode' => true,
             'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => false,
         ]);
         Http::fake([
             'https://avm.test/predict' => Http::response($this->legacySuccessResponse()),
@@ -321,6 +323,7 @@ class ValuationModuleTest extends TestCase
             'services.avm_v2.enabled' => true,
             'services.avm_v2.shadow_mode' => true,
             'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => false,
         ]);
         Http::fake([
             'https://avm.test/predict' => Http::response($this->legacySuccessResponse()),

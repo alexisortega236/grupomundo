@@ -37,3 +37,8 @@ services/avm/data/listings*.sqlite3
 
 # AVM legacy model - large binary kept outside normal Git
 services/avm/app/model/modelo_precio.joblib
+# AVM generated datasets / experiments
+services/avm/data/experiments/
+
+# Local MercadoLibre neighborhood configuration/data
+services/avm/app/data/mercadolibre_neighborhoods_cdmx.json

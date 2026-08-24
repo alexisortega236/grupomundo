@@ -86,27 +86,92 @@ class MercadoLibrePublicSource(ListingSource):
         self.delay_seconds = delay_seconds if delay_seconds is not None else float(os.getenv("LISTING_REQUEST_DELAY", "2"))
         self.timeout = timeout if timeout is not None else float(os.getenv("LISTING_REQUEST_TIMEOUT", "20"))
         self.session = requests.Session()
+        self.last_discovery_audit: list[dict] = []
         self.session.headers.update({
             "User-Agent": user_agent or os.getenv("LISTING_USER_AGENT", "GrupoMundoAVMResearchBot/0.1"),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "es-MX,es;q=0.9",
         })
 
-    def discover(self, state: str, municipality: str, operation: str, max_pages: int, start_urls: list[str] | None = None) -> list[str]:
+    def discover(
+        self,
+        state: str,
+        municipality: str,
+        operation: str,
+        max_pages: int,
+        start_urls: list[str] | None = None,
+        neighborhood: str | None = None,
+        audit_sink: list[dict] | None = None,
+    ) -> list[str]:
         urls: list[str] = []
-        seeds = start_urls or self._search_urls(state, municipality, operation, max_pages)
-        for search_url in seeds:
+        if audit_sink is None:
+            audit_sink = []
+        self.last_discovery_audit = audit_sink
+        targets = (
+            [(url, None, None) for url in start_urls]
+            if start_urls
+            else self._search_targets(state, municipality, operation, max_pages, neighborhood)
+        )
+        seen_ids: set[str] = set()
+        for search_url, property_type, page in targets:
+            offset = ((page * 48) + 1) if page is not None else None
+            audit = {
+                "state": state,
+                "municipality": municipality,
+                "neighborhood": neighborhood,
+                "property_type": property_type,
+                "page": page,
+                "offset": offset,
+                "url": search_url,
+                "status_http": None,
+                "response_url": None,
+                "links_found": 0,
+                "ids_found": 0,
+                "ids_unique": 0,
+                "duplicates_discarded": 0,
+            }
             try:
                 response = self.session.get(search_url, timeout=self.timeout)
             except requests.RequestException as exc:
                 logger.warning("No se pudo inspeccionar Mercado Libre %s: %s", search_url, exc)
+                audit["error"] = str(exc)
+                if audit_sink is not None:
+                    audit_sink.append(audit)
                 continue
+            audit["status_http"] = response.status_code
+            audit["response_url"] = response.url
             parser = _MercadoLibreHtmlParser()
             parser.feed(response.text)
+            page_ids: set[str] = set()
+            page_duplicates = 0
             for link in parser.links:
                 absolute = canonical_url(urljoin(response.url, link))
-                if self._is_detail_url(absolute) and absolute not in urls:
-                    urls.append(absolute)
+                if not self._is_detail_url(absolute):
+                    continue
+                audit["links_found"] += 1
+                source_id = self._source_id(absolute)
+                if source_id in page_ids or source_id in seen_ids:
+                    page_duplicates += 1
+                    continue
+                page_ids.add(source_id)
+                seen_ids.add(source_id)
+                urls.append(absolute)
+            audit["ids_found"] = audit["links_found"]
+            audit["ids_unique"] = len(page_ids)
+            audit["duplicates_discarded"] = page_duplicates
+            if audit_sink is not None:
+                audit_sink.append(audit)
+            logger.info(
+                "Mercado Libre discovery municipality=%s neighborhood=%s type=%s page=%s status=%s links=%s unique=%s duplicates=%s",
+                municipality,
+                neighborhood or "",
+                property_type or "",
+                page,
+                response.status_code,
+                audit["links_found"],
+                audit["ids_unique"],
+                page_duplicates,
+            )
             time.sleep(self.delay_seconds)
         return urls
 
@@ -185,22 +250,43 @@ class MercadoLibrePublicSource(ListingSource):
         listing.quality_flags = quality_flags(listing)
         return listing
 
-    def _search_urls(self, state: str, municipality: str, operation: str, max_pages: int) -> list[str]:
+    def _search_urls(
+        self,
+        state: str,
+        municipality: str,
+        operation: str,
+        max_pages: int,
+        neighborhood: str | None = None,
+    ) -> list[str]:
+        return [url for url, _, _ in self._search_targets(state, municipality, operation, max_pages, neighborhood)]
+
+    def _search_targets(
+        self,
+        state: str,
+        municipality: str,
+        operation: str,
+        max_pages: int,
+        neighborhood: str | None = None,
+    ) -> list[tuple[str, str, int]]:
         if operation != "venta":
             return []
         state_slug = self._slug(state)
         municipality_slug = self._slug(municipality)
-        urls: list[str] = []
+        neighborhood_slug = self._slug(neighborhood) if neighborhood else None
+        urls: list[tuple[str, str, int]] = []
         for property_type in self.property_types:
             path = PROPERTY_TYPE_PATHS.get(property_type)
             if not path:
                 continue
-            base = f"{self.base_url}/{path}/venta/{state_slug}/{municipality_slug}/"
+            location = f"{state_slug}/{municipality_slug}"
+            if neighborhood_slug:
+                location = f"{location}/{neighborhood_slug}"
+            base = f"{self.base_url}/{path}/venta/{location}/"
             for page in range(max(1, max_pages)):
                 if page == 0:
-                    urls.append(base)
+                    urls.append((base, property_type, page))
                 else:
-                    urls.append(f"{base}_Desde_{(page * 48) + 1}")
+                    urls.append((f"{base}_Desde_{(page * 48) + 1}", property_type, page))
         return urls
 
     def _is_detail_url(self, url: str) -> bool:
