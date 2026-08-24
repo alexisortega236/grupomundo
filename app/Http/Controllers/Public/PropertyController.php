@@ -11,7 +11,7 @@ class PropertyController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Property::published()->with('images');
+        $query = Property::published()->with(['images', 'coverImage']);
 
         foreach (['operation_type', 'property_type', 'state', 'city', 'neighborhood'] as $filter) {
             $query->when($request->filled($filter), fn ($q) => $q->where($filter, $request->string($filter)));
@@ -50,8 +50,8 @@ class PropertyController extends Controller
         abort_unless($property->status === PropertyStatus::Published && $property->published_at, 404);
 
         return view('public.properties.show', [
-            'property' => $property->load(['images', 'amenities']),
-            'related' => Property::published()->with('images')
+            'property' => $property->load(['images', 'coverImage', 'amenities']),
+            'related' => Property::published()->with(['images', 'coverImage'])
                 ->whereKeyNot($property->id)
                 ->where('property_type', $property->property_type)
                 ->take(3)->get(),

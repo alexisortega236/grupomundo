@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function __invoke()
     {
         return view('public.home', [
-            'featuredProperties' => Property::published()->featured()->with('images')->latest('published_at')->take(6)->get(),
+            'featuredProperties' => Property::published()->featured()->with(['images', 'coverImage'])->latest('published_at')->take(6)->get(),
             'propertyTypes' => Property::published()->distinct()->pluck('property_type')->filter()->values(),
         ]);
     }

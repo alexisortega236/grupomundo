@@ -1,4 +1,4 @@
-<x-public-layout title="Grupo Mundo Patrimonial" description="Encuentra propiedades en venta y renta con asesoria patrimonial.">
+<x-public-layout title="Grupo Mundo Patrimonial" description="Encuentra propiedades en venta y renta con asesoría patrimonial.">
     <section class="bg-[#0d2723] text-white">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-24">
             <div>
@@ -9,7 +9,7 @@
                     <select name="operation_type" class="rounded border-[#ded8ca]"><option value="">Venta y renta</option>@foreach(\App\Enums\OperationType::options() as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach</select>
                     <select name="property_type" class="rounded border-[#ded8ca]"><option value="">Tipo de inmueble</option>@foreach($propertyTypes as $type)<option>{{ $type }}</option>@endforeach</select>
                     <input name="keyword" class="rounded border-[#ded8ca]" placeholder="Zona o palabra clave">
-                    <select name="sort" class="rounded border-[#ded8ca]"><option value="recent">Mas recientes</option><option value="featured">Destacadas</option></select>
+                    <select name="sort" class="rounded border-[#ded8ca]"><option value="recent">Más recientes</option><option value="featured">Destacadas</option></select>
                     <button class="rounded bg-[#0d2723] px-5 py-3 text-sm font-bold uppercase tracking-[.16em] text-white">Buscar</button>
                 </form>
             </div>
@@ -28,8 +28,8 @@
     </section>
     <section class="bg-[#efe9dc] py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <p class="text-xs font-bold uppercase tracking-[.35em] text-[#b89752]">Mas que una inmobiliaria</p>
-            <h2 class="mt-4 max-w-3xl font-serif text-5xl">Acompañamiento para proteger cada decision.</h2>
+            <p class="text-xs font-bold uppercase tracking-[.35em] text-[#b89752]">Más que una inmobiliaria</p>
+            <h2 class="mt-4 max-w-3xl font-serif text-5xl">Acompañamiento para proteger cada decisión.</h2>
             <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-6">
                 <x-service-card class="lg:col-span-2" number="01" title="Compra y venta" text="Asesoría integral para comprar o vender tu propiedad con seguridad, estrategia y acompañamiento de principio a fin." />
                 <x-service-card class="lg:col-span-2" number="02" title="Rentas" text="Promoción, selección de prospectos, negociación y acompañamiento hasta la formalización del contrato." />
@@ -39,5 +39,5 @@
             </div>
         </div>
     </section>
-    <section class="bg-[#123f75] px-4 py-16 text-center text-white"><h2 class="font-serif text-4xl">Convierte tu siguiente movimiento inmobiliario en una decision patrimonial.</h2><a class="mt-6 inline-block rounded-full bg-[#d5b673] px-6 py-3 font-bold text-[#0d2723]" href="https://wa.me/{{ config('company.whatsapp_number') }}">Hablar con un asesor</a></section>
+    <section class="bg-[#123f75] px-4 py-16 text-center text-white"><h2 class="font-serif text-4xl">Convierte tu siguiente movimiento inmobiliario en una decisión patrimonial.</h2><a class="mt-6 inline-block rounded-full bg-[#d5b673] px-6 py-3 font-bold text-[#0d2723]" href="https://wa.me/{{ config('company.whatsapp_number') }}">Hablar con un asesor</a></section>
 </x-public-layout>

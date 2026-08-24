@@ -18,6 +18,6 @@ class ContactRequestController extends Controller
             'message',
         ]));
 
-        return back()->with('status', 'Tu solicitud fue enviada. Un asesor te contactara pronto.');
+        return back()->with('status', 'Tu solicitud fue enviada. Un asesor te contactará pronto.');
     }
 }
