@@ -1,0 +1,155 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout production
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_KEY }}
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/grupomundo_prod
+          chmod 600 ~/.ssh/grupomundo_prod
+
+          ssh-keyscan -p "$PROD_PORT" "$PROD_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Create remote release directory
+        id: release
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+        run: |
+          RELEASE="$(date +%Y%m%d_%H%M%S)-${GITHUB_SHA::7}"
+          echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
+
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "mkdir -p '$PROD_PATH/releases/$RELEASE'"
+
+      - name: Upload application
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+          RELEASE: ${{ steps.release.outputs.release }}
+        run: |
+          rsync -az \
+            --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='.env' \
+            -e "ssh -i ~/.ssh/grupomundo_prod -p $PROD_PORT" \
+            ./ \
+            "$PROD_USER@$PROD_HOST:$PROD_PATH/releases/$RELEASE/"
+
+      - name: Build release
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+          RELEASE: ${{ steps.release.outputs.release }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "bash -lc '
+              set -e
+
+              export NVM_DIR=\"\$HOME/.nvm\"
+              [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\"
+              nvm use 20
+
+              RELEASE_PATH=\"$PROD_PATH/releases/$RELEASE\"
+
+              cd \"\$RELEASE_PATH\"
+
+              ln -sfn \"$PROD_PATH/shared/.env\" .env
+
+              rm -rf storage
+              ln -sfn \"$PROD_PATH/shared/storage\" storage
+
+              composer install \
+                --no-dev \
+                --prefer-dist \
+                --no-interaction \
+                --optimize-autoloader
+
+              npm ci
+              npm run build
+
+              php artisan migrate --force
+              php artisan storage:link
+
+              php artisan config:clear
+              php artisan cache:clear
+              php artisan view:clear
+              php artisan config:cache
+              php artisan route:cache
+              php artisan view:cache
+            '"
+
+      - name: Activate release
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+          RELEASE: ${{ steps.release.outputs.release }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "ln -sfn '$PROD_PATH/releases/$RELEASE' '$PROD_PATH/current'"
+
+      - name: Keep last 5 releases
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "cd '$PROD_PATH/releases' && \
+             ls -1dt */ | tail -n +6 | xargs -r rm -rf"
+
+      - name: Verify current release
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "readlink -f '$PROD_PATH/current' && \
+             php '$PROD_PATH/current/artisan' about --only=environment"
