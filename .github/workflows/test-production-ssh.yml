@@ -1,0 +1,41 @@
+name: Test Production SSH
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ssh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_KEY }}
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/grupomundo_prod
+          chmod 600 ~/.ssh/grupomundo_prod
+
+          ssh-keyscan -p "$PROD_PORT" "$PROD_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Test connection to production
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "echo '=== SSH CONNECTION OK ===' && \
+             whoami && \
+             hostname && \
+             echo 'Production path: $PROD_PATH' && \
+             ls -ld '$PROD_PATH' '$PROD_PATH/releases' '$PROD_PATH/shared'"
