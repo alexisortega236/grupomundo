@@ -126,6 +126,19 @@ jobs:
             "$PROD_USER@$PROD_HOST" \
             "ln -sfn '$PROD_PATH/releases/$RELEASE' '$PROD_PATH/current'"
 
+      - name: Restart AVM service
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          PROD_PORT: ${{ secrets.PROD_PORT }}
+          PROD_USER: ${{ secrets.PROD_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/grupomundo_prod \
+            -p "$PROD_PORT" \
+            "$PROD_USER@$PROD_HOST" \
+            "sudo -n systemctl restart grupo-mundo-avm.service && \
+            sudo -n systemctl is-active grupo-mundo-avm.service"
+
       - name: Keep last 5 releases
         env:
           PROD_HOST: ${{ secrets.PROD_HOST }}
