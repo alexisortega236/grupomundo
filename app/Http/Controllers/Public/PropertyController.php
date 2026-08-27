@@ -62,7 +62,12 @@ class PropertyController extends Controller
 
     public function show(Property $property)
     {
-        abort_unless($property->status === PropertyStatus::Published && $property->published_at, 404);
+        abort_unless(
+            $property->origin === Property::ORIGIN_COMMERCIAL
+                && $property->status === PropertyStatus::Published
+                && $property->published_at,
+            404
+        );
 
         return view('public.properties.show', [
             'property' => $property->load(['images', 'coverImage', 'amenities']),

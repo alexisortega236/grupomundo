@@ -184,6 +184,7 @@ class ValuationService
             'short_description' => 'Propiedad creada desde el módulo de valuación.',
             'description' => 'Propiedad creada desde el módulo de valuación inmobiliaria automatizada.',
             'operation_type' => OperationType::Sale->value,
+            'origin' => Property::ORIGIN_VALUATION,
             'property_type' => $data['property_type'],
             'price' => 0,
             'currency' => 'MXN',

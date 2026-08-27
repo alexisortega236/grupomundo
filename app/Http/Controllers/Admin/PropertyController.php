@@ -21,7 +21,7 @@ class PropertyController extends Controller
      */
     public function index(Request $request)
     {
-        $properties = Property::withTrashed()
+        $properties = Property::commercial()->withTrashed()
             ->when($request->filled('search'), fn ($q) => $q->where('title', 'like', '%'.$request->string('search').'%'))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('operation_type'), fn ($q) => $q->where('operation_type', $request->string('operation_type')))
@@ -37,7 +37,11 @@ class PropertyController extends Controller
     public function create()
     {
         return view('admin.properties.form', [
-            'property' => new Property(['currency' => 'MXN', 'status' => PropertyStatus::Published]),
+            'property' => new Property([
+                'currency' => 'MXN',
+                'status' => PropertyStatus::Published,
+                'origin' => Property::ORIGIN_COMMERCIAL,
+            ]),
             'amenities' => Amenity::orderBy('name')->get(),
         ]);
     }
@@ -51,6 +55,7 @@ class PropertyController extends Controller
             $data = $this->propertyPayload($request);
             $data['slug'] = $this->uniqueSlug($data['title']);
             $data['created_by'] = $request->user()->id;
+            $data['origin'] = Property::ORIGIN_COMMERCIAL;
             $property = Property::create($data);
             $property->amenities()->sync($request->input('amenities', []));
             $images->sync($property, $request->validated());
@@ -73,6 +78,8 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
+        $this->authorize('update', $property);
+
         return view('admin.properties.form', [
             'property' => $property->load(['images', 'amenities']),
             'amenities' => Amenity::orderBy('name')->get(),
@@ -105,7 +112,7 @@ class PropertyController extends Controller
 
     public function togglePublished(Property $property)
     {
-        $this->authorize('update', $property);
+        $this->authorize('publish', $property);
         $property->update([
             'status' => $property->status === PropertyStatus::Published ? PropertyStatus::Draft : PropertyStatus::Published,
             'published_at' => $property->published_at ?: now(),

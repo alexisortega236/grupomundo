@@ -11,13 +11,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 
 class Property extends Model
 {
+    public const ORIGIN_COMMERCIAL = 'commercial';
+
+    public const ORIGIN_VALUATION = 'valuation';
+
     /** @use HasFactory<\Database\Factories\PropertyFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    protected $attributes = [
+        'origin' => self::ORIGIN_COMMERCIAL,
+    ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $property): void {
+            if (! in_array($property->origin, [self::ORIGIN_COMMERCIAL, self::ORIGIN_VALUATION], true)) {
+                throw new InvalidArgumentException('El origen de una property debe ser commercial o valuation.');
+            }
+        });
+
+        static::updating(function (self $property): void {
+            if ($property->isDirty('origin')) {
+                throw new InvalidArgumentException('El origen de una property no puede modificarse después de su creación.');
+            }
+        });
+    }
 
     protected function casts(): array
     {
@@ -57,6 +81,21 @@ class Property extends Model
         return $this->hasMany(Valuation::class);
     }
 
+    public function scopeCommercial($query)
+    {
+        return $query->where('origin', self::ORIGIN_COMMERCIAL);
+    }
+
+    public function scopeValuationOrigin($query)
+    {
+        return $query->where('origin', self::ORIGIN_VALUATION);
+    }
+
+    public function scopePublishable($query)
+    {
+        return $query->commercial();
+    }
+
     public function images(): HasMany
     {
         return $this->hasMany(PropertyImage::class)->orderBy('position');
@@ -79,7 +118,9 @@ class Property extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', PropertyStatus::Published)->whereNotNull('published_at');
+        return $query->publishable()
+            ->where('status', PropertyStatus::Published)
+            ->whereNotNull('published_at');
     }
 
     public function scopeFeatured($query)

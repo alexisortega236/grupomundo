@@ -34,6 +34,7 @@ class ValuationModuleTest extends TestCase
 
         $this->assertNotNull($property);
         $this->assertNotNull($valuation);
+        $this->assertSame(Property::ORIGIN_VALUATION, $property->origin);
         $this->assertSame($admin->id, $property->user_id);
         $this->assertSame('18.8123400', $property->latitude);
         $this->assertSame('COL_13', $property->avm_colonia);

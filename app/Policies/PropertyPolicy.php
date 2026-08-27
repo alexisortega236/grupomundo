@@ -35,7 +35,14 @@ class PropertyPolicy
      */
     public function update(User $user, Property $property): bool
     {
-        return in_array($user->role, ['admin', 'editor'], true);
+        return in_array($user->role, ['admin', 'editor'], true)
+            && $property->origin === Property::ORIGIN_COMMERCIAL;
+    }
+
+    public function publish(User $user, Property $property): bool
+    {
+        return $this->update($user, $property)
+            && $property->origin === Property::ORIGIN_COMMERCIAL;
     }
 
     /**
@@ -43,7 +50,8 @@ class PropertyPolicy
      */
     public function delete(User $user, Property $property): bool
     {
-        return in_array($user->role, ['admin', 'editor'], true);
+        return in_array($user->role, ['admin', 'editor'], true)
+            && $property->origin === Property::ORIGIN_COMMERCIAL;
     }
 
     /**
@@ -51,7 +59,8 @@ class PropertyPolicy
      */
     public function restore(User $user, Property $property): bool
     {
-        return in_array($user->role, ['admin', 'editor'], true);
+        return in_array($user->role, ['admin', 'editor'], true)
+            && $property->origin === Property::ORIGIN_COMMERCIAL;
     }
 
     /**
@@ -59,6 +68,8 @@ class PropertyPolicy
      */
     public function forceDelete(User $user, Property $property): bool
     {
-        return $user->role === 'admin';
+        return $user->role === 'admin'
+            && $property->origin === Property::ORIGIN_COMMERCIAL
+            && ! $property->valuations()->exists();
     }
 }

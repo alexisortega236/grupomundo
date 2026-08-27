@@ -28,7 +28,7 @@ class Valuation extends Model
 
     public function property(): BelongsTo
     {
-        return $this->belongsTo(Property::class);
+        return $this->belongsTo(Property::class)->withTrashed();
     }
 
     public function modelVersion(): BelongsTo
