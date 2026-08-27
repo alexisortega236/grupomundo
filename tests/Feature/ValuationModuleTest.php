@@ -23,7 +23,7 @@ class ValuationModuleTest extends TestCase
     public function test_admin_can_create_valuation_property_and_failed_valuation_when_avm_is_unavailable(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        config(['services.avm.url' => 'https://avm.test']);
+        config(['services.avm.url' => 'https://avm.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
         Http::fake(['https://avm.test/predict' => Http::response(['error' => 'down'], 500)]);
 
         $this->actingAs($admin)->post(route('admin.valuations.store'), $this->valuationPayload())
@@ -133,7 +133,7 @@ class ValuationModuleTest extends TestCase
 
     public function test_avm_client_handles_timeout_or_connection_failure(): void
     {
-        config(['services.avm.url' => 'https://avm.test']);
+        config(['services.avm.url' => 'https://avm.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
         Http::fake(fn () => throw new \Illuminate\Http\Client\ConnectionException('timeout'));
 
         $this->expectException(\App\Exceptions\AvmClientException::class);
@@ -144,7 +144,7 @@ class ValuationModuleTest extends TestCase
 
     public function test_valuation_service_marks_failed_on_avm_error(): void
     {
-        config(['services.avm.url' => 'https://avm.test']);
+        config(['services.avm.url' => 'https://avm.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
         Http::fake(['https://avm.test/predict' => Http::response(['error' => 'down'], 500)]);
 
         $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
@@ -156,7 +156,7 @@ class ValuationModuleTest extends TestCase
 
     public function test_valuation_service_stores_completed_prediction_without_fake_values(): void
     {
-        config(['services.avm.url' => 'https://avm.test']);
+        config(['services.avm.url' => 'https://avm.test', 'services.avm_v2.enabled' => false, 'services.avm_v2_v1.enabled' => false]);
         Http::fake([
             'https://avm.test/predict' => Http::response([
                 'precio_estimado' => 2980242,
@@ -186,7 +186,7 @@ class ValuationModuleTest extends TestCase
         $this->assertSame(2980242, $valuation->avm_response_json['precio_estimado']);
     }
 
-    public function test_shadow_v2_stores_experimental_prediction_without_replacing_legacy_result(): void
+    public function test_residential_v2_is_used_as_the_primary_prediction(): void
     {
         config([
             'services.avm.url' => 'https://avm.test',
@@ -215,7 +215,10 @@ class ValuationModuleTest extends TestCase
         $prediction = $valuation->modelPredictions()->first();
 
         $this->assertSame('completed', $valuation->status->value);
-        $this->assertSame('2980242.00', $valuation->estimated_value);
+        $this->assertSame('6250000.00', $valuation->estimated_value);
+        $this->assertSame('5100000.00', $valuation->lower_bound);
+        $this->assertSame('7600000.00', $valuation->upper_bound);
+        $this->assertSame('MXN', $valuation->currency);
         $this->assertNotNull($prediction);
         $this->assertSame('avm_residential_v2', $prediction->model_name);
         $this->assertSame('completed', $prediction->status);
@@ -229,7 +232,7 @@ class ValuationModuleTest extends TestCase
         $this->assertSame(0, $valuation->modelPredictions()->where('model_name', 'avm_v2_v1')->count());
     }
 
-    public function test_shadow_v2_failure_does_not_break_legacy_valuation(): void
+    public function test_residential_v2_failure_is_recorded_and_valuation_fails_when_fallback_disabled(): void
     {
         config([
             'services.avm.url' => 'https://avm.test',
@@ -246,8 +249,9 @@ class ValuationModuleTest extends TestCase
         $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
         $prediction = $valuation->modelPredictions()->first();
 
-        $this->assertSame('completed', $valuation->status->value);
-        $this->assertSame('2980242.00', $valuation->estimated_value);
+        $this->assertSame('failed', $valuation->status->value);
+        $this->assertSame('avm_models_ineligible', $valuation->error_code);
+        $this->assertNull($valuation->estimated_value);
         $this->assertNotNull($prediction);
         $this->assertSame('failed', $prediction->status);
         $this->assertFalse($prediction->eligible);
@@ -288,7 +292,7 @@ class ValuationModuleTest extends TestCase
         $this->assertSame('4100000.00', $predictions['avm_v2_v1']->estimated_value);
         $this->assertSame('completed', $predictions['avm_residential_v2']->status);
         $this->assertSame('6250000.00', $predictions['avm_residential_v2']->estimated_value);
-        $this->assertSame('2980242.00', $valuation->estimated_value);
+        $this->assertSame('6250000.00', $valuation->estimated_value);
     }
 
     public function test_shadow_v2_v1_failure_does_not_affect_legacy_or_v2(): void
@@ -341,6 +345,168 @@ class ValuationModuleTest extends TestCase
         $this->assertSame('completed', $valuation->status->value);
         $this->assertSame(0, $valuation->modelPredictions()->count());
         Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/predict/v2/residential'));
+    }
+
+    public function test_residential_ineligible_falls_back_to_v2_v1_without_duplicate_execution(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => false,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake([
+            'https://avm.test/predict/v2/residential' => Http::response(['eligible' => false, 'reason' => 'insufficient_data']),
+            'https://avm.test/predict/v2/v1' => Http::response([
+                'eligible' => true,
+                'model' => 'avm_v2_v1',
+                'model_version' => 'avm_v2_v1_2026',
+                'estimated_value' => 2249374,
+                'range' => ['low' => 2000000, 'high' => 2500000],
+                'currency' => 'MXN',
+            ]),
+        ]);
+
+        $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
+        $predictions = $valuation->modelPredictions()->get()->keyBy('model_name');
+
+        $this->assertSame('completed', $valuation->status->value);
+        $this->assertSame('avm_v2_v1_2026', $valuation->modelVersion->version);
+        $this->assertSame('2249374.00', $valuation->estimated_value);
+        $this->assertSame('ineligible', $predictions['avm_residential_v2']->status);
+        $this->assertSame('completed', $predictions['avm_v2_v1']->status);
+        $this->assertCount(2, $predictions);
+        Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/predict'));
+    }
+
+    public function test_residential_exception_falls_back_to_v2_v1(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => false,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake(function ($request) {
+            if (str_ends_with($request->url(), '/predict/v2/residential')) {
+                throw new \Illuminate\Http\Client\ConnectionException('timeout');
+            }
+
+            return Http::response(['eligible' => true, 'estimated_value' => 1800000, 'model_version' => 'v1']);
+        });
+
+        $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
+        $predictions = $valuation->modelPredictions()->get()->keyBy('model_name');
+
+        $this->assertSame('completed', $valuation->status->value);
+        $this->assertSame('1800000.00', $valuation->estimated_value);
+        $this->assertSame('failed', $predictions['avm_residential_v2']->status);
+        $this->assertSame('avm_v2_connection_failed', $predictions['avm_residential_v2']->error_code);
+        $this->assertSame('completed', $predictions['avm_v2_v1']->status);
+    }
+
+    public function test_both_new_models_ineligible_mark_valuation_failed_with_context(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => false,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake([
+            'https://avm.test/predict/v2/residential' => Http::response(['eligible' => false, 'reason' => 'no_residential_model']),
+            'https://avm.test/predict/v2/v1' => Http::response(['eligible' => false, 'reason' => 'outside_coverage']),
+        ]);
+
+        $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
+
+        $this->assertSame('failed', $valuation->status->value);
+        $this->assertSame('avm_models_ineligible', $valuation->error_code);
+        $this->assertStringContainsString('outside_coverage', $valuation->error_message);
+        $this->assertCount(2, $valuation->modelPredictions);
+    }
+
+    public function test_both_new_models_failing_are_captured_without_bubbling_exception(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => false,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake([
+            'https://avm.test/predict/v2/residential' => Http::response(['error' => 'down'], 503),
+            'https://avm.test/predict/v2/v1' => Http::response(['error' => 'down'], 503),
+        ]);
+
+        $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
+        $predictions = $valuation->modelPredictions()->get()->keyBy('model_name');
+
+        $this->assertSame('failed', $valuation->status->value);
+        $this->assertSame('avm_models_ineligible', $valuation->error_code);
+        $this->assertSame('failed', $predictions['avm_residential_v2']->status);
+        $this->assertSame('failed', $predictions['avm_v2_v1']->status);
+        $this->assertSame('avm_v2_v1_http_error', $predictions['avm_v2_v1']->error_code);
+    }
+
+    public function test_land_uses_only_v2_v1_as_primary_model(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => true,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake(['https://avm.test/predict/v2/v1' => Http::response([
+            'eligible' => true,
+            'estimated_value' => 900000,
+            'model_version' => 'land-v1',
+        ])]);
+
+        $valuation = app(ValuationService::class)->createAndRun([
+            ...$this->valuationPayload(),
+            'property_type' => 'land',
+            'construction_area_m2' => null,
+            'bedrooms' => null,
+            'bathrooms' => null,
+            'parking_spaces' => null,
+        ], User::factory()->create());
+
+        $this->assertSame('completed', $valuation->status->value);
+        $this->assertSame('900000.00', $valuation->estimated_value);
+        $this->assertSame(['avm_v2_v1'], $valuation->modelPredictions->pluck('model_name')->all());
+        Http::assertNotSent(fn ($request) => str_ends_with($request->url(), '/predict/v2/residential'));
+    }
+
+    public function test_cdmx_hybrid_model_response_is_used_as_primary(): void
+    {
+        config([
+            'services.avm_v2.enabled' => true,
+            'services.avm_v2.shadow_mode' => false,
+            'services.avm_v2.url' => 'https://avm.test',
+            'services.avm_v2_v1.enabled' => true,
+            'services.avm_v2_v1.url' => 'https://avm.test',
+        ]);
+        Http::fake(['https://avm.test/predict/v2/residential' => Http::response([
+            'eligible' => true,
+            'model' => 'avm_cdmx_v2_1_hybrid',
+            'model_version' => 'cdmx_v2_1',
+            'estimated_value' => 4200000,
+            'currency' => 'MXN',
+            'range' => ['low' => 3800000, 'high' => 4600000],
+        ])]);
+
+        $valuation = app(ValuationService::class)->createAndRun($this->valuationPayload(), User::factory()->create());
+
+        $this->assertSame('completed', $valuation->status->value);
+        $this->assertSame('cdmx_v2_1', $valuation->modelVersion->version);
+        $this->assertSame('avm_cdmx_v2_1_hybrid', $valuation->avm_response_json['model']);
+        $this->assertSame(1, $valuation->modelPredictions()->count());
     }
 
     public function test_admin_detail_shows_experimental_model_predictions(): void

@@ -12,6 +12,20 @@ class PublicValuationResultResolver
     {
         $property = $valuation->property;
 
+        if (
+            config('services.avm_v2.public_result', false)
+            && $prediction = $this->validCurrentPrediction($valuation)
+        ) {
+            return new PublicValuationResult(
+                source: $prediction->model_name,
+                estimatedValue: (float) $prediction->estimated_value,
+                rangeLow: $prediction->range_low !== null ? (float) $prediction->range_low : null,
+                rangeHigh: $prediction->range_high !== null ? (float) $prediction->range_high : null,
+                available: true,
+                fallbackReason: null,
+            );
+        }
+
         if ($property?->property_type === 'land') {
             return new PublicValuationResult(
                 source: 'unavailable',
@@ -20,21 +34,6 @@ class PublicValuationResultResolver
                 rangeHigh: null,
                 available: false,
                 fallbackReason: 'land_not_supported',
-            );
-        }
-
-        if (
-            config('services.avm_v2.public_result', false)
-            && in_array($property?->property_type, ['house', 'apartment'], true)
-            && $prediction = $this->validResidentialV2Prediction($valuation)
-        ) {
-            return new PublicValuationResult(
-                source: 'residential_v2',
-                estimatedValue: (float) $prediction->estimated_value,
-                rangeLow: $prediction->range_low !== null ? (float) $prediction->range_low : null,
-                rangeHigh: $prediction->range_high !== null ? (float) $prediction->range_high : null,
-                available: true,
-                fallbackReason: null,
             );
         }
 
@@ -59,14 +58,24 @@ class PublicValuationResultResolver
         );
     }
 
-    private function validResidentialV2Prediction(Valuation $valuation)
+    private function validCurrentPrediction(Valuation $valuation)
     {
-        return $valuation->modelPredictions
-            ->where('model_name', 'avm_residential_v2')
+        $modelNames = $valuation->property?->property_type === 'land'
+            ? ['avm_v2_v1']
+            : ['avm_residential_v2', 'avm_v2_v1'];
+
+        $predictions = $valuation->modelPredictions
+            ->whereIn('model_name', $modelNames)
             ->where('status', 'completed')
             ->where('eligible', true)
-            ->filter(fn ($prediction) => $prediction->estimated_value !== null)
-            ->sortByDesc('created_at')
-            ->first();
+            ->filter(fn ($prediction) => $prediction->estimated_value !== null);
+
+        $primaryVersion = $valuation->modelVersion?->version;
+
+        if ($primaryVersion !== null && $predictions->contains('model_version', $primaryVersion)) {
+            return $predictions->firstWhere('model_version', $primaryVersion);
+        }
+
+        return $predictions->sortByDesc('created_at')->first();
     }
 }

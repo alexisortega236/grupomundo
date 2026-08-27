@@ -2,6 +2,7 @@
 
 namespace App\Services\Valuation;
 
+use App\Data\Avm\AvmPrediction;
 use App\Enums\OperationType;
 use App\Enums\PropertyStatus;
 use App\Enums\ValuationStatus;
@@ -66,7 +67,7 @@ class ValuationService
                 ['features_json' => $features, ...$this->knownFeatureColumns($features)]
             );
 
-            $prediction = $this->avmClient->predict($property, $features);
+            [$prediction, $primaryModel] = $this->selectPrimaryPrediction($valuation, $property, $features);
 
             $estimatedPriceM2 = $prediction->estimatedPriceM2 ?: $this->estimatedPriceM2($prediction->estimatedValue, $property);
             $responseFeatures = $this->responseFeatures($prediction->derivedFeatures, $prediction->pois);
@@ -96,10 +97,9 @@ class ValuationService
                 'error_message' => null,
             ]);
 
-            $this->runExperimentalShadows($valuation->fresh(['property']));
+            $this->runExperimentalShadows($valuation->fresh(['property']), $primaryModel);
         } catch (AvmClientException $exception) {
             $this->markFailed($valuation, $exception->errorCode, $exception->getMessage());
-            $this->runExperimentalShadows($valuation->fresh(['property']));
         } catch (Throwable $exception) {
             Log::error('Unexpected valuation failure', [
                 'valuation_id' => $valuation->id,
@@ -109,6 +109,66 @@ class ValuationService
         }
 
         return $valuation->fresh(['property', 'features']);
+    }
+
+    /** @return array{0: \App\Data\Avm\AvmPrediction, 1: string} */
+    private function selectPrimaryPrediction(Valuation $valuation, Property $property, array $features): array
+    {
+        $attemptedNewModel = false;
+        $failures = [];
+
+        if (in_array($property->property_type, ['house', 'apartment'], true)
+            && config('services.avm_v2.enabled', false)) {
+            $attemptedNewModel = true;
+            $started = microtime(true);
+            $request = $this->residentialAvmV2Client->payload($property);
+
+            try {
+                $response = $this->residentialAvmV2Client->predict($property);
+                $eligible = (bool) ($response['eligible'] ?? false);
+                $this->recordModelPrediction($valuation, 'avm_residential_v2', $response, $request, $started);
+
+                if ($eligible && isset($response['estimated_value'])) {
+                    return [AvmPrediction::fromArray($response), 'avm_residential_v2'];
+                }
+
+                $failures[] = $response['reason'] ?? 'avm_residential_v2_ineligible';
+            } catch (Throwable $exception) {
+                $this->recordModelPrediction($valuation, 'avm_residential_v2', null, $request, $started, $exception);
+                $failures[] = $exception instanceof AvmClientException ? $exception->errorCode : 'avm_residential_v2_failed';
+            }
+        }
+
+        if (in_array($property->property_type, ['house', 'apartment', 'land'], true)
+            && config('services.avm_v2_v1.enabled', false)) {
+            $attemptedNewModel = true;
+            $started = microtime(true);
+            $request = $this->avmV2V1Client->payload($property);
+
+            try {
+                $response = $this->avmV2V1Client->predict($property);
+                $eligible = (bool) ($response['eligible'] ?? false);
+                $this->recordModelPrediction($valuation, 'avm_v2_v1', $response, $request, $started);
+
+                if ($eligible && isset($response['estimated_value'])) {
+                    return [AvmPrediction::fromArray($response), 'avm_v2_v1'];
+                }
+
+                $failures[] = $response['reason'] ?? 'avm_v2_v1_ineligible';
+            } catch (Throwable $exception) {
+                $this->recordModelPrediction($valuation, 'avm_v2_v1', null, $request, $started, $exception);
+                $failures[] = $exception instanceof AvmClientException ? $exception->errorCode : 'avm_v2_v1_failed';
+            }
+        }
+
+        if (! $attemptedNewModel) {
+            return [$this->avmClient->predict($property, $features), 'legacy'];
+        }
+
+        throw new AvmClientException(
+            'avm_models_ineligible',
+            'Ningún modelo AVM disponible pudo generar una valuación elegible: '.implode(', ', $failures)
+        );
     }
 
     private function propertyPayload(array $data, ?User $user): array
@@ -232,9 +292,10 @@ class ValuationService
         ], fn ($value) => $value !== null);
     }
 
-    private function runResidentialV2Shadow(Valuation $valuation): void
+    private function runResidentialV2Shadow(Valuation $valuation, array $executedModels): void
     {
-        if (! config('services.avm_v2.enabled', false) || ! config('services.avm_v2.shadow_mode', true)) {
+        if (! config('services.avm_v2.enabled', false) || ! config('services.avm_v2.shadow_mode', true)
+            || in_array('avm_residential_v2', $executedModels, true)) {
             return;
         }
 
@@ -249,52 +310,29 @@ class ValuationService
 
         try {
             $response = $this->residentialAvmV2Client->predict($property);
-            $eligible = (bool) ($response['eligible'] ?? false);
-            $range = $response['range'] ?? [];
-
-            $valuation->modelPredictions()->create([
-                'model_name' => 'avm_residential_v2',
-                'model_version' => $response['model_version'] ?? null,
-                'status' => $eligible ? 'completed' : 'ineligible',
-                'eligible' => $eligible,
-                'estimated_value' => $eligible && isset($response['estimated_value']) ? (float) $response['estimated_value'] : null,
-                'range_low' => $eligible && isset($range['low']) ? (float) $range['low'] : null,
-                'range_high' => $eligible && isset($range['high']) ? (float) $range['high'] : null,
-                'confidence' => $response['confidence'] ?? null,
-                'request_json' => $request,
-                'response_json' => $response,
-                'error_code' => $eligible ? null : ($response['reason'] ?? 'ineligible'),
-                'execution_ms' => (int) round((microtime(true) - $started) * 1000),
-            ]);
+            $this->recordModelPrediction($valuation, 'avm_residential_v2', $response, $request, $started);
         } catch (Throwable $exception) {
             Log::warning('AVM v2 shadow prediction failed', [
                 'valuation_id' => $valuation->id,
                 'message' => $exception->getMessage(),
             ]);
 
-            $valuation->modelPredictions()->create([
-                'model_name' => 'avm_residential_v2',
-                'model_version' => 'avm_residential_v2_v2_experimental',
-                'status' => 'failed',
-                'eligible' => false,
-                'request_json' => $request,
-                'response_json' => null,
-                'error_code' => $exception instanceof AvmClientException ? $exception->errorCode : 'avm_v2_shadow_failed',
-                'execution_ms' => (int) round((microtime(true) - $started) * 1000),
-            ]);
+            $this->recordModelPrediction($valuation, 'avm_residential_v2', null, $request, $started, $exception);
         }
     }
 
-    private function runExperimentalShadows(Valuation $valuation): void
+    private function runExperimentalShadows(Valuation $valuation, string $primaryModel): void
     {
         // Cada modelo registra su propio estado; un fallo no debe impedir el otro.
-        $this->runResidentialV2Shadow($valuation);
-        $this->runAvmV2V1Shadow($valuation);
+        $this->runResidentialV2Shadow($valuation, [$primaryModel]);
+        $this->runAvmV2V1Shadow($valuation, [$primaryModel]);
     }
 
-    private function runAvmV2V1Shadow(Valuation $valuation): void
+    private function runAvmV2V1Shadow(Valuation $valuation, array $executedModels): void
     {
-        if (! config('services.avm_v2_v1.enabled', false)) {
+        if (! config('services.avm_v2_v1.enabled', false)
+            || ! config('services.avm_v2.shadow_mode', true)
+            || in_array('avm_v2_v1', $executedModels, true)) {
             return;
         }
 
@@ -308,35 +346,47 @@ class ValuationService
 
         try {
             $response = $this->avmV2V1Client->predict($property);
-            $eligible = (bool) ($response['eligible'] ?? false);
-
-            $valuation->modelPredictions()->create([
-                'model_name' => 'avm_v2_v1',
-                'model_version' => $response['model_version'] ?? 'avm_v2_v1_experimental',
-                'status' => $eligible ? 'completed' : 'ineligible',
-                'eligible' => $eligible,
-                'estimated_value' => $eligible && isset($response['estimated_value']) ? (float) $response['estimated_value'] : null,
-                'request_json' => $request,
-                'response_json' => $response,
-                'error_code' => $eligible ? null : ($response['reason'] ?? 'ineligible'),
-                'execution_ms' => (int) round((microtime(true) - $started) * 1000),
-            ]);
+            $this->recordModelPrediction($valuation, 'avm_v2_v1', $response, $request, $started);
         } catch (Throwable $exception) {
             Log::warning('AVM v2 v1 shadow prediction failed', [
                 'valuation_id' => $valuation->id,
                 'message' => $exception->getMessage(),
             ]);
 
-            $valuation->modelPredictions()->create([
-                'model_name' => 'avm_v2_v1',
-                'model_version' => 'avm_v2_v1_experimental',
-                'status' => 'failed',
-                'eligible' => false,
-                'request_json' => $request,
-                'response_json' => null,
-                'error_code' => $exception instanceof AvmClientException ? $exception->errorCode : 'avm_v2_v1_shadow_failed',
-                'execution_ms' => (int) round((microtime(true) - $started) * 1000),
-            ]);
+            $this->recordModelPrediction($valuation, 'avm_v2_v1', null, $request, $started, $exception);
         }
+    }
+
+    private function recordModelPrediction(
+        Valuation $valuation,
+        string $modelName,
+        ?array $response,
+        array $request,
+        float $started,
+        ?Throwable $exception = null,
+    ): void {
+        $eligible = $exception === null
+            && (bool) ($response['eligible'] ?? false)
+            && isset($response['estimated_value']);
+        $range = $response['range'] ?? [];
+
+        $valuation->modelPredictions()->create([
+            'model_name' => $modelName,
+            'model_version' => ($response ?? [])['model_version']
+                ?? ($response ?? [])['model']
+                ?? ($modelName === 'avm_v2_v1' ? 'avm_v2_v1' : null),
+            'status' => $exception !== null ? 'failed' : ($eligible ? 'completed' : 'ineligible'),
+            'eligible' => $eligible,
+            'estimated_value' => $eligible && isset($response['estimated_value']) ? (float) $response['estimated_value'] : null,
+            'range_low' => $eligible && isset($range['low']) ? (float) $range['low'] : null,
+            'range_high' => $eligible && isset($range['high']) ? (float) $range['high'] : null,
+            'confidence' => $response['confidence'] ?? ($response['confidence_score'] ?? null),
+            'request_json' => $request,
+            'response_json' => $response,
+            'error_code' => $exception instanceof AvmClientException
+                ? $exception->errorCode
+                : ($exception !== null ? $modelName.'_failed' : ($eligible ? null : ($response['reason'] ?? 'ineligible'))),
+            'execution_ms' => (int) round((microtime(true) - $started) * 1000),
+        ]);
     }
 }

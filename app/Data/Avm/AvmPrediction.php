@@ -37,13 +37,19 @@ class AvmPrediction
             );
         }
 
+        $confidence = $data['confidence_score'] ?? $data['confidence'] ?? null;
+
         return new self(
             estimatedValue: isset($data['estimated_value']) ? (float) $data['estimated_value'] : null,
             estimatedPriceM2: isset($data['estimated_price_m2']) ? (float) $data['estimated_price_m2'] : null,
-            lowerBound: isset($data['lower_bound']) ? (float) $data['lower_bound'] : null,
-            upperBound: isset($data['upper_bound']) ? (float) $data['upper_bound'] : null,
-            confidenceScore: isset($data['confidence_score']) ? (float) $data['confidence_score'] : null,
+            lowerBound: isset($data['lower_bound']) ? (float) $data['lower_bound'] : ($data['range']['low'] ?? null),
+            upperBound: isset($data['upper_bound']) ? (float) $data['upper_bound'] : ($data['range']['high'] ?? null),
+            confidenceScore: is_numeric($confidence) ? (float) $confidence : null,
             modelVersion: $data['model_version'] ?? null,
+            currency: $data['currency'] ?? 'MXN',
+            zoneInferred: $data['zone_inferred'] ?? ($data['location']['zone'] ?? null),
+            derivedFeatures: $data['features_derivadas'] ?? [],
+            pois: $data['pois'] ?? [],
             rawResponse: $data,
         );
     }

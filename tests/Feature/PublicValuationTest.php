@@ -268,7 +268,7 @@ class PublicValuationTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_public_shadow_v2_receives_captured_coordinates_even_when_legacy_mapping_is_unavailable(): void
+    public function test_public_residential_v2_is_the_primary_result_even_when_legacy_mapping_is_unavailable(): void
     {
         config([
             'services.avm.url' => 'https://avm.test',
@@ -296,8 +296,8 @@ class PublicValuationTest extends TestCase
         $valuation = Valuation::with(['property', 'modelPredictions'])->first();
         $prediction = $valuation->modelPredictions->first();
 
-        $this->assertSame('failed', $valuation->status->value);
-        $this->assertSame('missing_legacy_colonia', $valuation->error_code);
+        $this->assertSame('completed', $valuation->status->value);
+        $this->assertNull($valuation->error_code);
         $this->assertNotNull($prediction);
         $this->assertSame('completed', $prediction->status);
         $this->assertSame('931920.00', $prediction->estimated_value);
@@ -313,7 +313,7 @@ class PublicValuationTest extends TestCase
             || (($request['colonia'] ?? null) === 'COL_13'));
     }
 
-    public function test_public_shadow_v2_failure_does_not_replace_legacy_controlled_error(): void
+    public function test_public_v2_failure_is_exposed_as_unavailable(): void
     {
         config([
             'services.avm.url' => 'https://avm.test',
@@ -331,7 +331,7 @@ class PublicValuationTest extends TestCase
         $prediction = $valuation->modelPredictions->first();
 
         $this->assertSame('failed', $valuation->status->value);
-        $this->assertSame('missing_legacy_colonia', $valuation->error_code);
+        $this->assertSame('avm_models_ineligible', $valuation->error_code);
         $this->assertNotNull($prediction);
         $this->assertSame('failed', $prediction->status);
         $this->assertSame('avm_v2_http_error', $prediction->error_code);
