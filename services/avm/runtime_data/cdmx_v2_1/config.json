@@ -22,10 +22,14 @@
     "same_ageb",
     "similar_1km",
     "similar_2km",
-    "municipality_fallback"
+    "municipality_filtered",
+    "insufficient_market_evidence"
   ],
   "score_threshold": 35.0,
   "minimum_comparables": 3,
+  "physical_acceptance_tolerance": 0.30,
+  "strong_physical_tolerance": 0.20,
+  "municipality_top_n": 10,
   "score_weights": {
     "distance": 25,
     "construction_similarity": 20,
@@ -41,6 +45,6 @@
     "house": "weighted_p50(price/(construction_area_m2+0.5*land_area_m2))*(construction_area_m2+0.5*land_area_m2)"
   },
   "range": "weighted_p25_p75",
-  "reconciliation": "market_base<1500000: clip(0.75+0.20*market_strength); otherwise clip(0.15+0.75*market_strength)",
+  "reconciliation": "market unavailable: ML only and LOW confidence; otherwise market_base<1500000: clip(0.75+0.20*market_strength); otherwise clip(0.15+0.75*market_strength)",
   "target_leakage_safe": true
 }
