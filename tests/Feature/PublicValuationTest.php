@@ -370,9 +370,9 @@ class PublicValuationTest extends TestCase
             prediction: [
                 'status' => 'completed',
                 'eligible' => true,
-                'estimated_value' => 931920,
-                'range_low' => 700000,
-                'range_high' => 1200000,
+                'estimated_value' => 3492301,
+                'range_low' => 1652884,
+                'range_high' => 5331718,
                 'confidence' => 'MEDIUM',
                 'response_json' => ['location' => ['municipality' => 'Cuautla', 'ageb' => '057A']],
             ],
@@ -380,11 +380,10 @@ class PublicValuationTest extends TestCase
 
         $this->get(route('valuation.show', $valuation->uuid))
             ->assertOk()
-            ->assertSee('$931,920 MXN')
+            ->assertSee('$1,652,884 MXN')
             ->assertDontSee('Rango estimado')
-            ->assertDontSee('$700,000')
-            ->assertDontSee('$1,200,000')
-            ->assertDontSee('$2,980,242 MXN')
+            ->assertDontSee('$5,331,718 MXN')
+            ->assertDontSee('$3,492,301 MXN')
             ->assertDontSee('avm_residential_v2')
             ->assertDontSee('MEDIUM')
             ->assertDontSee('057A')
@@ -393,8 +392,8 @@ class PublicValuationTest extends TestCase
 
         $this->assertSame('2980242.00', $valuation->fresh()->estimated_value);
         $prediction = $valuation->modelPredictions()->first();
-        $this->assertSame('700000.00', $prediction->range_low);
-        $this->assertSame('1200000.00', $prediction->range_high);
+        $this->assertSame('1652884.00', $prediction->range_low);
+        $this->assertSame('5331718.00', $prediction->range_high);
     }
 
     public function test_public_result_ignores_v2_when_flag_is_disabled(): void
@@ -408,12 +407,15 @@ class PublicValuationTest extends TestCase
                 'estimated_value' => 931920,
                 'range_low' => 700000,
                 'range_high' => 1200000,
+                'legacy_range_low' => 900000,
+                'legacy_range_high' => 1400000,
             ],
         );
 
         $this->get(route('valuation.show', $valuation->uuid))
             ->assertOk()
-            ->assertSee('$2,980,242 MXN')
+            ->assertSee('$900,000 MXN')
+            ->assertDontSee('$2,980,242 MXN')
             ->assertDontSee('$931,920 MXN')
             ->assertDontSee('Rango estimado');
     }
@@ -423,20 +425,34 @@ class PublicValuationTest extends TestCase
         config(['services.avm_v2.public_result' => true]);
         $failed = $this->storedValuationWithPrediction(
             legacyValue: 2980242,
-            prediction: ['status' => 'failed', 'eligible' => false, 'estimated_value' => null],
+            prediction: [
+                'status' => 'failed',
+                'eligible' => false,
+                'estimated_value' => null,
+                'legacy_range_low' => 2000000,
+                'legacy_range_high' => 3000000,
+            ],
         );
         $ineligible = $this->storedValuationWithPrediction(
             legacyValue: 1569135,
-            prediction: ['status' => 'ineligible', 'eligible' => false, 'estimated_value' => null],
+            prediction: [
+                'status' => 'ineligible',
+                'eligible' => false,
+                'estimated_value' => null,
+                'legacy_range_low' => 1200000,
+                'legacy_range_high' => 1800000,
+            ],
         );
 
         $this->get(route('valuation.show', $failed->uuid))
             ->assertOk()
-            ->assertSee('$2,980,242 MXN')
+            ->assertSee('$2,000,000 MXN')
+            ->assertDontSee('$2,980,242 MXN')
             ->assertDontSee('Rango estimado');
         $this->get(route('valuation.show', $ineligible->uuid))
             ->assertOk()
-            ->assertSee('$1,569,135 MXN');
+            ->assertSee('$1,200,000 MXN')
+            ->assertDontSee('$1,569,135 MXN');
     }
 
     public function test_land_never_uses_residential_v2_public_result(): void
@@ -459,6 +475,26 @@ class PublicValuationTest extends TestCase
             ->assertSee('La valuación automática de terrenos todavía no está disponible')
             ->assertDontSee('$931,920 MXN')
             ->assertDontSee('$2,980,242 MXN');
+    }
+
+    public function test_public_result_does_not_expose_estimated_value_when_range_low_is_missing(): void
+    {
+        $valuation = $this->storedValuationWithPrediction(
+            legacyValue: 3492301,
+            prediction: [
+                'status' => 'completed',
+                'eligible' => true,
+                'estimated_value' => 3492301,
+                'range_low' => null,
+                'range_high' => 5331718,
+            ],
+        );
+
+        $this->get(route('valuation.show', $valuation->uuid))
+            ->assertOk()
+            ->assertSee('No pudimos calcular la estimación principal en este momento')
+            ->assertDontSee('$3,492,301 MXN')
+            ->assertDontSee('$5,331,718 MXN');
     }
 
     public function test_admin_valuations_still_list_public_valuations(): void
@@ -517,6 +553,8 @@ class PublicValuationTest extends TestCase
             'source' => 'public',
             'status' => ValuationStatus::Completed,
             'estimated_value' => $legacyValue,
+            'lower_bound' => $prediction['legacy_range_low'] ?? null,
+            'upper_bound' => $prediction['legacy_range_high'] ?? null,
             'currency' => 'MXN',
             'valued_at' => now(),
         ]);
