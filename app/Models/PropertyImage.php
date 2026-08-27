@@ -40,6 +40,7 @@ class PropertyImage extends Model
     {
         return array_values(array_filter([
             $this->path,
+            $this->original_path,
             $this->card_path,
             $this->thumb_path,
         ]));

@@ -8,16 +8,19 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Throwable;
 
 class PropertyImageService
 {
-    private const LARGE_WIDTH = 2200;
-    private const CARD_WIDTH = 900;
-    private const THUMB_WIDTH = 300;
-    private const WEBP_QUALITY = 90;
+    private const LARGE_WIDTH = 2400;
+    private const CARD_WIDTH = 1000;
+    private const THUMB_WIDTH = 400;
+    private const WEBP_QUALITY = 88;
 
     public function sync(Property $property, array $data): void
     {
+        $createdPaths = [];
+
         foreach ($data['delete_images'] ?? [] as $imageId) {
             $image = $property->images()->find($imageId);
             if ($image) {
@@ -34,21 +37,28 @@ class PropertyImageService
             ]);
         }
 
-        foreach ($data['images'] ?? [] as $index => $image) {
-            $versions = $this->storeOptimizedVersions($property, $image);
+        try {
+            foreach ($data['images'] ?? [] as $index => $image) {
+                $versions = $this->storeOptimizedVersions($property, $image);
+                $createdPaths = [...$createdPaths, ...$versions];
 
-            $property->images()->create([
-                'path' => $versions['path'],
-                'card_path' => $versions['card_path'],
-                'thumb_path' => $versions['thumb_path'],
-                'alt_text' => $data['new_image_alt'][$index] ?? $property->title,
-                'original_filename' => $image->getClientOriginalName(),
-                'size_kb' => $versions['size_kb'],
-                'width' => $versions['width'],
-                'height' => $versions['height'],
-                'position' => 100 + $index,
-                'is_cover' => false,
-            ]);
+                $property->images()->create([
+                    'path' => $versions['path'],
+                    'original_path' => $versions['original_path'],
+                    'card_path' => $versions['card_path'],
+                    'thumb_path' => $versions['thumb_path'],
+                    'alt_text' => $data['new_image_alt'][$index] ?? $property->title,
+                    'original_filename' => $image->getClientOriginalName(),
+                    'size_kb' => $versions['size_kb'],
+                    'width' => $versions['width'],
+                    'height' => $versions['height'],
+                    'position' => 100 + $index,
+                    'is_cover' => false,
+                ]);
+            }
+        } catch (Throwable $exception) {
+            Storage::disk('public')->delete(array_values(array_filter($createdPaths, 'is_string')));
+            throw $exception;
         }
 
         $coverId = $data['cover_image_id'] ?? null;
@@ -70,19 +80,35 @@ class PropertyImageService
         $directory = "properties/{$property->id}";
         $name = Str::uuid()->toString();
 
-        $large = $source->scaleDown(width: self::LARGE_WIDTH);
-        $card = $source->scaleDown(width: self::CARD_WIDTH);
-        $thumb = $source->scaleDown(width: self::THUMB_WIDTH);
-
+        $extension = strtolower($file->getClientOriginalExtension()) ?: 'bin';
+        $originalPath = "{$directory}/{$name}-original.{$extension}";
         $paths = [
             'path' => "{$directory}/{$name}-large.webp",
             'card_path' => "{$directory}/{$name}-card.webp",
             'thumb_path' => "{$directory}/{$name}-thumb.webp",
+            'original_path' => $originalPath,
         ];
 
-        Storage::disk('public')->put($paths['path'], (string) $large->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
-        Storage::disk('public')->put($paths['card_path'], (string) $card->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
-        Storage::disk('public')->put($paths['thumb_path'], (string) $thumb->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
+        try {
+            Storage::disk('public')->put($originalPath, $file->get());
+
+            if (method_exists($source, 'orient')) {
+                $source = $source->orient();
+            }
+
+            // scaleDown mutates the Image instance; clone the oriented source
+            // so every derivative starts from the same original dimensions.
+            $large = (clone $source)->scaleDown(width: self::LARGE_WIDTH);
+            $card = (clone $source)->scaleDown(width: self::CARD_WIDTH);
+            $thumb = (clone $source)->scaleDown(width: self::THUMB_WIDTH);
+
+            Storage::disk('public')->put($paths['path'], (string) $large->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
+            Storage::disk('public')->put($paths['card_path'], (string) $card->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
+            Storage::disk('public')->put($paths['thumb_path'], (string) $thumb->encodeUsingFileExtension('webp', quality: self::WEBP_QUALITY, strip: true));
+        } catch (Throwable $exception) {
+            Storage::disk('public')->delete(array_values($paths));
+            throw $exception;
+        }
 
         return [
             ...$paths,

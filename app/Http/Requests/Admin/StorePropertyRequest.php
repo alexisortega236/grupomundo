@@ -67,7 +67,7 @@ class StorePropertyRequest extends FormRequest
             'is_featured' => ['nullable', 'boolean'],
             'amenities' => ['nullable', 'array'],
             'amenities.*' => ['integer', 'exists:amenities,id'],
-            'images' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'new_image_alt' => ['nullable', 'array'],
             'existing_images' => ['nullable', 'array'],
