@@ -21,7 +21,11 @@ class PublicPropertyTest extends TestCase
         $this->seed();
         $this->get('/')
             ->assertOk()
-            ->assertSee('Encuentra el espacio ideal')
+            ->assertSeeInOrder([
+                'Encuentra el',
+                'espacio ideal',
+                'siguiente etapa.',
+            ])
             ->assertSee('Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.');
     }
 
@@ -100,15 +104,15 @@ class PublicPropertyTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder([
                 '01',
-                'Compra y venta',
+                'Compra estratégica',
                 '02',
-                'Rentas',
+                'Rentas inteligentes',
                 '03',
-                'Administración',
+                'Administración patrimonial',
                 '04',
-                'Gestión y asesoría',
+                'Asesoría integral',
                 '05',
-                'Protección patrimonial',
+                'Protección y prevención',
             ]);
     }
 

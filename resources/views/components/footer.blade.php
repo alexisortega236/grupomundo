@@ -1,7 +1,9 @@
 <footer class="bg-[#0d2723] text-white">
-    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
-        <div><p class="font-serif text-2xl">Grupo Mundo Patrimonial</p><p class="mt-3 text-sm text-white/70">Espacios excepcionales y decisiones patrimoniales inteligentes.</p></div>
-        <div class="text-sm text-white/75"><p>Propiedades</p><p>Servicios inmobiliarios</p><p>Protección patrimonial</p></div>
-        <div class="text-sm text-white/75"><p>{{ config('company.contact_email') }}</p><p>WhatsApp {{ config('company.whatsapp_number') }}</p></div>
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
+        <div><div class="flex items-center gap-3"><span class="grid h-11 w-11 place-items-center border border-[#d5b673] font-serif text-lg text-[#d5b673]">M</span><span class="text-xs font-bold uppercase tracking-[.18em]">Grupo Mundo<br><span class="text-[#d5b673]">Patrimonial</span></span></div><p class="mt-5 max-w-xs text-sm leading-relaxed text-white/65">Espacios excepcionales y decisiones patrimoniales inteligentes.</p></div>
+        <div class="text-sm text-white/75"><p class="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d5b673]">Servicios</p><div class="grid gap-3"><a href="{{ route('services') }}#compra-estrategica">Compra y venta</a><a href="{{ route('services') }}#rentas-inteligentes">Rentas</a><a href="{{ route('services') }}#administracion-patrimonial">Administración patrimonial</a><a href="{{ route('services') }}#asesoria-integral">Asesoría integral</a><a href="{{ route('services') }}#proteccion-prevencion">Protección patrimonial</a></div></div>
+        <div class="text-sm text-white/75"><p class="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d5b673]">La empresa</p><div class="grid gap-3"><a href="{{ route('about') }}">Nosotros</a><a href="{{ route('services') }}">Nuestro enfoque</a><a href="{{ route('contact') }}">Contacto</a></div></div>
+        <div class="text-sm text-white/75"><p class="mb-4 text-xs font-bold uppercase tracking-[.2em] text-[#d5b673]">Contacto</p><div class="grid gap-3"><a href="mailto:{{ config('company.contact_email') }}">{{ config('company.contact_email') }}</a><a href="https://wa.me/{{ config('company.whatsapp_number') }}" target="_blank" rel="noopener">WhatsApp</a><a href="{{ route('contact') }}">Solicitar asesoría</a></div></div>
     </div>
+    <div class="border-t border-white/10"><div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"><p>© {{ now()->year }} Grupo Mundo Patrimonial. Todos los derechos reservados.</p><p>Información comercial sujeta a disponibilidad.</p></div></div>
 </footer>

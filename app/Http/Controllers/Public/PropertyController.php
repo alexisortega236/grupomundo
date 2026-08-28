@@ -16,7 +16,16 @@ class PropertyController extends Controller
         $query = Property::published()->with(['images', 'coverImage']);
 
         foreach (['property_type', 'state', 'city', 'neighborhood'] as $filter) {
-            $query->when($request->filled($filter), fn ($q) => $q->where($filter, $request->string($filter)));
+            $query->when($request->filled($filter), function ($q) use ($filter, $request) {
+                $value = $request->string($filter)->toString();
+
+                if ($filter === 'property_type' && $value === 'commercial') {
+                    $q->whereIn($filter, ['Oficina', 'Local', 'commercial', 'office', 'local']);
+                    return;
+                }
+
+                $q->where($filter, $value);
+            });
         }
 
         $operation = $request->string('operation_type')->toString();
