@@ -5,12 +5,14 @@
                 <p class="text-xs font-bold uppercase tracking-[.35em] text-[#d5b673]">Real estate · inversión · patrimonio</p>
                 <h1 class="mt-5 max-w-2xl font-serif text-5xl leading-[1.04] sm:text-7xl">Encuentra el<br>espacio ideal<br>para tu<br>siguiente etapa.</h1>
                 <p class="mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.</p>
-                <form action="{{ route('properties.index') }}" class="mt-8 grid gap-3 rounded-2xl bg-[#f5f2eb] p-4 text-[#0d2723] shadow-2xl md:grid-cols-2 lg:-mr-24 lg:relative lg:z-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,.8fr)_minmax(185px,1.35fr)]">
-                    <select name="operation_type" class="rounded-lg border-[#ded8ca] bg-white"><option value="">Todas las operaciones</option><option value="sale">Venta</option><option value="rent">Renta</option><option value="presale">Preventa</option></select>
-                    <select name="property_type" class="rounded-lg border-[#ded8ca] bg-white"><option value="">Tipo de propiedad</option>@foreach($propertyTypes as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach</select>
-                    <input name="keyword" class="rounded-lg border-[#ded8ca] bg-white" placeholder="Zona o palabra clave">
-                    <select name="sort" class="rounded-lg border-[#ded8ca] bg-white"><option value="recent">Más recientes</option><option value="featured">Destacadas</option></select>
-                    <button class="whitespace-nowrap rounded-lg bg-[#d5b673] px-5 py-3 text-sm font-bold uppercase tracking-[.12em] text-[#0d2723] transition hover:bg-[#c9a968]">Buscar propiedades</button>
+                <form action="{{ route('properties.index') }}" class="mt-8 grid gap-3 rounded-2xl bg-[#f5f2eb] p-4 text-[#0d2723] shadow-2xl md:grid-cols-2 lg:-mr-24 lg:relative lg:z-10 lg:flex lg:items-stretch">
+                    <div class="contents lg:grid lg:min-w-0 lg:flex-1 lg:grid-cols-4 lg:gap-3">
+                        <select name="operation_type" class="rounded-lg border-[#ded8ca] bg-white"><option value="">Todas las operaciones</option><option value="sale">Venta</option><option value="rent">Renta</option><option value="presale">Preventa</option></select>
+                        <select name="property_type" class="rounded-lg border-[#ded8ca] bg-white"><option value="">Tipo de propiedad</option>@foreach($propertyTypes as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach</select>
+                        <input name="keyword" class="rounded-lg border-[#ded8ca] bg-white" placeholder="Zona o palabra clave">
+                        <select name="sort" class="rounded-lg border-[#ded8ca] bg-white"><option value="recent">Más recientes</option><option value="featured">Destacadas</option></select>
+                    </div>
+                    <button class="whitespace-nowrap rounded-lg bg-[#d5b673] px-6 py-3 text-sm font-bold uppercase tracking-[.12em] text-[#0d2723] transition hover:bg-[#c9a968] lg:flex-none lg:shrink-0">Buscar propiedades</button>
                 </form>
                 <div class="mt-8 grid gap-4 text-sm text-white/80 sm:grid-cols-3 lg:mt-10 lg:max-w-3xl">
                     <div class="flex items-center gap-3"><span class="text-[#d5b673]" aria-hidden="true"><svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="3"/><path d="M5.5 20c.8-3.3 2.9-5 6.5-5s5.7 1.7 6.5 5"/></svg></span><span>Asesoría personalizada</span></div>
