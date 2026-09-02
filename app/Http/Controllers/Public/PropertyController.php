@@ -7,6 +7,7 @@ use App\Enums\AvmPropertyType;
 use App\Enums\OperationType;
 use App\Enums\PropertyStatus;
 use App\Models\Property;
+use App\Models\ContactRequest;
 use Illuminate\Http\Request;
 
 class PropertyController extends Controller
@@ -80,6 +81,7 @@ class PropertyController extends Controller
 
         return view('public.properties.show', [
             'property' => $property->load(['images', 'coverImage', 'amenities']),
+            'contactFormToken' => ContactRequest::issueFormToken(),
             'related' => Property::published()->with(['images', 'coverImage'])
                 ->whereKeyNot($property->id)
                 ->where('property_type', $property->property_type)

@@ -138,6 +138,7 @@ class PublicPropertyTest extends TestCase
             'email' => 'cliente@example.com',
             'message' => 'Quiero informacion.',
             'website' => '',
+            'contact_form_token' => ContactRequest::issueFormToken(time() - 4),
         ])->assertRedirect();
 
         $this->assertDatabaseHas('contact_requests', ['phone' => '5512345678']);
@@ -145,7 +146,7 @@ class PublicPropertyTest extends TestCase
 
     public function test_validation_rejects_incomplete_information(): void
     {
-        $this->post(route('contact-requests.store'), [])->assertSessionHasErrors(['name', 'phone', 'message']);
+        $this->post(route('contact-requests.store'), [])->assertSessionHasErrors(['name', 'phone', 'contact_form_token']);
     }
 
     public function test_guest_cannot_enter_admin_panel(): void
