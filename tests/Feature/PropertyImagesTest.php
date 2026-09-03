@@ -45,30 +45,59 @@ class PropertyImagesTest extends TestCase
         Storage::disk('public')->assertExists($image->thumb_path);
     }
 
-    public function test_admin_can_create_exactly_ten_images_and_first_is_cover(): void
+    public function test_admin_can_create_exactly_twenty_five_images_and_first_is_cover(): void
     {
         Storage::fake('public');
         $admin = User::factory()->create(['role' => 'admin']);
-        $images = collect(range(1, 10))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
+        $images = collect(range(1, 25))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
 
         $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
             'images' => $images,
         ]))->assertRedirect();
 
         $property = Property::latest()->first();
-        $this->assertCount(10, $property->images);
+        $this->assertCount(25, $property->images);
         $this->assertSame(1, $property->images()->where('is_cover', true)->count());
         $this->assertSame($property->images()->orderBy('position')->first()->id, $property->images()->where('is_cover', true)->first()->id);
     }
 
-    public function test_eleven_images_are_rejected(): void
+    public function test_twenty_six_images_are_rejected(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $images = collect(range(1, 11))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
+        $images = collect(range(1, 26))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
 
         $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
             'images' => $images,
         ]))->assertSessionHasErrors('images');
+
+        $this->assertDatabaseCount('properties', 0);
+    }
+
+    public function test_admin_can_upload_three_videos_without_duration_validation(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->create(['role' => 'admin']);
+        $videos = collect(range(1, 3))->map(fn ($index) => UploadedFile::fake()->create("video-{$index}.mp4", 1024, 'video/mp4'))->all();
+
+        $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
+            'videos' => $videos,
+        ]))->assertRedirect();
+
+        $property = Property::latest()->first();
+        $this->assertCount(3, $property->videos);
+        foreach ($property->videos as $video) {
+            Storage::disk('public')->assertExists($video->path);
+        }
+    }
+
+    public function test_four_videos_are_rejected(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $videos = collect(range(1, 4))->map(fn ($index) => UploadedFile::fake()->create("video-{$index}.mp4", 1024, 'video/mp4'))->all();
+
+        $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
+            'videos' => $videos,
+        ]))->assertSessionHasErrors('videos');
 
         $this->assertDatabaseCount('properties', 0);
     }

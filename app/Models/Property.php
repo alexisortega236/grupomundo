@@ -101,6 +101,11 @@ class Property extends Model
         return $this->hasMany(PropertyImage::class)->orderBy('position');
     }
 
+    public function videos(): HasMany
+    {
+        return $this->hasMany(PropertyVideo::class)->orderBy('position');
+    }
+
     public function coverImage(): HasMany
     {
         return $this->hasMany(PropertyImage::class)->where('is_cover', true)->orderBy('position');

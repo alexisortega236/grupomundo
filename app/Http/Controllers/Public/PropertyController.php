@@ -80,7 +80,7 @@ class PropertyController extends Controller
         );
 
         return view('public.properties.show', [
-            'property' => $property->load(['images', 'coverImage', 'amenities']),
+            'property' => $property->load(['images', 'coverImage', 'videos', 'amenities']),
             'contactFormToken' => ContactRequest::issueFormToken(),
             'related' => Property::published()->with(['images', 'coverImage'])
                 ->whereKeyNot($property->id)

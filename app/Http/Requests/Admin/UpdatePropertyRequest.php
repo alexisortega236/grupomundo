@@ -18,8 +18,18 @@ class UpdatePropertyRequest extends FormRequest
                 : 0;
             $newCount = count($this->file('images', []));
 
-            if ($remainingCount + $newCount > 10) {
-                $validator->errors()->add('images', 'Una propiedad puede tener como máximo 10 imágenes.');
+            if ($remainingCount + $newCount > 25) {
+                $validator->errors()->add('images', 'Una propiedad puede tener como máximo 25 imágenes.');
+            }
+
+            $deletedVideos = collect($this->input('delete_videos', []))->map(fn ($id) => (int) $id);
+            $remainingVideos = $property
+                ? $property->videos()->whereNotIn('id', $deletedVideos)->count()
+                : 0;
+            $newVideos = count($this->file('videos', []));
+
+            if ($remainingVideos + $newVideos > 3) {
+                $validator->errors()->add('videos', 'Una propiedad puede tener como máximo 3 videos.');
             }
         });
     }

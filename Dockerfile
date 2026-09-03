@@ -27,6 +27,7 @@ RUN apt-get update \
 COPY --from=vendor /app /var/www/html
 COPY --from=assets /app/public/build /var/www/html/public/build
 COPY docker/apache-laravel.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/php.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY docker/entrypoint.sh /usr/local/bin/render-entrypoint
 
 RUN chmod +x /usr/local/bin/render-entrypoint \

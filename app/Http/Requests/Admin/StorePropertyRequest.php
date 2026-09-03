@@ -67,12 +67,17 @@ class StorePropertyRequest extends FormRequest
             'is_featured' => ['nullable', 'boolean'],
             'amenities' => ['nullable', 'array'],
             'amenities.*' => ['integer', 'exists:amenities,id'],
-            'images' => ['nullable', 'array', 'max:10'],
+            'images' => ['nullable', 'array', 'max:25'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'new_image_alt' => ['nullable', 'array'],
             'existing_images' => ['nullable', 'array'],
             'delete_images' => ['nullable', 'array'],
             'cover_image_id' => ['nullable', 'integer'],
+            'cover_image_new' => ['nullable', 'integer', 'min:0'],
+            'videos' => ['nullable', 'array', 'max:3'],
+            'videos.*' => ['file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska'],
+            'delete_videos' => ['nullable', 'array'],
+            'delete_videos.*' => ['integer'],
         ];
     }
 }
