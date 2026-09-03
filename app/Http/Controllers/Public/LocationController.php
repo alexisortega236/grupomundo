@@ -124,7 +124,7 @@ class LocationController
         $data = $request->validate([
             'state' => ['required', 'in:Morelos,Ciudad de México'],
             'municipality' => ['required', 'string', 'max:120'],
-            'q' => ['required', 'string', 'min:2', 'max:80'],
+            'q' => ['required', 'string', 'min:3', 'max:80'],
         ]);
 
         if (! array_key_exists($data['municipality'], app(SupportedValuationLocations::class)->municipalitiesForState($data['state']))) {
