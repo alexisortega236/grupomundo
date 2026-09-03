@@ -88,6 +88,37 @@ class LocationController
             : array_values($locations->municipalitiesForState($state)));
     }
 
+    public function postalCode(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'postal_code' => ['required', 'regex:/^\d{5}$/'],
+        ]);
+
+        $settlements = PostalSettlement::query()
+            ->where('postal_code', $data['postal_code'])
+            ->orderBy('state')
+            ->orderBy('municipality')
+            ->orderBy('settlement')
+            ->get(['id', 'state', 'municipality', 'settlement', 'settlement_type', 'postal_code', 'city']);
+
+        if ($settlements->isEmpty()) {
+            return response()->json(['message' => 'No encontramos ese código postal en el catálogo.'], 404);
+        }
+
+        return response()->json([
+            'state' => $settlements->first()->state,
+            'municipalities' => $settlements->pluck('municipality')->unique()->values(),
+            'settlements' => $settlements->map(fn (PostalSettlement $settlement) => [
+                'id' => $settlement->id,
+                'name' => $settlement->settlement,
+                'type' => $settlement->settlement_type,
+                'postal_code' => $settlement->postal_code,
+                'city' => $settlement->city,
+                'municipality' => $settlement->municipality,
+            ])->values(),
+        ]);
+    }
+
     public function settlements(Request $request): JsonResponse
     {
         $data = $request->validate([

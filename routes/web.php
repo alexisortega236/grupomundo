@@ -20,6 +20,7 @@ Route::get('/propiedades', [PropertyController::class, 'index'])->name('properti
 Route::get('/propiedades/{property:slug}', [PropertyController::class, 'show'])->name('properties.show');
 Route::get('/valuador', [ValuationController::class, 'create'])->name('valuation.create');
 Route::get('/valuador/locations/municipalities', [LocationController::class, 'municipalities'])->middleware('throttle:30,1')->name('valuation.locations.municipalities');
+Route::get('/valuador/locations/postal-code', [LocationController::class, 'postalCode'])->middleware('throttle:30,1')->name('valuation.locations.postal-code');
 Route::get('/valuador/locations/settlements', [LocationController::class, 'settlements'])->middleware('throttle:60,1')->name('valuation.locations.settlements');
 Route::get('/valuador/geocode', [LocationController::class, 'geocode'])->middleware('throttle:20,1')->name('valuation.geocode');
 Route::get('/valuador/reverse-geocode', [LocationController::class, 'reverse'])->middleware('throttle:10,1')->name('valuation.reverse-geocode');
