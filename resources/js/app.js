@@ -6,7 +6,7 @@ window.Alpine = Alpine;
 
 window.propertyLocation = ({ states, initialState, initialMunicipality, initialNeighborhood, initialCity, initialPostalCode, municipalitiesUrl, postalCodeUrl = '/valuador/locations/postal-code', settlementsUrl }) => ({
     states,
-    mode: states.includes(initialState) || !initialState ? 'catalog' : 'manual',
+    mode: 'catalog',
     state: initialState || '',
     municipality: initialMunicipality || '',
     neighborhood: initialNeighborhood || '',
@@ -22,9 +22,14 @@ window.propertyLocation = ({ states, initialState, initialMunicipality, initialN
     init() {
         this.$el.closest('form')?.addEventListener('submit', () => this.syncDisabledFields());
         this.addPostalCodeField();
+        this.removeManualLocationOption();
         if (this.mode === 'catalog' && this.state) {
             this.loadMunicipalities(this.state, this.municipality);
         }
+    },
+    removeManualLocationOption() {
+        this.$el.querySelector('input[name="location_mode"]')?.closest('div.mt-4.flex.flex-wrap')?.remove();
+        this.$el.querySelector('[x-show="mode === \'manual\'"]')?.remove();
     },
     addPostalCodeField() {
         const stateSelect = this.$el.querySelector('#catalog-state');
