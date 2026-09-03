@@ -68,7 +68,7 @@ class StorePropertyRequest extends FormRequest
             'amenities' => ['nullable', 'array'],
             'amenities.*' => ['integer', 'exists:amenities,id'],
             'images' => ['nullable', 'array', 'max:25'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp'],
             'new_image_alt' => ['nullable', 'array'],
             'existing_images' => ['nullable', 'array'],
             'delete_images' => ['nullable', 'array'],
