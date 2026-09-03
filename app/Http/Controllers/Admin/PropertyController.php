@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\UpdatePropertyRequest;
 use App\Models\Amenity;
 use App\Models\Property;
 use App\Services\PropertyImageService;
+use App\Services\Valuation\SupportedValuationLocations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +35,7 @@ class PropertyController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(SupportedValuationLocations $locations)
     {
         return view('admin.properties.form', [
             'property' => new Property([
@@ -43,6 +44,7 @@ class PropertyController extends Controller
                 'origin' => Property::ORIGIN_COMMERCIAL,
             ]),
             'amenities' => Amenity::orderBy('name')->get(),
+            'locationStates' => $locations->states(),
         ]);
     }
 
@@ -76,13 +78,14 @@ class PropertyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Property $property)
+    public function edit(Property $property, SupportedValuationLocations $locations)
     {
         $this->authorize('update', $property);
 
         return view('admin.properties.form', [
             'property' => $property->load(['images', 'amenities']),
             'amenities' => Amenity::orderBy('name')->get(),
+            'locationStates' => $locations->states(),
         ]);
     }
 

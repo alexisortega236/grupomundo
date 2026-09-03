@@ -113,6 +113,7 @@ class LocationController
                 'name' => $settlement->settlement,
                 'type' => $settlement->settlement_type,
                 'postal_code' => $settlement->postal_code,
+                'city' => $settlement->city,
             ])
             ->values();
 
