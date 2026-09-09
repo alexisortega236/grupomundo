@@ -32,6 +32,8 @@ DENUE_CATEGORIES = {
     "professional_services": ("54",),
 }
 
+MAX_NEAREST_AGEB_DISTANCE_M = 150
+
 
 @dataclass
 class AgebMatch:
@@ -43,6 +45,9 @@ class AgebMatch:
     municipality: str | None = None
     locality: str | None = None
     area_km2: float | None = None
+    ageb_match_method: str | None = None
+    ageb_distance_m: float | None = None
+    point_cve_loc: str | None = None
 
 
 class InegiSpatialIndex:
@@ -55,11 +60,23 @@ class InegiSpatialIndex:
         self.localities = self._load_polygons(paths.locality_shp)
         self.blocks = self._load_polygons(paths.block_shp) if paths.block_shp.exists() else []
 
-    def match(self, latitude: float, longitude: float) -> AgebMatch:
+    def match(self, latitude: float, longitude: float, allow_nearest: bool = False) -> AgebMatch:
         point = Point(*self.transformer.transform(longitude, latitude))
         ageb_record = self._find(self.agebs, point)
         if not ageb_record:
-            return AgebMatch()
+            if not allow_nearest:
+                return AgebMatch()
+            return self._nearest_match(point)
+        return self._match_record(point, ageb_record, ageb_match_method="exact", ageb_distance_m=0.0)
+
+    def _match_record(
+        self,
+        point,
+        ageb_record: dict[str, Any],
+        *,
+        ageb_match_method: str,
+        ageb_distance_m: float,
+    ) -> AgebMatch:
         attrs = ageb_record["attrs"]
         municipality_record = self._find(self.municipalities, point)
         locality_record = self._find(self.localities, point)
@@ -73,6 +90,41 @@ class InegiSpatialIndex:
             municipality=_get(municipality_record["attrs"], "NOMGEO", "NOM_MUN") if municipality_record else None,
             locality=_get(locality_record["attrs"], "NOMGEO", "NOM_LOC") if locality_record else None,
             area_km2=ageb_record["geometry"].area / 1_000_000,
+            ageb_match_method=ageb_match_method,
+            ageb_distance_m=ageb_distance_m,
+            point_cve_loc=_get(locality_record["attrs"], "CVE_LOC", "LOC") if locality_record else None,
+        )
+
+    def _nearest_match(self, point) -> AgebMatch:
+        municipality_record = self._find(self.municipalities, point)
+        if not municipality_record:
+            return AgebMatch()
+
+        municipality_attrs = municipality_record["attrs"]
+        municipality_ent = _clean_code(_get(municipality_attrs, "CVE_ENT", "ENTIDAD"), 2)
+        municipality_mun = _clean_code(_get(municipality_attrs, "CVE_MUN", "MUN"), 3)
+        if not municipality_ent or not municipality_mun:
+            return AgebMatch()
+
+        candidates = []
+        for record in self.agebs:
+            attrs = record["attrs"]
+            candidate_ent = _clean_code(_get(attrs, "CVE_ENT", "ENTIDAD"), 2)
+            candidate_mun = _clean_code(_get(attrs, "CVE_MUN", "MUN"), 3)
+            if (candidate_ent, candidate_mun) != (municipality_ent, municipality_mun):
+                continue
+            candidates.append((point.distance(record["geometry"]), record))
+
+        if not candidates:
+            return AgebMatch()
+        distance_m, ageb_record = min(candidates, key=lambda item: item[0])
+        if distance_m > MAX_NEAREST_AGEB_DISTANCE_M:
+            return AgebMatch()
+        return self._match_record(
+            point,
+            ageb_record,
+            ageb_match_method="nearest",
+            ageb_distance_m=float(distance_m),
         )
 
     def _load_polygons(self, shp_path: Path) -> list[dict[str, Any]]:

@@ -135,7 +135,7 @@ class MorelosDataProvider:
         self.denue = DenueIndex(paths.denue_csv)
 
     def match(self, latitude, longitude):
-        return self.spatial.match(latitude, longitude)
+        return self.spatial.match(latitude, longitude, allow_nearest=True)
 
 
 class CdmxDataProvider:

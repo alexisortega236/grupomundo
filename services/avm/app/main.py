@@ -128,7 +128,8 @@ def _real_location_context(data: dict):
     lat = float(data.get("latitude"))
     lng = float(data.get("longitude"))
     spatial, censo, denue = _spatial_services()
-    match = spatial.match(lat, lng)
+    # This is the Morelos spatial path. CDMX uses its own regional provider.
+    match = spatial.match(lat, lng, allow_nearest=True)
     if not match.cve_ageb:
         return None
     return match, censo.features(match), denue.counts(lat, lng)
@@ -178,7 +179,13 @@ def _interval_for(property_type: str, prediction: float) -> tuple[float, float, 
         pct = float(subset["percentage_error"].quantile(0.90)) / 100
     return prediction * (1 - pct), prediction * (1 + pct), 0.90
 
-def _confidence(property_type: str, estimated_value: float, municipality: str | None, ageb: str | None, missing: list[str]) -> str:
+def _confidence(
+    property_type: str,
+    estimated_value: float,
+    municipality: str | None,
+    ageb: str | None,
+    missing: list[str],
+) -> str:
     if missing or not ageb:
         return "LOW"
     if estimated_value < 1_000_000 or estimated_value > 12_000_000:
@@ -310,7 +317,13 @@ def _predict_morelos_residential(data: dict, context):
     prediction = float(max(1, np.expm1(residential_v2_pipe.predict(pd.DataFrame([row]))[0])))
     low, high, coverage = _interval_for(property_type, prediction)
     missing = [key for key in ("construction_area_m2",) if row.get(key) in (None, "")]
-    confidence = _confidence(property_type, prediction, row["municipality"], match.cve_ageb, missing)
+    confidence = _confidence(
+        property_type,
+        prediction,
+        row["municipality"],
+        match.cve_ageb,
+        missing,
+    )
     return jsonify({
         "eligible": True,
         "model": "avm_residential_v2_v2",
@@ -321,7 +334,15 @@ def _predict_morelos_residential(data: dict, context):
         "currency": "MXN",
         "range": {"low": round(low), "high": round(high), "nominal_coverage": coverage},
         "confidence": confidence,
-        "location": {"municipality": row["municipality"], "locality": match.locality, "ageb": match.cve_ageb},
+        "location": {
+            "municipality": row["municipality"],
+            "locality": match.locality,
+            "locality_cve_loc": getattr(match, "point_cve_loc", None),
+            "ageb": match.cve_ageb,
+            "ageb_cve_loc": match.cve_loc,
+            "ageb_match_method": getattr(match, "ageb_match_method", None),
+            "ageb_distance_m": getattr(match, "ageb_distance_m", None),
+        },
     }), 200
 
 @app.post("/predict/v2/v1")
@@ -382,9 +403,13 @@ def predict_v2_v1():
         "location": {
             "municipality": row["municipality"],
             "locality": match.locality,
+            "locality_cve_loc": getattr(match, "point_cve_loc", None),
             "neighborhood": data.get("neighborhood"),
             "ageb": match.cve_ageb,
+            "ageb_cve_loc": match.cve_loc,
             "coordinate_quality": coordinate_quality,
+            "ageb_match_method": getattr(match, "ageb_match_method", None),
+            "ageb_distance_m": getattr(match, "ageb_distance_m", None),
         },
     }), 200
 
