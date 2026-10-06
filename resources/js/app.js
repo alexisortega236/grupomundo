@@ -21,6 +21,9 @@ window.propertyCardGallery = (images, detailUrl) => ({
     previous() {
         if (this.images.length > 1) this.index = (this.index - 1 + this.images.length) % this.images.length;
     },
+    goTo(index) {
+        if (index >= 0 && index < this.images.length) this.index = index;
+    },
     startTouch(event) {
         const touch = event.changedTouches[0];
         this.touchStartX = touch.screenX;
