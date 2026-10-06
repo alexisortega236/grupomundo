@@ -12,8 +12,31 @@ window.propertyCardGallery = (images, detailUrl) => ({
     touchStartY: 0,
     moved: false,
     suppressClick: false,
+    autoplayTimer: null,
+    autoplayDelay: 5000,
     get current() {
         return this.images[this.index] || this.images[0];
+    },
+    init() {
+        this.resumeAutoplay();
+    },
+    destroy() {
+        this.pauseAutoplay();
+    },
+    pauseAutoplay() {
+        if (this.autoplayTimer) {
+            window.clearInterval(this.autoplayTimer);
+            this.autoplayTimer = null;
+        }
+    },
+    resumeAutoplay() {
+        this.pauseAutoplay();
+        if (this.images.length > 1) {
+            this.autoplayTimer = window.setInterval(() => this.next(), this.autoplayDelay);
+        }
+    },
+    restartAutoplay() {
+        this.resumeAutoplay();
     },
     next() {
         if (this.images.length > 1) this.index = (this.index + 1) % this.images.length;
@@ -42,6 +65,7 @@ window.propertyCardGallery = (images, detailUrl) => ({
             deltaX < 0 ? this.next() : this.previous();
             this.suppressClick = true;
             window.setTimeout(() => { this.suppressClick = false; }, 450);
+            this.restartAutoplay();
             event.preventDefault();
         }
     },
