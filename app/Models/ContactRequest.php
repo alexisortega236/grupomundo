@@ -47,4 +47,9 @@ class ContactRequest extends Model
     {
         return $this->belongsTo(Property::class);
     }
+
+    public function valuation(): BelongsTo
+    {
+        return $this->belongsTo(Valuation::class);
+    }
 }

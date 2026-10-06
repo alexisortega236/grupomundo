@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\ContactRequestController as AdminContactRequestController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
+use App\Http\Controllers\Admin\PropertyTypeController as AdminPropertyTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ValuationController as AdminValuationController;
 use App\Http\Controllers\ProfileController;
@@ -45,6 +46,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('propiedades', AdminPropertyController::class)->parameters(['propiedades' => 'property'])->names('properties');
     Route::resource('valuaciones', AdminValuationController::class)->parameters(['valuaciones' => 'valuation'])->only(['index', 'create', 'store', 'show'])->names('valuations');
     Route::resource('amenidades', AdminAmenityController::class)->parameters(['amenidades' => 'amenity'])->except('show')->names('amenities');
+    Route::patch('tipos-propiedad/{propertyType}/toggle-active', [AdminPropertyTypeController::class, 'toggleActive'])->name('property-types.toggle-active');
+    Route::resource('tipos-propiedad', AdminPropertyTypeController::class)->parameters(['tipos-propiedad' => 'propertyType'])->only(['index', 'create', 'store', 'edit', 'update'])->names('property-types');
     Route::resource('solicitudes', AdminContactRequestController::class)->parameters(['solicitudes' => 'contactRequest'])->only(['index', 'show', 'update', 'destroy'])->names('contact-requests');
     Route::resource('usuarios', AdminUserController::class)->parameters(['usuarios' => 'user'])->middleware('can:admin-only')->names('users');
 });

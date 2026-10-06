@@ -47,7 +47,7 @@ window.propertyLocation = ({ states, initialState, initialMunicipality, initialN
     },
     syncDisabledFields() {
         const manual = this.mode === 'manual';
-        this.$el.querySelectorAll('[name="neighborhood"], [name="city"], [name="state"], [name="postal_code"]').forEach((field) => {
+        this.$el.querySelectorAll('[name="municipality"], [name="neighborhood"], [name="city"], [name="state"], [name="postal_code"]').forEach((field) => {
             field.disabled = field.closest('[x-show="mode === \'manual\'"]') ? !manual : manual;
         });
     },

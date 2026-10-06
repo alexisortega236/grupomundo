@@ -45,26 +45,26 @@ class PropertyImagesTest extends TestCase
         Storage::disk('public')->assertExists($image->thumb_path);
     }
 
-    public function test_admin_can_create_exactly_twenty_five_images_and_first_is_cover(): void
+    public function test_admin_can_create_exactly_forty_images_and_first_is_cover(): void
     {
         Storage::fake('public');
         $admin = User::factory()->create(['role' => 'admin']);
-        $images = collect(range(1, 25))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
+        $images = collect(range(1, 40))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
 
         $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
             'images' => $images,
         ]))->assertRedirect();
 
         $property = Property::latest()->first();
-        $this->assertCount(25, $property->images);
+        $this->assertCount(40, $property->images);
         $this->assertSame(1, $property->images()->where('is_cover', true)->count());
         $this->assertSame($property->images()->orderBy('position')->first()->id, $property->images()->where('is_cover', true)->first()->id);
     }
 
-    public function test_twenty_six_images_are_rejected(): void
+    public function test_forty_one_images_are_rejected(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $images = collect(range(1, 26))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
+        $images = collect(range(1, 41))->map(fn ($index) => UploadedFile::fake()->image("imagen-{$index}.jpg"))->all();
 
         $this->actingAs($admin)->post(route('admin.properties.store'), $this->propertyPayload([
             'images' => $images,
@@ -102,32 +102,32 @@ class PropertyImagesTest extends TestCase
         $this->assertDatabaseCount('properties', 0);
     }
 
-    public function test_update_allows_seven_existing_plus_three_new_images(): void
+    public function test_update_allows_thirty_seven_existing_plus_three_new_images(): void
     {
         Storage::fake('public');
         $admin = User::factory()->create(['role' => 'admin']);
         $property = Property::factory()->create(['created_by' => $admin->id]);
-        app(PropertyImageService::class)->sync($property, ['images' => $this->images(7)]);
+        app(PropertyImageService::class)->sync($property, ['images' => $this->images(37)]);
 
         $this->actingAs($admin)->put(route('admin.properties.update', $property), $this->propertyPayload([
             'images' => $this->images(3),
         ]))->assertRedirect();
 
-        $this->assertCount(10, $property->fresh()->images);
+        $this->assertCount(40, $property->fresh()->images);
     }
 
-    public function test_update_rejects_seven_existing_plus_four_new_images(): void
+    public function test_update_rejects_thirty_seven_existing_plus_four_new_images(): void
     {
         Storage::fake('public');
         $admin = User::factory()->create(['role' => 'admin']);
         $property = Property::factory()->create(['created_by' => $admin->id]);
-        app(PropertyImageService::class)->sync($property, ['images' => $this->images(7)]);
+        app(PropertyImageService::class)->sync($property, ['images' => $this->images(37)]);
 
         $this->actingAs($admin)->put(route('admin.properties.update', $property), $this->propertyPayload([
             'images' => $this->images(4),
         ]))->assertSessionHasErrors('images');
 
-        $this->assertCount(7, $property->fresh()->images);
+        $this->assertCount(37, $property->fresh()->images);
     }
 
     public function test_generated_dimensions_are_independent_and_do_not_upscale_small_images(): void

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Enums\AvmPropertyType;
 use App\Enums\OperationType;
 use App\Enums\PropertyStatus;
 use App\Models\Property;
 use App\Models\ContactRequest;
 use Illuminate\Http\Request;
+use App\Support\PropertyTypeCatalog;
 
 class PropertyController extends Controller
 {
@@ -16,19 +16,29 @@ class PropertyController extends Controller
     {
         $query = Property::published()->with(['images', 'coverImage']);
 
-        foreach (['property_type', 'state', 'city', 'neighborhood'] as $filter) {
+        foreach (['property_type', 'state', 'neighborhood'] as $filter) {
             $query->when($request->filled($filter), function ($q) use ($filter, $request) {
                 $value = $request->string($filter)->toString();
 
                 if ($filter === 'property_type' && $value === 'commercial') {
-                    $q->whereIn($filter, ['Oficina', 'Local', 'commercial', 'office', 'local']);
+                    $q->whereIn($filter, ['Oficina', 'Local', 'Consultorio', 'Bodega', 'commercial', 'office', 'local']);
                     return;
                 }
 
-                $q->where($filter, $value);
+                if ($filter === 'neighborhood') {
+                    $q->where('neighborhood', $value);
+                } else {
+                    $q->where($filter, $value);
+                }
             });
         }
 
+        $query->when($request->filled('municipality'), function ($q) use ($request) {
+            $value = $request->string('municipality')->toString();
+            $q->where(fn ($nested) => $nested->where('municipality', $value)->orWhere(function ($legacy) use ($value) {
+                $legacy->whereNull('municipality')->where('city', $value);
+            })->orWhere('city', $value));
+        })->when($request->filled('city') && ! $request->filled('municipality'), fn ($q) => $q->where('city', $request->string('city')->toString()));
         $operation = $request->string('operation_type')->toString();
         $query->when($operation !== '', function ($q) use ($operation) {
             $values = match ($operation) {
@@ -62,10 +72,9 @@ class PropertyController extends Controller
             'properties' => $query->paginate(9)->withQueryString(),
             'filters' => $request->query(),
             'options' => [
-                'types' => Property::published()->distinct()->pluck('property_type')->filter()
-                    ->mapWithKeys(fn ($type) => [$type => AvmPropertyType::labelFor($type)]),
+                'types' => PropertyTypeCatalog::options(),
                 'states' => Property::published()->distinct()->pluck('state')->filter(),
-                'cities' => Property::published()->distinct()->pluck('city')->filter(),
+                'municipalities' => Property::published()->selectRaw('COALESCE(municipality, city) as location_name')->distinct()->orderBy('location_name')->pluck('location_name')->filter(),
             ],
         ]);
     }

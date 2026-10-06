@@ -13,7 +13,7 @@ class ContactRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $requests = ContactRequest::with('property')
+        $requests = ContactRequest::with(['property', 'valuation'])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->latest()->paginate(15)->withQueryString();
         return view('admin.contact-requests.index', compact('requests'));
@@ -40,6 +40,7 @@ class ContactRequestController extends Controller
      */
     public function show(ContactRequest $contactRequest)
     {
+        $contactRequest->load(['property', 'valuation']);
         return view('admin.contact-requests.show', compact('contactRequest'));
     }
 

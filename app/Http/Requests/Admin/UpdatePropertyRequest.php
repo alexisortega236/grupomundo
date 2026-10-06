@@ -18,8 +18,8 @@ class UpdatePropertyRequest extends FormRequest
                 : 0;
             $newCount = count($this->file('images', []));
 
-            if ($remainingCount + $newCount > 25) {
-                $validator->errors()->add('images', 'Una propiedad puede tener como máximo 25 imágenes.');
+            if ($remainingCount + $newCount > 40) {
+                $validator->errors()->add('images', 'Una propiedad puede tener como máximo 40 imágenes.');
             }
 
             $deletedVideos = collect($this->input('delete_videos', []))->map(fn ($id) => (int) $id);

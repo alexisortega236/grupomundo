@@ -64,7 +64,7 @@ class PublicPropertyTest extends TestCase
         $response->assertSee('Destacada visible 0')
             ->assertSee('Destacada visible 5')
             ->assertDontSee('Destacada visible 6')
-            ->assertDontSee($notFeatured->title)
+            ->assertSee($notFeatured->title)
             ->assertDontSee($draftFeatured->title);
         $this->assertCount(6, $visible->take(6));
     }

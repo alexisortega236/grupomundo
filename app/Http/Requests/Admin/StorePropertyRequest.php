@@ -6,6 +6,8 @@ use App\Enums\OperationType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Property;
+use App\Models\PropertyType;
 
 class StorePropertyRequest extends FormRequest
 {
@@ -44,7 +46,18 @@ class StorePropertyRequest extends FormRequest
             'short_description' => ['nullable', 'string', 'max:500'],
             'description' => ['required', 'string'],
             'operation_type' => ['required', Rule::enum(OperationType::class)],
-            'property_type' => ['required', 'string', 'max:100'],
+            'property_type' => [
+                'required', 'string', 'max:120',
+                function (string $attribute, mixed $value, \Closure $fail) use ($propertyId): void {
+                    $type = PropertyType::where('name', $value)->first();
+                    $current = $propertyId ? Property::withTrashed()->find($propertyId)?->property_type : null;
+                    if (! $type && $current !== $value) {
+                        $fail('Selecciona un tipo de propiedad disponible en el catálogo.');
+                    } elseif ($type && ! $type->is_active && $current !== $value) {
+                        $fail('El tipo de propiedad seleccionado está inactivo.');
+                    }
+                },
+            ],
             'price' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', Rule::in(['MXN', 'USD'])],
             'rent_period' => ['nullable', 'string', 'max:50'],
@@ -53,10 +66,13 @@ class StorePropertyRequest extends FormRequest
             'interior_number' => ['nullable', 'string', 'max:50'],
             'neighborhood' => ['required', 'string', 'max:120'],
             'city' => ['required', 'string', 'max:120'],
+            'municipality' => ['nullable', 'string', 'max:120'],
             'state' => ['required', 'string', 'max:120'],
             'postal_code' => ['nullable', 'string', 'max:20'],
             'bedrooms' => ['nullable', 'integer', 'min:0'],
             'bathrooms' => ['nullable', 'numeric', 'min:0'],
+            'full_bathrooms' => ['nullable', 'integer', 'min:0'],
+            'half_bathrooms' => ['nullable', 'integer', 'min:0'],
             'parking_spaces' => ['nullable', 'integer', 'min:0'],
             'construction_area' => ['nullable', 'numeric', 'min:0'],
             'land_area' => ['nullable', 'numeric', 'min:0'],
@@ -67,7 +83,7 @@ class StorePropertyRequest extends FormRequest
             'is_featured' => ['nullable', 'boolean'],
             'amenities' => ['nullable', 'array'],
             'amenities.*' => ['integer', 'exists:amenities,id'],
-            'images' => ['nullable', 'array', 'max:25'],
+            'images' => ['nullable', 'array', 'max:40'],
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp'],
             'new_image_alt' => ['nullable', 'array'],
             'existing_images' => ['nullable', 'array'],

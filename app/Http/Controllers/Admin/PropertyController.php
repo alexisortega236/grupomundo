@@ -8,9 +8,11 @@ use App\Http\Requests\Admin\StorePropertyRequest;
 use App\Http\Requests\Admin\UpdatePropertyRequest;
 use App\Models\Amenity;
 use App\Models\Property;
+use App\Models\PropertyType;
 use App\Services\PropertyImageService;
 use App\Services\PropertyVideoService;
 use App\Services\Valuation\SupportedValuationLocations;
+use App\Support\PropertyTypeCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -46,6 +48,7 @@ class PropertyController extends Controller
             ]),
             'amenities' => Amenity::orderBy('name')->get(),
             'locationStates' => $locations->states(),
+            'propertyTypes' => PropertyTypeCatalog::assignmentOptions(),
         ]);
     }
 
@@ -88,6 +91,7 @@ class PropertyController extends Controller
             'property' => $property->load(['images', 'videos', 'amenities']),
             'amenities' => Amenity::orderBy('name')->get(),
             'locationStates' => $locations->states(),
+            'propertyTypes' => PropertyTypeCatalog::assignmentOptions($property),
         ]);
     }
 
@@ -160,6 +164,15 @@ class PropertyController extends Controller
         $data = collect($request->validated())->except([
             'slug', 'published_at', 'amenities', 'images', 'new_image_alt', 'existing_images', 'delete_images', 'cover_image_id', 'cover_image_new', 'videos', 'delete_videos',
         ])->all();
+        if (array_key_exists('full_bathrooms', $data) || array_key_exists('half_bathrooms', $data)) {
+            $full = $data['full_bathrooms'] ?? null;
+            $half = $data['half_bathrooms'] ?? null;
+            $data['bathrooms'] = ($full === null && $half === null)
+                ? ($property?->bathrooms ?? ($data['bathrooms'] ?? null))
+                : (float) ($full ?? 0) + ((float) ($half ?? 0) * 0.5);
+        }
+        $propertyType = PropertyType::where('name', $data['property_type'] ?? null)->first();
+        $data['property_type_id'] = $propertyType?->id;
         $data['is_featured'] = $request->boolean('is_featured');
         if (($data['status'] ?? null) === PropertyStatus::Published->value && ! $property?->published_at) {
             $data['published_at'] = now();

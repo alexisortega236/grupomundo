@@ -50,6 +50,8 @@ class Property extends Model
             'status' => PropertyStatus::class,
             'price' => 'decimal:2',
             'bathrooms' => 'decimal:1',
+            'full_bathrooms' => 'integer',
+            'half_bathrooms' => 'integer',
             'construction_area' => 'decimal:2',
             'land_area' => 'decimal:2',
             'latitude' => 'decimal:7',
@@ -69,6 +71,11 @@ class Property extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function propertyType(): BelongsTo
+    {
+        return $this->belongsTo(PropertyType::class, 'property_type_id');
     }
 
     public function user(): BelongsTo
@@ -178,5 +185,33 @@ class Property extends Model
         return collect([$streetLine, $this->neighborhood, $this->city, $this->state])
             ->filter(fn ($value) => filled($value))
             ->implode(', ');
+    }
+
+    public function bathroomsLabel(): string
+    {
+        if ($this->full_bathrooms !== null || $this->half_bathrooms !== null) {
+            $full = (int) ($this->full_bathrooms ?? 0);
+            $half = (int) ($this->half_bathrooms ?? 0);
+
+            return $full.' completos'.($half ? ' + '.$half.' medio'.($half === 1 ? '' : 's') : '');
+        }
+
+        return $this->bathrooms !== null ? (string) $this->bathrooms.' baños' : 'Baños por confirmar';
+    }
+
+    /** @return array{full_bathrooms: int, half_bathrooms: int}|null */
+    public static function bathroomBreakdownFromLegacy(mixed $bathrooms): ?array
+    {
+        if ($bathrooms === null || $bathrooms === '') {
+            return null;
+        }
+
+        $value = (float) $bathrooms;
+        $full = (int) floor($value);
+        $fraction = round($value - $full, 1);
+
+        return in_array($fraction, [0.0, 0.5], true)
+            ? ['full_bathrooms' => $full, 'half_bathrooms' => $fraction === 0.5 ? 1 : 0]
+            : null;
     }
 }

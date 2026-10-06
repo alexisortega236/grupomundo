@@ -50,4 +50,9 @@ class Valuation extends Model
     {
         return $this->hasMany(ValuationModelPrediction::class);
     }
+
+    public function contactRequests(): HasMany
+    {
+        return $this->hasMany(ContactRequest::class);
+    }
 }

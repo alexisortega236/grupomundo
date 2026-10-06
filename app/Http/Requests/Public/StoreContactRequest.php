@@ -36,6 +36,11 @@ class StoreContactRequest extends FormRequest
                     ->where('status', 'published')
                     ->whereNotNull('published_at')),
             ],
+            'valuation_uuid' => [
+                'nullable',
+                'uuid',
+                Rule::exists('valuations', 'uuid')->where(fn ($query) => $query->where('source', 'public')),
+            ],
             'name' => ['required', 'string', 'max:120'],
             'phone' => ['required', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:160'],

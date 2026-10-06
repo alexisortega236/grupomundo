@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\StoreContactRequest;
 use App\Models\ContactRequest;
 use App\Models\Property;
+use App\Models\Valuation;
 
 class ContactRequestController extends Controller
 {
@@ -18,6 +19,15 @@ class ContactRequestController extends Controller
             'email',
             'message',
         ]);
+
+        if ($request->filled('valuation_uuid')) {
+            $valuation = Valuation::with('property')
+                ->where('uuid', $request->string('valuation_uuid')->toString())
+                ->where('source', 'public')
+                ->firstOrFail();
+            $data['valuation_id'] = $valuation->id;
+            $data['property_id'] = $valuation->property_id;
+        }
 
         if (blank($data['message'] ?? null)) {
             $title = isset($data['property_id'])

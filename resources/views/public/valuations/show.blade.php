@@ -72,8 +72,21 @@
         <aside class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-[#e4dccd] lg:self-start">
             <h2 class="font-serif text-3xl">¿Quieres una valoración más detallada?</h2>
             <p class="mt-4 text-sm leading-relaxed text-[#51635f]">Nuestro equipo puede ayudarte a analizar tu propiedad y acompañarte en el proceso de venta o inversión.</p>
+            <form method="POST" action="{{ route('contact-requests.store') }}" class="mt-6 grid gap-3">
+                @csrf
+                <input type="hidden" name="valuation_uuid" value="{{ $valuation->uuid }}">
+                <input type="hidden" name="contact_form_token" value="{{ \App\Models\ContactRequest::issueFormToken() }}">
+                <div class="absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true"><label for="valuation-website">Sitio web</label><input id="valuation-website" name="website" tabindex="-1" autocomplete="off"></div>
+                <p class="text-sm font-semibold text-[#0d2723]">¿Quieres que uno de nuestros agentes se comunique contigo para ayudarte a vender o rentar tu propiedad?</p>
+                <x-form.input label="Nombre" name="name" required />
+                <x-form.input label="Teléfono" name="phone" required />
+                <x-form.input label="Email" name="email" type="email" />
+                <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}"></div>
+                <button class="rounded-full bg-[#d5b673] px-6 py-3 text-center text-sm font-bold uppercase tracking-[.14em] text-[#0d2723]">Quiero que me contacten</button>
+            </form>
             <a class="mt-6 block rounded-full bg-[#0d2723] px-6 py-3 text-center text-sm font-bold uppercase tracking-[.14em] text-white" href="{{ $advisorUrl }}" target="_blank" rel="noopener">Hablar con un asesor</a>
             <a class="mt-3 block rounded-full border border-[#0d2723] px-6 py-3 text-center text-sm font-bold uppercase tracking-[.14em] text-[#0d2723]" href="{{ route('valuation.create') }}">Nueva valuación</a>
         </aside>
     </section>
 </x-public-layout>
+@if(config('services.turnstile.site_key'))<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>@endif
