@@ -36,8 +36,8 @@
         @if(filled($property->short_description))<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-[#51635f]">{{ $property->short_description }}</p>@endif
         <p class="mt-2 text-sm text-[#687773]">{{ $property->neighborhood }}, {{ $property->city }}</p>
         <div class="mt-4 flex flex-wrap gap-3 text-sm text-[#687773]">
-            <span>{{ $property->bedrooms !== null && $property->bedrooms > 0 ? $property->bedrooms.' rec.' : 'Recámaras por confirmar' }}</span><span>{{ $property->bathroomsLabel() }}</span><span>{{ $property->construction_area ? number_format($property->construction_area).' m²' : 'Sup. por confirmar' }}</span>
+            <span>{{ $property->bedrooms !== null && $property->bedrooms > 0 ? $property->bedrooms.' rec.' : 'Recámaras: consultar' }}</span><span>{{ $property->bathroomsLabel() }}</span><span>{{ $property->construction_area ? number_format($property->construction_area).' m²' : 'Superficie: consultar' }}</span>
         </div>
-        <a class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="{{ route('properties.show', $property) }}">Ver propiedad <span aria-hidden="true">→</span></a>
+        <a class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold uppercase tracking-[.14em] text-[#b89752]" href="{{ route('properties.show', $property) }}">Ver detalles <span aria-hidden="true">→</span></a>
     </div>
 </article>

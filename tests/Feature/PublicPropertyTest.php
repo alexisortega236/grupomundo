@@ -26,7 +26,7 @@ class PublicPropertyTest extends TestCase
                 'espacio ideal',
                 'siguiente etapa.',
             ])
-            ->assertSee('Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.');
+            ->assertSee('Encuentra propiedades para vivir o invertir, con asesoría profesional durante todo el proceso.');
     }
 
     public function test_home_shows_only_published_featured_properties_and_limits_to_ten(): void
@@ -72,7 +72,7 @@ class PublicPropertyTest extends TestCase
     public function test_catalog_loads_and_filters(): void
     {
         $this->seed();
-        $this->get('/propiedades?operation_type=sale')->assertOk()->assertSee('resultados encontrados');
+        $this->get('/propiedades?operation_type=sale')->assertOk()->assertSee('propiedades disponibles');
     }
 
     public function test_presale_property_appears_and_can_be_filtered_publicly(): void

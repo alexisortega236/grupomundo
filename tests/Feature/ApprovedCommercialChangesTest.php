@@ -105,7 +105,7 @@ class ApprovedCommercialChangesTest extends TestCase
         $normal = Property::factory()->create(['title' => 'Única normal', 'is_featured' => false]);
         Property::factory()->create(['title' => 'No debe salir', 'origin' => Property::ORIGIN_VALUATION, 'is_featured' => false]);
 
-        $this->get('/')->assertSeeInOrder(['Propiedades destacadas', $featured->title, 'Propiedades normales', $normal->title])->assertDontSee('No debe salir');
+        $this->get('/')->assertSeeInOrder(['Propiedades destacadas', $featured->title, 'Más propiedades', $normal->title])->assertDontSee('No debe salir');
     }
 
     public function test_valuation_lead_derives_property_and_valuation_ids_from_uuid(): void
