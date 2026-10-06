@@ -197,4 +197,62 @@ window.propertyLocation = ({ states, initialState, initialMunicipality, initialN
     },
 });
 
+window.propertySearchLocation = ({ initialState = '', initialMunicipality = '', initialNeighborhood = '', municipalitiesUrl, settlementsUrl }) => ({
+    state: initialState,
+    municipality: initialMunicipality,
+    settlementQuery: initialNeighborhood,
+    municipalities: [],
+    settlements: [],
+    loadingMunicipalities: false,
+    loadingSettlements: false,
+    municipalityRequest: 0,
+    settlementRequest: 0,
+    init() {
+        if (this.state) this.loadMunicipalities(this.municipality);
+    },
+    async loadMunicipalities(selected = '') {
+        const requestId = ++this.municipalityRequest;
+        this.municipality = '';
+        this.settlementQuery = '';
+        this.settlements = [];
+        this.municipalities = [];
+        if (!this.state) return;
+        this.loadingMunicipalities = true;
+        try {
+            const response = await fetch(`${municipalitiesUrl}?state=${encodeURIComponent(this.state)}`);
+            const values = await response.json();
+            if (requestId !== this.municipalityRequest) return;
+            this.municipalities = Array.isArray(values) ? values : [];
+            this.municipality = this.municipalities.includes(selected) ? selected : '';
+            if (this.municipality && initialNeighborhood) this.settlementQuery = initialNeighborhood;
+        } finally {
+            if (requestId === this.municipalityRequest) this.loadingMunicipalities = false;
+        }
+    },
+    clearNeighborhood() {
+        this.settlementQuery = '';
+        this.settlements = [];
+        ++this.settlementRequest;
+    },
+    async searchSettlements() {
+        const query = this.settlementQuery.trim();
+        const requestId = ++this.settlementRequest;
+        this.settlements = [];
+        if (!this.state || !this.municipality || query.length < 2) return;
+        this.loadingSettlements = true;
+        try {
+            const params = new URLSearchParams({ state: this.state, municipality: this.municipality, q: query });
+            const response = await fetch(`${settlementsUrl}?${params}`);
+            const values = await response.json();
+            if (requestId === this.settlementRequest) this.settlements = Array.isArray(values) ? values : [];
+        } finally {
+            if (requestId === this.settlementRequest) this.loadingSettlements = false;
+        }
+    },
+    selectSettlement(settlement) {
+        this.settlementQuery = settlement.name;
+        this.settlements = [];
+    },
+});
+
 Alpine.start();
