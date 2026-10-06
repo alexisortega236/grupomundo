@@ -4,6 +4,55 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
+window.propertyCardGallery = (images, detailUrl) => ({
+    images,
+    detailUrl,
+    index: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    moved: false,
+    suppressClick: false,
+    get current() {
+        return this.images[this.index] || this.images[0];
+    },
+    next() {
+        if (this.images.length > 1) this.index = (this.index + 1) % this.images.length;
+    },
+    previous() {
+        if (this.images.length > 1) this.index = (this.index - 1 + this.images.length) % this.images.length;
+    },
+    startTouch(event) {
+        const touch = event.changedTouches[0];
+        this.touchStartX = touch.screenX;
+        this.touchStartY = touch.screenY;
+        this.moved = false;
+    },
+    moveTouch(event) {
+        const touch = event.changedTouches[0];
+        this.moved = Math.abs(touch.screenX - this.touchStartX) > 10
+            || Math.abs(touch.screenY - this.touchStartY) > 10;
+    },
+    endTouch(event) {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.screenX - this.touchStartX;
+        if (Math.abs(deltaX) >= 45 && Math.abs(deltaX) > Math.abs(touch.screenY - this.touchStartY)) {
+            deltaX < 0 ? this.next() : this.previous();
+            this.suppressClick = true;
+            window.setTimeout(() => { this.suppressClick = false; }, 450);
+            event.preventDefault();
+        }
+    },
+    openDetail(event) {
+        if (this.suppressClick || this.moved) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.moved = false;
+            return;
+        }
+        window.location.href = this.detailUrl;
+    },
+});
+
 window.propertyLocation = ({ states, initialState, initialMunicipality, initialNeighborhood, initialCity, initialPostalCode, municipalitiesUrl, postalCodeUrl = '/valuador/locations/postal-code', settlementsUrl }) => ({
     states,
     mode: 'catalog',

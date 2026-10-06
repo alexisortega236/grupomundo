@@ -29,10 +29,10 @@ class PublicPropertyTest extends TestCase
             ->assertSee('Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.');
     }
 
-    public function test_home_shows_only_published_featured_properties_and_limits_to_six(): void
+    public function test_home_shows_only_published_featured_properties_and_limits_to_ten(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $visible = Property::factory()->count(7)->sequence(
+        $visible = Property::factory()->count(11)->sequence(
             fn ($sequence) => [
                 'created_by' => $admin->id,
                 'title' => 'Destacada visible '.$sequence->index,
@@ -62,11 +62,11 @@ class PublicPropertyTest extends TestCase
         $response = $this->get('/')->assertOk();
 
         $response->assertSee('Destacada visible 0')
-            ->assertSee('Destacada visible 5')
-            ->assertDontSee('Destacada visible 6')
+            ->assertSee('Destacada visible 9')
+            ->assertDontSee('Destacada visible 10')
             ->assertSee($notFeatured->title)
             ->assertDontSee($draftFeatured->title);
-        $this->assertCount(6, $visible->take(6));
+        $this->assertCount(10, $visible->take(10));
     }
 
     public function test_catalog_loads_and_filters(): void
