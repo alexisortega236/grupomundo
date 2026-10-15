@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\OperationType;
 use App\Models\Property;
+use App\Models\PropertyType;
 use Illuminate\Http\Request;
 
 class PublicPropertyCatalog
@@ -21,7 +22,16 @@ class PublicPropertyCatalog
                 $value = $request->string($filter)->toString();
 
                 if ($filter === 'property_type' && $value === 'commercial') {
-                    $q->whereIn($filter, ['Oficina', 'Local', 'Consultorio', 'Bodega', 'commercial', 'office', 'local']);
+                    $q->where(function ($commercial) {
+                        $commercial->whereHas('propertyType', fn ($type) => $type
+                            ->where('classification', PropertyType::CLASSIFICATION_COMMERCIAL))
+                            ->orWhere(function ($legacy) {
+                                $legacy->whereNull('property_type_id')
+                                    ->whereIn('property_type', PropertyType::query()
+                                        ->where('classification', PropertyType::CLASSIFICATION_COMMERCIAL)
+                                        ->select('name'));
+                            });
+                    });
                     return;
                 }
 

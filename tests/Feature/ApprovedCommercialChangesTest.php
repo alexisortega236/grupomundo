@@ -20,18 +20,33 @@ class ApprovedCommercialChangesTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         $this->actingAs($admin)->post(route('admin.property-types.store'), [
-            'name' => 'Estudio', 'sort_order' => 2, 'is_active' => 1,
+            'name' => 'Estudio', 'sort_order' => 2, 'classification' => 'residential', 'is_active' => 1,
         ])->assertRedirect();
         $type = PropertyType::where('name', 'Estudio')->firstOrFail();
 
         $this->actingAs($admin)->put(route('admin.property-types.update', $type), [
-            'name' => 'Estudio renovado', 'sort_order' => 1, 'is_active' => 1,
+            'name' => 'Estudio renovado', 'sort_order' => 1, 'classification' => 'commercial', 'is_active' => 1,
         ])->assertRedirect();
-        $this->assertDatabaseHas('property_types', ['name' => 'Estudio renovado', 'sort_order' => 1]);
+        $this->assertDatabaseHas('property_types', ['name' => 'Estudio renovado', 'sort_order' => 1, 'classification' => 'commercial']);
 
         $this->actingAs($admin)->patch(route('admin.property-types.toggle-active', $type->fresh()))->assertRedirect();
         $this->assertDatabaseHas('property_types', ['id' => $type->id, 'is_active' => false]);
         $this->actingAs($admin)->get(route('admin.property-types.index'))->assertSee('Estudio renovado')->assertSee('Inactivo');
+    }
+
+    public function test_initial_property_types_have_the_approved_classifications(): void
+    {
+        foreach ([
+            'Casa' => 'residential',
+            'Departamento' => 'residential',
+            'Oficina' => 'commercial',
+            'Local' => 'commercial',
+            'Consultorio' => 'commercial',
+            'Bodega' => 'commercial',
+            'Terreno' => 'land',
+        ] as $name => $classification) {
+            $this->assertDatabaseHas('property_types', compact('name', 'classification'));
+        }
     }
 
     public function test_inactive_type_cannot_be_assigned_to_new_property_but_existing_assignment_survives(): void
@@ -46,6 +61,85 @@ class ApprovedCommercialChangesTest extends TestCase
 
         $this->actingAs($admin)->put(route('admin.properties.update', $existing), $this->payload(['property_type' => 'Casa']))->assertRedirect();
         $this->assertDatabaseHas('properties', ['id' => $existing->id, 'property_type' => 'Casa', 'property_type_id' => $type->id]);
+    }
+
+    public function test_new_commercial_type_is_used_by_the_public_commercial_filter(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)->post(route('admin.property-types.store'), [
+            'name' => 'Estudio comercial',
+            'sort_order' => 20,
+            'classification' => 'commercial',
+            'is_active' => 1,
+        ])->assertRedirect();
+
+        $this->actingAs($admin)->post(route('admin.properties.store'), $this->payload([
+            'title' => 'Estudio comercial dinámico',
+            'property_type' => 'Estudio comercial',
+        ]))->assertRedirect();
+
+        $this->get('/propiedades?property_type=commercial&state=Morelos&sort=price_desc')
+            ->assertOk()
+            ->assertSee('Estudio comercial dinámico');
+    }
+
+    public function test_changing_classification_keeps_historical_property_and_changes_filter_membership(): void
+    {
+        $type = PropertyType::where('name', 'Casa')->firstOrFail();
+        $property = Property::factory()->create([
+            'title' => 'Casa histórica de clasificación',
+            'property_type' => 'Casa',
+            'property_type_id' => $type->id,
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $type->update(['classification' => 'commercial']);
+        $this->get('/propiedades?property_type=commercial')->assertSee($property->title);
+
+        $type->update(['classification' => 'residential']);
+        $this->get('/propiedades?property_type=commercial')->assertDontSee($property->title);
+        $this->get('/propiedades')->assertSee($property->title);
+        $this->assertDatabaseHas('properties', [
+            'id' => $property->id,
+            'property_type' => 'Casa',
+            'property_type_id' => $type->id,
+        ]);
+    }
+
+    public function test_historical_property_without_type_id_uses_the_classified_name(): void
+    {
+        $type = PropertyType::where('name', 'Oficina')->firstOrFail();
+        $property = Property::factory()->create([
+            'title' => 'Oficina histórica sin relación',
+            'property_type' => 'Oficina',
+            'property_type_id' => null,
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $this->get('/propiedades?property_type=commercial')->assertSee($property->title);
+
+        $type->update(['is_active' => false]);
+        $this->get('/propiedades?property_type=commercial')->assertSee($property->title);
+        $this->assertDatabaseHas('properties', ['id' => $property->id, 'property_type_id' => null]);
+    }
+
+    public function test_custom_type_without_classification_is_not_guessed_as_commercial(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)->post(route('admin.property-types.store'), [
+            'name' => 'Uso mixto personalizado',
+            'sort_order' => 30,
+            'is_active' => 1,
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('property_types', [
+            'name' => 'Uso mixto personalizado',
+            'classification' => null,
+        ]);
     }
 
     #[DataProvider('legacyBathroomCases')]

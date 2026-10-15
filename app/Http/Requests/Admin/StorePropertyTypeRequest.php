@@ -22,6 +22,7 @@ class StorePropertyTypeRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:120', Rule::unique('property_types', 'name')->ignore($id)],
             'sort_order' => ['required', 'integer', 'min:0', 'max:100000'],
+            'classification' => ['nullable', Rule::in(array_keys(PropertyType::classifications()))],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

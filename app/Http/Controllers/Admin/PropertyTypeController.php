@@ -25,7 +25,10 @@ class PropertyTypeController extends Controller
     {
         $this->authorize('create', PropertyType::class);
 
-        return view('admin.property-types.form', ['propertyType' => new PropertyType(['is_active' => true])]);
+        return view('admin.property-types.form', [
+            'propertyType' => new PropertyType(['is_active' => true]),
+            'classifications' => PropertyType::classifications(),
+        ]);
     }
 
     public function store(StorePropertyTypeRequest $request)
@@ -40,7 +43,10 @@ class PropertyTypeController extends Controller
     {
         $this->authorize('update', $propertyType);
 
-        return view('admin.property-types.form', compact('propertyType'));
+        return view('admin.property-types.form', [
+            'propertyType' => $propertyType,
+            'classifications' => PropertyType::classifications(),
+        ]);
     }
 
     public function update(StorePropertyTypeRequest $request, PropertyType $propertyType)
