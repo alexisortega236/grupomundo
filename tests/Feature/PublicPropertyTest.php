@@ -26,13 +26,13 @@ class PublicPropertyTest extends TestCase
                 'espacio ideal',
                 'siguiente etapa.',
             ])
-            ->assertSee('Descubre una selección de propiedades residenciales, comerciales e industriales para vivir, invertir y hacer crecer tu patrimonio, con asesoría profesional y acompañamiento especializado de principio a fin.');
+            ->assertSee('Encuentra propiedades para vivir o invertir, con asesoría profesional durante todo el proceso.');
     }
 
-    public function test_home_shows_only_published_featured_properties_and_limits_to_six(): void
+    public function test_home_shows_only_published_featured_properties_and_limits_to_ten(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $visible = Property::factory()->count(7)->sequence(
+        $visible = Property::factory()->count(11)->sequence(
             fn ($sequence) => [
                 'created_by' => $admin->id,
                 'title' => 'Destacada visible '.$sequence->index,
@@ -62,17 +62,17 @@ class PublicPropertyTest extends TestCase
         $response = $this->get('/')->assertOk();
 
         $response->assertSee('Destacada visible 0')
-            ->assertSee('Destacada visible 5')
-            ->assertDontSee('Destacada visible 6')
-            ->assertDontSee($notFeatured->title)
+            ->assertSee('Destacada visible 9')
+            ->assertDontSee('Destacada visible 10')
+            ->assertSee($notFeatured->title)
             ->assertDontSee($draftFeatured->title);
-        $this->assertCount(6, $visible->take(6));
+        $this->assertCount(10, $visible->take(10));
     }
 
     public function test_catalog_loads_and_filters(): void
     {
         $this->seed();
-        $this->get('/propiedades?operation_type=sale')->assertOk()->assertSee('resultados encontrados');
+        $this->get('/propiedades?operation_type=sale')->assertOk()->assertSee('propiedades disponibles');
     }
 
     public function test_presale_property_appears_and_can_be_filtered_publicly(): void
@@ -138,6 +138,7 @@ class PublicPropertyTest extends TestCase
             'email' => 'cliente@example.com',
             'message' => 'Quiero informacion.',
             'website' => '',
+            'contact_form_token' => ContactRequest::issueFormToken(time() - 4),
         ])->assertRedirect();
 
         $this->assertDatabaseHas('contact_requests', ['phone' => '5512345678']);
@@ -145,7 +146,7 @@ class PublicPropertyTest extends TestCase
 
     public function test_validation_rejects_incomplete_information(): void
     {
-        $this->post(route('contact-requests.store'), [])->assertSessionHasErrors(['name', 'phone', 'message']);
+        $this->post(route('contact-requests.store'), [])->assertSessionHasErrors(['name', 'phone', 'contact_form_token']);
     }
 
     public function test_guest_cannot_enter_admin_panel(): void

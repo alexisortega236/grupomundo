@@ -6,3 +6,5 @@
 
 body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
 .font-serif { font-family: Georgia, Cambria, "Times New Roman", serif; }
+
+.property-card-gallery { touch-action: pan-y; }

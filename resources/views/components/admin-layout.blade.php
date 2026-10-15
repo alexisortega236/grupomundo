@@ -19,6 +19,7 @@
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.properties.index') }}">Propiedades</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.valuations.index') }}">Valuaciones</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.amenities.index') }}">Amenidades</a>
+                <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.property-types.index') }}">Tipos de propiedad</a>
                 <a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.contact-requests.index') }}">Solicitudes</a>
                 @can('admin-only')<a class="rounded px-3 py-2 hover:bg-white/10" href="{{ route('admin.users.index') }}">Usuarios</a>@endcan
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="mt-4 w-full rounded border border-white/20 px-3 py-2 text-left hover:bg-white/10">Cerrar sesión</button></form>

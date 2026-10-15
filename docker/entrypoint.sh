@@ -25,6 +25,11 @@ php artisan db:seed --class=CdmxPostalSettlementsSeeder --force --no-interaction
   echo "ERROR: CdmxPostalSettlementsSeeder failed; aborting container startup." >&2
   exit 1
 }
+echo "Seeding Ciudad de México official colonies..."
+php artisan db:seed --class=CdmxOfficialColoniesSeeder --force --no-interaction || {
+  echo "ERROR: CdmxOfficialColoniesSeeder failed; aborting container startup." >&2
+  exit 1
+}
 
 # DatabaseSeeder contains development/demo data. Production must opt in
 # explicitly; the catalog seeders above remain part of the application boot.

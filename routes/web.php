@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\ContactRequestController as AdminContactRequestController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
+use App\Http\Controllers\Admin\PropertyTypeController as AdminPropertyTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ValuationController as AdminValuationController;
 use App\Http\Controllers\ProfileController;
@@ -20,6 +21,7 @@ Route::get('/propiedades', [PropertyController::class, 'index'])->name('properti
 Route::get('/propiedades/{property:slug}', [PropertyController::class, 'show'])->name('properties.show');
 Route::get('/valuador', [ValuationController::class, 'create'])->name('valuation.create');
 Route::get('/valuador/locations/municipalities', [LocationController::class, 'municipalities'])->middleware('throttle:30,1')->name('valuation.locations.municipalities');
+Route::get('/valuador/locations/postal-code', [LocationController::class, 'postalCode'])->middleware('throttle:30,1')->name('valuation.locations.postal-code');
 Route::get('/valuador/locations/settlements', [LocationController::class, 'settlements'])->middleware('throttle:60,1')->name('valuation.locations.settlements');
 Route::get('/valuador/geocode', [LocationController::class, 'geocode'])->middleware('throttle:20,1')->name('valuation.geocode');
 Route::get('/valuador/reverse-geocode', [LocationController::class, 'reverse'])->middleware('throttle:10,1')->name('valuation.reverse-geocode');
@@ -44,6 +46,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('propiedades', AdminPropertyController::class)->parameters(['propiedades' => 'property'])->names('properties');
     Route::resource('valuaciones', AdminValuationController::class)->parameters(['valuaciones' => 'valuation'])->only(['index', 'create', 'store', 'show'])->names('valuations');
     Route::resource('amenidades', AdminAmenityController::class)->parameters(['amenidades' => 'amenity'])->except('show')->names('amenities');
+    Route::patch('tipos-propiedad/{propertyType}/toggle-active', [AdminPropertyTypeController::class, 'toggleActive'])->name('property-types.toggle-active');
+    Route::resource('tipos-propiedad', AdminPropertyTypeController::class)->parameters(['tipos-propiedad' => 'propertyType'])->only(['index', 'create', 'store', 'edit', 'update'])->names('property-types');
     Route::resource('solicitudes', AdminContactRequestController::class)->parameters(['solicitudes' => 'contactRequest'])->only(['index', 'show', 'update', 'destroy'])->names('contact-requests');
     Route::resource('usuarios', AdminUserController::class)->parameters(['usuarios' => 'user'])->middleware('can:admin-only')->names('users');
 });

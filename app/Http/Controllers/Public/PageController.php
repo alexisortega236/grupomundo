@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use App\Models\ContactRequest;
 use Illuminate\Support\Facades\Response;
 
 class PageController extends Controller
@@ -20,7 +21,7 @@ class PageController extends Controller
 
     public function contact()
     {
-        return view('public.contact');
+        return view('public.contact', ['contactFormToken' => ContactRequest::issueFormToken()]);
     }
 
     public function sitemap()

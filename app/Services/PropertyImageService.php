@@ -37,12 +37,13 @@ class PropertyImageService
             ]);
         }
 
+        $createdImageIds = [];
         try {
             foreach ($data['images'] ?? [] as $index => $image) {
                 $versions = $this->storeOptimizedVersions($property, $image);
                 $createdPaths = [...$createdPaths, ...$versions];
 
-                $property->images()->create([
+                $createdImage = $property->images()->create([
                     'path' => $versions['path'],
                     'original_path' => $versions['original_path'],
                     'card_path' => $versions['card_path'],
@@ -55,6 +56,7 @@ class PropertyImageService
                     'position' => 100 + $index,
                     'is_cover' => false,
                 ]);
+                $createdImageIds[$index] = $createdImage->id;
             }
         } catch (Throwable $exception) {
             Storage::disk('public')->delete(array_values(array_filter($createdPaths, 'is_string')));
@@ -62,9 +64,12 @@ class PropertyImageService
         }
 
         $coverId = $data['cover_image_id'] ?? null;
-        if ($coverId) {
+        $newCoverIndex = $data['cover_image_new'] ?? null;
+        $newCoverId = $newCoverIndex !== null ? ($createdImageIds[$newCoverIndex] ?? null) : null;
+        if ($coverId || $newCoverId) {
             $property->images()->update(['is_cover' => false]);
-            $property->images()->whereKey($coverId)->update(['is_cover' => true]);
+            $selectedCoverId = $newCoverId ?: $coverId;
+            $property->images()->whereKey($selectedCoverId)->update(['is_cover' => true]);
         }
 
         if (! $property->images()->where('is_cover', true)->exists()) {

@@ -8,7 +8,11 @@ use App\Http\Requests\Admin\StorePropertyRequest;
 use App\Http\Requests\Admin\UpdatePropertyRequest;
 use App\Models\Amenity;
 use App\Models\Property;
+use App\Models\PropertyType;
 use App\Services\PropertyImageService;
+use App\Services\PropertyVideoService;
+use App\Services\Valuation\SupportedValuationLocations;
+use App\Support\PropertyTypeCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +38,7 @@ class PropertyController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(SupportedValuationLocations $locations)
     {
         return view('admin.properties.form', [
             'property' => new Property([
@@ -43,15 +47,17 @@ class PropertyController extends Controller
                 'origin' => Property::ORIGIN_COMMERCIAL,
             ]),
             'amenities' => Amenity::orderBy('name')->get(),
+            'locationStates' => $locations->states(),
+            'propertyTypes' => PropertyTypeCatalog::assignmentOptions(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePropertyRequest $request, PropertyImageService $images)
+    public function store(StorePropertyRequest $request, PropertyImageService $images, PropertyVideoService $videos)
     {
-        $property = DB::transaction(function () use ($request, $images) {
+        $property = DB::transaction(function () use ($request, $images, $videos) {
             $data = $this->propertyPayload($request);
             $data['slug'] = $this->uniqueSlug($data['title']);
             $data['created_by'] = $request->user()->id;
@@ -59,6 +65,7 @@ class PropertyController extends Controller
             $property = Property::create($data);
             $property->amenities()->sync($request->input('amenities', []));
             $images->sync($property, $request->validated());
+            $videos->sync($property, $request->validated());
             return $property;
         });
 
@@ -70,31 +77,34 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        return view('admin.properties.show', ['property' => $property->load(['images', 'amenities', 'contactRequests'])]);
+        return view('admin.properties.show', ['property' => $property->load(['images', 'videos', 'amenities', 'contactRequests'])]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Property $property)
+    public function edit(Property $property, SupportedValuationLocations $locations)
     {
         $this->authorize('update', $property);
 
         return view('admin.properties.form', [
-            'property' => $property->load(['images', 'amenities']),
+            'property' => $property->load(['images', 'videos', 'amenities']),
             'amenities' => Amenity::orderBy('name')->get(),
+            'locationStates' => $locations->states(),
+            'propertyTypes' => PropertyTypeCatalog::assignmentOptions($property),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images)
+    public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images, PropertyVideoService $videos)
     {
-        DB::transaction(function () use ($request, $property, $images) {
+        DB::transaction(function () use ($request, $property, $images, $videos) {
             $property->update($this->propertyPayload($request, $property));
             $property->amenities()->sync($request->input('amenities', []));
             $images->sync($property, $request->validated());
+            $videos->sync($property, $request->validated());
         });
 
         return redirect()->route('admin.properties.show', $property)->with('status', 'Propiedad actualizada.');
@@ -142,6 +152,9 @@ class PropertyController extends Controller
         foreach ($property->images as $image) {
             Storage::disk('public')->delete($image->paths());
         }
+        foreach ($property->videos as $video) {
+            Storage::disk('public')->delete($video->path);
+        }
         $property->forceDelete();
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad eliminada permanentemente.');
     }
@@ -149,8 +162,17 @@ class PropertyController extends Controller
     private function propertyPayload(Request $request, ?Property $property = null): array
     {
         $data = collect($request->validated())->except([
-            'slug', 'published_at', 'amenities', 'images', 'new_image_alt', 'existing_images', 'delete_images', 'cover_image_id',
+            'slug', 'published_at', 'amenities', 'images', 'new_image_alt', 'existing_images', 'delete_images', 'cover_image_id', 'cover_image_new', 'videos', 'delete_videos',
         ])->all();
+        if (array_key_exists('full_bathrooms', $data) || array_key_exists('half_bathrooms', $data)) {
+            $full = $data['full_bathrooms'] ?? null;
+            $half = $data['half_bathrooms'] ?? null;
+            $data['bathrooms'] = ($full === null && $half === null)
+                ? ($property?->bathrooms ?? ($data['bathrooms'] ?? null))
+                : (float) ($full ?? 0) + ((float) ($half ?? 0) * 0.5);
+        }
+        $propertyType = PropertyType::where('name', $data['property_type'] ?? null)->first();
+        $data['property_type_id'] = $propertyType?->id;
         $data['is_featured'] = $request->boolean('is_featured');
         if (($data['status'] ?? null) === PropertyStatus::Published->value && ! $property?->published_at) {
             $data['published_at'] = now();
