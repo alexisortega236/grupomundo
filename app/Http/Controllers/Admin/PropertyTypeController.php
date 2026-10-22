@@ -8,6 +8,7 @@ use App\Models\Property;
 use App\Models\PropertyType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Services\PropertyRevisionService;
 
 class PropertyTypeController extends Controller
 {
@@ -49,19 +50,12 @@ class PropertyTypeController extends Controller
         ]);
     }
 
-    public function update(StorePropertyTypeRequest $request, PropertyType $propertyType)
+    public function update(StorePropertyTypeRequest $request, PropertyType $propertyType, PropertyRevisionService $revisions)
     {
         $this->authorize('update', $propertyType);
         $data = $this->payload($request);
 
-        DB::transaction(function () use ($propertyType, $data): void {
-            $oldName = $propertyType->name;
-            $propertyType->update($data);
-
-            if ($oldName !== $propertyType->name) {
-                Property::where('property_type_id', $propertyType->id)->update(['property_type' => $propertyType->name]);
-            }
-        });
+        $revisions->updatePropertyType($propertyType, $data);
 
         return redirect()->route('admin.property-types.index')->with('status', 'Tipo de propiedad actualizado.');
     }

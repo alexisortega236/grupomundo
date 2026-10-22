@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreAmenityRequest;
 use App\Models\Amenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\PropertyRevisionService;
 
 class AmenityController extends Controller
 {
@@ -49,18 +50,18 @@ class AmenityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreAmenityRequest $request, Amenity $amenity)
+    public function update(StoreAmenityRequest $request, Amenity $amenity, PropertyRevisionService $revisions)
     {
-        $amenity->update($this->payload($request));
+        $revisions->updateAmenity($amenity, $this->payload($request));
         return redirect()->route('admin.amenities.index')->with('status', 'Amenidad actualizada.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Amenity $amenity)
+    public function destroy(Amenity $amenity, PropertyRevisionService $revisions)
     {
-        $amenity->delete();
+        $revisions->deleteAmenity($amenity);
         return back()->with('status', 'Amenidad eliminada.');
     }
 
