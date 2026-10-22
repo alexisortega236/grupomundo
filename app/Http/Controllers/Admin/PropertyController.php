@@ -10,6 +10,7 @@ use App\Models\Amenity;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Services\PropertyImageService;
+use App\Services\PropertyRevisionService;
 use App\Services\PropertyVideoService;
 use App\Services\Valuation\SupportedValuationLocations;
 use App\Support\PropertyTypeCatalog;
@@ -55,9 +56,9 @@ class PropertyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePropertyRequest $request, PropertyImageService $images, PropertyVideoService $videos)
+    public function store(StorePropertyRequest $request, PropertyImageService $images, PropertyVideoService $videos, PropertyRevisionService $revisions)
     {
-        $property = DB::transaction(function () use ($request, $images, $videos) {
+        $property = $revisions->create(function () use ($request, $images, $videos) {
             $data = $this->propertyPayload($request);
             $data['slug'] = $this->uniqueSlug($data['title']);
             $data['created_by'] = $request->user()->id;
@@ -98,13 +99,13 @@ class PropertyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images, PropertyVideoService $videos)
+    public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images, PropertyVideoService $videos, PropertyRevisionService $revisions)
     {
-        DB::transaction(function () use ($request, $property, $images, $videos) {
-            $property->update($this->propertyPayload($request, $property));
-            $property->amenities()->sync($request->input('amenities', []));
-            $images->sync($property, $request->validated());
-            $videos->sync($property, $request->validated());
+        $revisions->mutate($property, function (Property $locked) use ($request, $images, $videos): void {
+            $locked->update($this->propertyPayload($request, $locked));
+            $locked->amenities()->sync($request->input('amenities', []));
+            $images->sync($locked, $request->validated());
+            $videos->sync($locked, $request->validated());
         });
 
         return redirect()->route('admin.properties.show', $property)->with('status', 'Propiedad actualizada.');
@@ -113,39 +114,41 @@ class PropertyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Property $property)
+    public function destroy(Property $property, PropertyRevisionService $revisions)
     {
         $this->authorize('delete', $property);
-        $property->delete();
+        $revisions->softDelete($property);
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad enviada a eliminadas.');
     }
 
-    public function togglePublished(Property $property)
+    public function togglePublished(Property $property, PropertyRevisionService $revisions)
     {
         $this->authorize('publish', $property);
-        $property->update([
-            'status' => $property->status === PropertyStatus::Published ? PropertyStatus::Draft : PropertyStatus::Published,
-            'published_at' => $property->published_at ?: now(),
-        ]);
+        $revisions->mutate($property, function (Property $locked): void {
+            $locked->update([
+                'status' => $locked->status === PropertyStatus::Published ? PropertyStatus::Draft : PropertyStatus::Published,
+                'published_at' => $locked->published_at ?: now(),
+            ]);
+        });
         return back()->with('status', 'Publicación actualizada.');
     }
 
-    public function archive(Property $property)
+    public function archive(Property $property, PropertyRevisionService $revisions)
     {
         $this->authorize('update', $property);
-        $property->update(['status' => PropertyStatus::Archived]);
+        $revisions->mutate($property, fn (Property $locked) => $locked->update(['status' => PropertyStatus::Archived]));
         return back()->with('status', 'Propiedad archivada.');
     }
 
-    public function restore(int $property)
+    public function restore(int $property, PropertyRevisionService $revisions)
     {
         $property = Property::withTrashed()->findOrFail($property);
         $this->authorize('restore', $property);
-        $property->restore();
+        $revisions->restore($property);
         return back()->with('status', 'Propiedad restaurada.');
     }
 
-    public function forceDelete(int $property)
+    public function forceDelete(int $property, PropertyRevisionService $revisions)
     {
         $property = Property::withTrashed()->findOrFail($property);
         $this->authorize('forceDelete', $property);
@@ -155,7 +158,7 @@ class PropertyController extends Controller
         foreach ($property->videos as $video) {
             Storage::disk('public')->delete($video->path);
         }
-        $property->forceDelete();
+        $revisions->forceDelete($property);
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad eliminada permanentemente.');
     }
 
