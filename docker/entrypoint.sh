@@ -41,6 +41,10 @@ php artisan config:cache --no-interaction
 php artisan route:cache --no-interaction
 php artisan view:cache --no-interaction
 
+if [ "${RUN_PROPERTY_CHANGES_PUBLISHER:-false}" = "true" ]; then
+  /usr/local/bin/publish-property-changes-loop &
+fi
+
 chown -R www-data:www-data storage bootstrap/cache database public/storage 2>/dev/null || true
 
 if command -v apache2-foreground >/dev/null 2>&1; then

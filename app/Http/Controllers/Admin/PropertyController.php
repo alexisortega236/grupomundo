@@ -11,6 +11,7 @@ use App\Models\Property;
 use App\Models\PropertyType;
 use App\Services\PropertyImageService;
 use App\Services\PropertyRevisionService;
+use App\Services\TransactionSideEffects;
 use App\Services\PropertyVideoService;
 use App\Services\Valuation\SupportedValuationLocations;
 use App\Support\PropertyTypeCatalog;
@@ -58,15 +59,15 @@ class PropertyController extends Controller
      */
     public function store(StorePropertyRequest $request, PropertyImageService $images, PropertyVideoService $videos, PropertyRevisionService $revisions)
     {
-        $property = $revisions->create(function () use ($request, $images, $videos) {
+        $property = $revisions->create(function (TransactionSideEffects $effects) use ($request, $images, $videos) {
             $data = $this->propertyPayload($request);
             $data['slug'] = $this->uniqueSlug($data['title']);
             $data['created_by'] = $request->user()->id;
             $data['origin'] = Property::ORIGIN_COMMERCIAL;
             $property = Property::create($data);
             $property->amenities()->sync($request->input('amenities', []));
-            $images->sync($property, $request->validated());
-            $videos->sync($property, $request->validated());
+            $images->sync($property, $request->validated(), $effects);
+            $videos->sync($property, $request->validated(), $effects);
             return $property;
         });
 
@@ -101,11 +102,11 @@ class PropertyController extends Controller
      */
     public function update(UpdatePropertyRequest $request, Property $property, PropertyImageService $images, PropertyVideoService $videos, PropertyRevisionService $revisions)
     {
-        $revisions->mutate($property, function (Property $locked) use ($request, $images, $videos): void {
+        $revisions->mutate($property, function (Property $locked, TransactionSideEffects $effects) use ($request, $images, $videos): void {
             $locked->update($this->propertyPayload($request, $locked));
             $locked->amenities()->sync($request->input('amenities', []));
-            $images->sync($locked, $request->validated());
-            $videos->sync($locked, $request->validated());
+            $images->sync($locked, $request->validated(), $effects);
+            $videos->sync($locked, $request->validated(), $effects);
         });
 
         return redirect()->route('admin.properties.show', $property)->with('status', 'Propiedad actualizada.');
@@ -152,13 +153,10 @@ class PropertyController extends Controller
     {
         $property = Property::withTrashed()->findOrFail($property);
         $this->authorize('forceDelete', $property);
-        foreach ($property->images as $image) {
-            Storage::disk('public')->delete($image->paths());
-        }
-        foreach ($property->videos as $video) {
-            Storage::disk('public')->delete($video->path);
-        }
+        $imagePaths = $property->images->flatMap(fn ($image) => $image->paths())->all();
+        $videoPaths = $property->videos->pluck('path')->all();
         $revisions->forceDelete($property);
+        Storage::disk('public')->delete([...$imagePaths, ...$videoPaths]);
         return redirect()->route('admin.properties.index')->with('status', 'Propiedad eliminada permanentemente.');
     }
 

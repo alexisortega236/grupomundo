@@ -17,30 +17,32 @@ class PropertyImageService
     private const THUMB_WIDTH = 400;
     private const WEBP_QUALITY = 88;
 
-    public function sync(Property $property, array $data): void
+    public function sync(Property $property, array $data, ?TransactionSideEffects $effects = null): void
     {
+        $ownsEffects = $effects === null;
+        $effects ??= new TransactionSideEffects();
         $createdPaths = [];
 
-        foreach ($data['delete_images'] ?? [] as $imageId) {
-            $image = $property->images()->find($imageId);
-            if ($image) {
-                Storage::disk('public')->delete($image->paths());
-                $image->delete();
-            }
-        }
-
-        foreach ($data['existing_images'] ?? [] as $imageId => $payload) {
-            $property->images()->whereKey($imageId)->update([
-                'alt_text' => $payload['alt_text'] ?? null,
-                'position' => $payload['position'] ?? 0,
-                'is_cover' => false,
-            ]);
-        }
-
-        $createdImageIds = [];
         try {
+            foreach ($data['delete_images'] ?? [] as $imageId) {
+                $image = $property->images()->find($imageId);
+                if ($image) {
+                    $effects->deleteAfterCommit($image->paths());
+                    $image->delete();
+                }
+            }
+
+            foreach ($data['existing_images'] ?? [] as $imageId => $payload) {
+                $property->images()->whereKey($imageId)->update([
+                    'alt_text' => $payload['alt_text'] ?? null,
+                    'position' => $payload['position'] ?? 0,
+                    'is_cover' => false,
+                ]);
+            }
+
+            $createdImageIds = [];
             foreach ($data['images'] ?? [] as $index => $image) {
-                $versions = $this->storeOptimizedVersions($property, $image);
+                $versions = $this->storeOptimizedVersions($property, $image, $effects->operationId(), (int) $index, $effects);
                 $createdPaths = [...$createdPaths, ...$versions];
 
                 $createdImage = $property->images()->create([
@@ -58,32 +60,39 @@ class PropertyImageService
                 ]);
                 $createdImageIds[$index] = $createdImage->id;
             }
+
+            $coverId = $data['cover_image_id'] ?? null;
+            $newCoverIndex = $data['cover_image_new'] ?? null;
+            $newCoverId = $newCoverIndex !== null ? ($createdImageIds[$newCoverIndex] ?? null) : null;
+            if ($coverId || $newCoverId) {
+                $property->images()->update(['is_cover' => false]);
+                $selectedCoverId = $newCoverId ?: $coverId;
+                $property->images()->whereKey($selectedCoverId)->update(['is_cover' => true]);
+            }
+
+            if (! $property->images()->where('is_cover', true)->exists()) {
+                $first = $property->images()->orderBy('position')->first();
+                $first?->update(['is_cover' => true]);
+            }
+
+            if ($ownsEffects) {
+                $effects->committed();
+            }
         } catch (Throwable $exception) {
             Storage::disk('public')->delete(array_values(array_filter($createdPaths, 'is_string')));
+            if ($ownsEffects) {
+                $effects->rolledBack();
+            }
             throw $exception;
-        }
-
-        $coverId = $data['cover_image_id'] ?? null;
-        $newCoverIndex = $data['cover_image_new'] ?? null;
-        $newCoverId = $newCoverIndex !== null ? ($createdImageIds[$newCoverIndex] ?? null) : null;
-        if ($coverId || $newCoverId) {
-            $property->images()->update(['is_cover' => false]);
-            $selectedCoverId = $newCoverId ?: $coverId;
-            $property->images()->whereKey($selectedCoverId)->update(['is_cover' => true]);
-        }
-
-        if (! $property->images()->where('is_cover', true)->exists()) {
-            $first = $property->images()->orderBy('position')->first();
-            $first?->update(['is_cover' => true]);
         }
     }
 
-    private function storeOptimizedVersions(Property $property, UploadedFile $file): array
+    private function storeOptimizedVersions(Property $property, UploadedFile $file, string $operationId, int $index, TransactionSideEffects $effects): array
     {
         $manager = new ImageManager(new Driver());
         $source = $manager->decodePath($file->getRealPath());
         $directory = "properties/{$property->id}";
-        $name = Str::uuid()->toString();
+        $name = "{$operationId}-{$index}";
 
         $extension = strtolower($file->getClientOriginalExtension()) ?: 'bin';
         $originalPath = "{$directory}/{$name}-original.{$extension}";
@@ -95,6 +104,9 @@ class PropertyImageService
         ];
 
         try {
+            foreach ($paths as $path) {
+                $effects->stage($path);
+            }
             Storage::disk('public')->put($originalPath, $file->get());
 
             if (method_exists($source, 'orient')) {

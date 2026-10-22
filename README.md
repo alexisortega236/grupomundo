@@ -133,3 +133,11 @@ RUN_SEEDERS=true
 ```
 
 Para una prueba rapida puede dejar SQLite, que es el valor predeterminado del contenedor. Para produccion usa una base externa y configura `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` y `DB_PASSWORD`.
+
+El publisher incremental puede ejecutarse dentro del mismo contenedor Render,
+sin crear un worker adicional. Para activarlo de forma controlada configura
+`RUN_PROPERTY_CHANGES_PUBLISHER=true`; por defecto permanece desactivado.
+Usa `PROPERTY_CHANGES_PUBLISH_INTERVAL_SECONDS` y
+`PROPERTY_CHANGES_PUBLISH_LIMIT` para ajustar el ciclo. El comando usa un lock
+distribuido de base de datos y puede recuperarse después de reinicios. La
+limpieza de eventos no se activa desde el entrypoint.
