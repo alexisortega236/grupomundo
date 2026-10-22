@@ -141,3 +141,8 @@ Usa `PROPERTY_CHANGES_PUBLISH_INTERVAL_SECONDS` y
 `PROPERTY_CHANGES_PUBLISH_LIMIT` para ajustar el ciclo. El comando usa un lock
 distribuido de base de datos y puede recuperarse después de reinicios. La
 limpieza de eventos no se activa desde el entrypoint.
+
+Para la integración SDG, configura `SDG_OAUTH_CLIENT_ID` con un UUID estable y
+`SDG_OAUTH_CLIENT_SECRET` con un secreto aleatorio largo. El entrypoint ejecuta
+`passport:initialize-sdg-client` después de las migraciones. La inicialización
+es idempotente, no imprime el secreto y se omite si faltan ambas variables.
