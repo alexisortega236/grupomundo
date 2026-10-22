@@ -9,6 +9,7 @@
         "php": "^8.3",
         "intervention/image": "^4.2",
         "laravel/framework": "^13.8",
+        "laravel/passport": "^13.0",
         "laravel/tinker": "^3.0"
     },
     "require-dev": {
