@@ -5,23 +5,25 @@ namespace App\Services;
 use App\Models\Property;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Throwable;
 
 class PropertyVideoService
 {
-    public function sync(Property $property, array $data): void
+    public function sync(Property $property, array $data, ?TransactionSideEffects $effects = null): void
     {
-        foreach ($data['delete_videos'] ?? [] as $videoId) {
-            $video = $property->videos()->find($videoId);
-            if ($video) {
-                Storage::disk('public')->delete($video->path);
-                $video->delete();
-            }
-        }
+        $ownsEffects = $effects === null;
+        $effects ??= new TransactionSideEffects();
 
-        $createdPaths = [];
         try {
+            foreach ($data['delete_videos'] ?? [] as $videoId) {
+                $video = $property->videos()->find($videoId);
+                if ($video) {
+                    $effects->deleteAfterCommit([$video->path]);
+                    $video->delete();
+                }
+            }
+
+            $createdPaths = [];
             $position = (int) $property->videos()->max('position');
 
             foreach ($data['videos'] ?? [] as $index => $video) {
@@ -29,12 +31,14 @@ class PropertyVideoService
                     continue;
                 }
 
+                $filename = "{$effects->operationId()}-{$index}.".strtolower($video->getClientOriginalExtension() ?: 'mp4');
                 $path = $video->storeAs(
                     "properties/{$property->id}/videos",
-                    Str::uuid()->toString().'.'.strtolower($video->getClientOriginalExtension() ?: 'mp4'),
+                    $filename,
                     'public'
                 );
                 $createdPaths[] = $path;
+                $effects->stage($path);
 
                 $property->videos()->create([
                     'path' => $path,
@@ -44,8 +48,15 @@ class PropertyVideoService
                     'position' => ++$position,
                 ]);
             }
+
+            if ($ownsEffects) {
+                $effects->committed();
+            }
         } catch (Throwable $exception) {
             Storage::disk('public')->delete($createdPaths);
+            if ($ownsEffects) {
+                $effects->rolledBack();
+            }
             throw $exception;
         }
     }

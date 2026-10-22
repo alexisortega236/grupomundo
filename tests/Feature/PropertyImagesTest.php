@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Property;
 use App\Models\User;
 use App\Services\PropertyImageService;
+use App\Services\PropertyRevisionService;
+use App\Services\TransactionRetry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -168,6 +170,55 @@ class PropertyImagesTest extends TestCase
 
         $this->assertCount(10, $property->fresh()->images);
         $this->assertDatabaseMissing('property_images', ['id' => $deletedImage->id]);
+    }
+
+    public function test_rollback_removes_staged_image_and_video_files_without_database_references(): void
+    {
+        Storage::fake('public');
+        $property = Property::factory()->create();
+        $image = UploadedFile::fake()->image('rollback.jpg', 800, 600);
+        $video = UploadedFile::fake()->create('rollback.mp4', 1024, 'video/mp4');
+
+        try {
+            app(PropertyRevisionService::class)->mutate($property, function (Property $locked, $effects) use ($image, $video): void {
+                app(PropertyImageService::class)->sync($locked, ['images' => [$image]], $effects);
+                app(\App\Services\PropertyVideoService::class)->sync($locked, ['videos' => [$video]], $effects);
+
+                throw new \RuntimeException('intentional media rollback');
+            });
+            $this->fail('The transaction should have rolled back.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('intentional media rollback', $exception->getMessage());
+        }
+
+        $this->assertDatabaseCount('property_images', 0);
+        $this->assertDatabaseCount('property_videos', 0);
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
+
+    public function test_deadlock_retry_reuses_media_paths_without_duplicate_files_or_rows(): void
+    {
+        Storage::fake('public');
+        $property = Property::factory()->create();
+        $image = UploadedFile::fake()->image('deadlock.jpg', 800, 600);
+        $attempts = 0;
+
+        app(TransactionRetry::class)->run(function ($effects) use (&$attempts, $property, $image): void {
+            $attempts++;
+            app(PropertyImageService::class)->sync($property, ['images' => [$image]], $effects);
+
+            if ($attempts === 1) {
+                $exception = new class('deadlock') extends \RuntimeException {
+                    public array $errorInfo = ['40001', 1213, 'deadlock'];
+                };
+
+                throw $exception;
+            }
+        }, 'test.media_deadlock');
+
+        $this->assertSame(2, $attempts);
+        $this->assertDatabaseCount('property_images', 1);
+        $this->assertCount(4, Storage::disk('public')->allFiles());
     }
 
     private function images(int $count): array

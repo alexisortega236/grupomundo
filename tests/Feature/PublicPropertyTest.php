@@ -419,7 +419,7 @@ class PublicPropertyTest extends TestCase
         $this->assertSame($firstPublishedAt->toDateTimeString(), $property->refresh()->published_at->toDateTimeString());
     }
 
-    public function test_admin_can_create_amenity_without_slug(): void
+    public function test_admin_rejects_an_amenity_equivalent_under_mysql_collation(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
         Amenity::create(['name' => 'Area verde', 'slug' => 'area-verde']);
@@ -430,9 +430,9 @@ class PublicPropertyTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.amenities.store'), [
             'name' => 'Área verde',
-        ])->assertRedirect();
+        ])->assertSessionHasErrors(['name' => 'Ya existe una amenidad equivalente; los acentos y mayúsculas no distinguen nombres.']);
 
-        $this->assertDatabaseHas('amenities', ['name' => 'Área verde', 'slug' => 'area-verde-2']);
+        $this->assertDatabaseCount('amenities', 1);
     }
 
     public function test_user_roles_are_displayed_in_spanish(): void

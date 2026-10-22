@@ -4,6 +4,8 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
+use App\Models\Amenity;
 
 class StoreAmenityRequest extends FormRequest
 {
@@ -25,7 +27,22 @@ class StoreAmenityRequest extends FormRequest
         $id = $this->route('amenity')?->id;
 
         return [
-            'name' => ['required', 'string', 'max:120', 'unique:amenities,name'.($id ? ','.$id : '')],
+            'name' => [
+                'required',
+                'string',
+                'max:120',
+                function (string $attribute, mixed $value, \Closure $fail) use ($id): void {
+                    $candidate = Str::lower(Str::ascii(trim((string) $value)));
+                    $equivalentExists = Amenity::query()
+                        ->when($id, fn ($query) => $query->whereKeyNot($id))
+                        ->get(['id', 'name'])
+                        ->contains(fn (Amenity $amenity): bool => Str::lower(Str::ascii(trim($amenity->name))) === $candidate);
+
+                    if ($equivalentExists) {
+                        $fail('Ya existe una amenidad equivalente; los acentos y mayúsculas no distinguen nombres.');
+                    }
+                },
+            ],
         ];
     }
 }

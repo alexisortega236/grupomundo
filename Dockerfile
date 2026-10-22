@@ -29,8 +29,10 @@ COPY --from=assets /app/public/build /var/www/html/public/build
 COPY docker/apache-laravel.conf /etc/apache2/sites-available/000-default.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY docker/entrypoint.sh /usr/local/bin/render-entrypoint
+COPY docker/publish-property-changes-loop.sh /usr/local/bin/publish-property-changes-loop
 
 RUN chmod +x /usr/local/bin/render-entrypoint \
+    && chmod +x /usr/local/bin/publish-property-changes-loop \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache database public
 
@@ -44,6 +46,9 @@ ENV CACHE_STORE=database
 ENV QUEUE_CONNECTION=database
 ENV DB_CONNECTION=sqlite
 ENV DB_DATABASE=/var/www/html/database/database.sqlite
+ENV RUN_PROPERTY_CHANGES_PUBLISHER=false
+ENV PROPERTY_CHANGES_PUBLISH_INTERVAL_SECONDS=60
+ENV PROPERTY_CHANGES_PUBLISH_LIMIT=100
 
 EXPOSE 10000
 
